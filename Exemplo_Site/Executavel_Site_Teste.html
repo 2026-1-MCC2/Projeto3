@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Restocka – Marketplace B2B</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --r1:#C1121F;--r2:#E63946;--o1:#E85D04;--o2:#F77F00;--o3:#F4A261;
+  --y1:#FFBA08;--y2:#FFD166;--bg:#FFF8F0;--white:#fff;--dark:#1A0A00;
+  --gray:#6B5040;--lgray:#FFF0E0;--border:#FFD0A0;--green:#16A34A;
+  --shadow:0 4px 20px rgba(200,80,0,.10);--rad:12px
+}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh}
+a{cursor:pointer;text-decoration:none;color:inherit}
+input,select,textarea,button{font-family:'Poppins',sans-serif;font-size:14px}
+.hidden{display:none!important}
+.page{display:none}.page.active{display:block}
+
+/* TOAST */
+#toast-ct{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.t-msg{background:#1A0A00;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.25);border-left:4px solid var(--green);animation:tin .3s ease}
+.t-msg.err{border-left-color:var(--r2)}
+@keyframes tin{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+
+/* MODAL */
+#modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.m-box{background:var(--white);border-radius:20px;padding:34px;max-width:520px;width:100%;box-shadow:0 24px 70px rgba(0,0,0,.25);position:relative;max-height:90vh;overflow-y:auto}
+.m-close{position:absolute;top:14px;right:14px;background:var(--lgray);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--gray)}
+.m-close:hover{background:var(--border)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:opacity .15s,transform .15s;white-space:nowrap}
+.btn:hover{opacity:.88;transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-red{background:linear-gradient(135deg,var(--r1),var(--r2));color:#fff}
+.btn-orange{background:linear-gradient(135deg,var(--o1),var(--o2));color:#fff}
+.btn-yellow{background:linear-gradient(135deg,var(--y1),var(--y2));color:var(--dark)}
+.btn-outline{background:transparent;border:2px solid var(--o2);color:var(--o1)}
+.btn-outline:hover{background:var(--o2);color:#fff;opacity:1}
+.btn-ghost{background:var(--lgray);color:var(--gray);border:1.5px solid var(--border)}
+.btn-ghost:hover{border-color:var(--o2);color:var(--o1);opacity:1}
+.btn-success{background:#dcfce7;color:var(--green);border:none}
+.btn-success:hover{background:var(--green);color:#fff;opacity:1}
+.btn-danger{background:#fee2e2;color:var(--r2);border:none}
+.btn-danger:hover{background:var(--r2);color:#fff;opacity:1}
+.btn-sm{padding:6px 14px;font-size:12px}
+.btn-lg{padding:13px 30px;font-size:15px}
+.btn-block{width:100%}
+
+/* FORMS */
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--dark);text-transform:uppercase;letter-spacing:.4px}
+.fg input,.fg select,.fg textarea{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:14px;outline:none;background:var(--white);color:var(--dark)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--o2);box-shadow:0 0 0 3px rgba(247,127,0,.1)}
+.fg textarea{resize:vertical;min-height:90px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.req{color:var(--r2)}
+
+/* NAV */
+nav{background:linear-gradient(90deg,#1A0A00,#2D1200);box-shadow:0 2px 16px rgba(0,0,0,.3);position:sticky;top:0;z-index:200}
+.nav-in{max-width:1200px;margin:0 auto;padding:0 20px;height:64px;display:flex;align-items:center;gap:16px}
+.logo{font-size:22px;font-weight:900;letter-spacing:-1px;cursor:pointer;flex-shrink:0;line-height:1;user-select:none}
+.logo .lr{color:#FF6B6B}.logo .lo{color:var(--o3)}
+.logo small{display:block;font-size:9px;font-weight:400;color:rgba(255,255,255,.3);letter-spacing:.3px;margin-top:-2px}
+.nav-links{display:flex;gap:4px;flex:1;justify-content:center}
+.nav-links button{background:transparent;border:none;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,.5);cursor:pointer;transition:background .15s,color .15s}
+.nav-links button:hover,.nav-links button.active{background:rgba(255,186,8,.12);color:var(--y2)}
+.nav-right{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.u-chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:5px 14px 5px 6px;border-radius:30px;cursor:pointer}
+.u-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+.u-av-r{background:linear-gradient(135deg,var(--r1),var(--r2))}
+.u-av-o{background:linear-gradient(135deg,var(--o1),var(--o2))}
+.u-av-y{background:linear-gradient(135deg,var(--y1),var(--o1))}
+.u-name{font-size:13px;font-weight:700;color:#fff}
+.u-badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:800}
+.ub-admin{background:rgba(193,18,31,.3);color:#ffaaaa}
+.ub-supplier{background:rgba(247,127,0,.25);color:var(--y2)}
+.ub-buyer{background:rgba(255,209,102,.15);color:var(--y2)}
+.chip{font-size:11px;padding:3px 8px;border-radius:20px;background:var(--lgray);color:var(--gray);font-weight:600;border:1px solid var(--border)}
+.stars{color:var(--y1);font-size:13px;letter-spacing:.5px}
+.status-badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:700}
+.sb-active{background:#fef3c7;color:#b45309}
+.sb-draft{background:#fee2e2;color:var(--r1)}
+.sb-paused{background:var(--lgray);color:var(--gray)}
+.sb-pending{background:#dbeafe;color:#1e40af}
+
+/* ────── LOGIN ────── */
+.login-bg{min-height:100vh;background:linear-gradient(135deg,#1A0A00,#3d1200,#1A0A00);display:flex;align-items:center;justify-content:center;padding:30px 20px}
+.login-box{background:var(--white);border-radius:20px;padding:44px;max-width:420px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.4)}
+.login-logo{text-align:center;font-size:28px;font-weight:900;letter-spacing:-1px;margin-bottom:4px;user-select:none}
+.login-logo .lr{color:var(--r2)}.login-logo .lo{color:var(--o2)}
+.login-sub{text-align:center;font-size:13px;color:var(--gray);margin-bottom:28px}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:42px}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--gray);padding:0}
+.divider{text-align:center;color:var(--gray);font-size:12px;margin:16px 0;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:44%;height:1px;background:var(--border)}
+.divider::before{left:0}.divider::after{right:0}
+.login-foot{text-align:center;font-size:13px;color:var(--gray);margin-top:16px}
+.login-foot a{color:var(--o1);font-weight:700}
+.forgot-link{display:block;text-align:right;font-size:12px;color:var(--o1);font-weight:700;cursor:pointer;margin-bottom:18px}
+
+/* ────── REGISTER ────── */
+.reg-bg{min-height:calc(100vh - 64px);background:linear-gradient(135deg,#1A0A00,#3d1200);display:flex;align-items:center;justify-content:center;padding:40px 20px}
+.reg-box{background:var(--white);border-radius:20px;padding:40px;max-width:500px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.role-opt{border:2px solid var(--border);border-radius:12px;padding:14px;text-align:center;cursor:pointer;background:var(--lgray);transition:border-color .15s,background .15s}
+.role-opt:hover{border-color:var(--o2)}
+.role-opt.sel{border-color:var(--o2);background:rgba(247,127,0,.07)}
+.role-opt .ri{font-size:26px;margin-bottom:5px}
+.role-opt .rn{font-size:13px;font-weight:800}
+.role-opt .rd{font-size:11px;color:var(--gray)}
+
+/* ────── HOME ────── */
+.hero{background:linear-gradient(150deg,#1A0A00 0%,#3a1200 50%,#1A0A00 100%);color:#fff;padding:72px 20px;overflow:hidden;position:relative}
+.hero::after{content:'🌶️';position:absolute;right:-10px;bottom:-20px;font-size:16rem;opacity:.04;pointer-events:none}
+.hero-in{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,186,8,.12);padding:5px 14px;border-radius:30px;font-size:11px;font-weight:700;margin-bottom:16px;border:1px solid rgba(255,186,8,.25);color:var(--y2);text-transform:uppercase;letter-spacing:.5px}
+.hero h1{font-size:2.5rem;font-weight:900;line-height:1.18;margin-bottom:14px}
+.hero h1 em{font-style:normal;color:var(--y2)}
+.hero p{color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:26px;font-size:14px}
+.hero-sbar{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:12px;padding:5px 5px 5px 14px;display:flex;gap:8px;align-items:center}
+.hero-sbar input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:14px}
+.hero-sbar input::placeholder{color:rgba(255,255,255,.35)}
+.hero-stats{display:flex;gap:24px;margin-top:24px}
+.hs-n{font-size:22px;font-weight:900;color:var(--y2)}
+.hs-l{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px}
+.hero-vis{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:22px;backdrop-filter:blur(12px)}
+.hv-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.35);margin-bottom:12px}
+.hv-cats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hv-cat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:12px;text-align:center;cursor:pointer;transition:background .15s}
+.hv-cat:hover{background:rgba(255,186,8,.12);border-color:rgba(255,186,8,.25)}
+.hv-cat .ic{font-size:26px;display:block;margin-bottom:4px}
+.hv-cat span{font-size:11px;color:rgba(255,255,255,.65);font-weight:600}
+.hv-top{margin-top:12px;background:rgba(255,186,8,.1);border:1px solid rgba(255,186,8,.2);border-radius:12px;padding:12px;text-align:center}
+.hv-top .label{font-size:10px;color:rgba(255,255,255,.45);margin-bottom:2px}
+.hv-top .name{font-size:13px;font-weight:800;color:#fff}
+.hv-top .rate{font-size:11px;color:var(--y2);margin-top:2px}
+
+/* SECTIONS */
+.sec{max-width:1200px;margin:0 auto;padding:56px 20px}
+.sec-hd{text-align:center;margin-bottom:32px}
+.stag{display:inline-block;padding:4px 12px;border-radius:30px;font-size:10px;font-weight:800;background:rgba(247,127,0,.1);color:var(--o1);margin-bottom:8px;border:1px solid rgba(247,127,0,.2);text-transform:uppercase;letter-spacing:.6px}
+.sec-hd h2{font-size:26px;font-weight:800;margin-bottom:6px}
+.sec-hd p{color:var(--gray);font-size:13px}
+
+/* CATS */
+.cats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.cat-card{background:var(--white);border-radius:var(--rad);padding:22px 14px;text-align:center;box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent;transition:border-color .2s,transform .2s,box-shadow .2s}
+.cat-card:hover{border-color:var(--o2);transform:translateY(-4px);box-shadow:0 8px 28px rgba(247,127,0,.15)}
+.cat-card .ic{font-size:30px;margin-bottom:8px}
+.cat-card .cn{font-size:13px;font-weight:700}
+.cat-card .cc{font-size:11px;color:var(--gray);margin-top:2px}
+
+/* SUPPLIERS */
+.sup-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.sup-card{background:var(--white);border-radius:var(--rad);padding:18px;box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent;transition:border-color .2s,transform .2s}
+.sup-card:hover{border-color:var(--o3);transform:translateY(-3px)}
+.sup-av{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:10px}
+.sup-card .sn{font-size:13px;font-weight:800}
+.sup-card .sl{font-size:11px;color:var(--gray);margin:2px 0 6px}
+.chips-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+
+/* PRODUCTS */
+.prods-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.p-card{background:var(--white);border-radius:var(--rad);overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform .2s,box-shadow .2s}
+.p-card:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(247,127,0,.14)}
+.p-img{height:144px;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative}
+.p-badge{position:absolute;top:8px;left:8px;background:linear-gradient(90deg,var(--r1),var(--r2));color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px}
+.p-fav{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.92);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.p-body{padding:13px}
+.p-name{font-size:13px;font-weight:800;margin-bottom:3px;line-height:1.3}
+.p-sup{font-size:11px;color:var(--gray);margin-bottom:6px}
+.p-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.p-moq{font-size:11px;color:var(--o1);font-weight:700}
+.p-card-btns{display:flex;gap:6px}
+.p-card-btns .btn{flex:1;font-size:11px;padding:7px 8px;border-radius:8px}
+
+/* BENEFITS */
+.ben-bg{background:linear-gradient(135deg,var(--r1),var(--o1),var(--y1));padding:56px 20px}
+.ben-in{max-width:1200px;margin:0 auto}
+.ben-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:32px}
+.ben-card{background:rgba(255,255,255,.14);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:24px;color:#fff;text-align:center}
+.ben-card .ic{font-size:34px;margin-bottom:12px}
+.ben-card h3{font-size:14px;font-weight:800;margin-bottom:6px}
+.ben-card p{font-size:12px;color:rgba(255,255,255,.78);line-height:1.65}
+
+/* CTA */
+.cta{background:var(--lgray);text-align:center;padding:68px 20px;border-top:2px solid var(--border)}
+.cta h2{font-size:28px;font-weight:900;margin-bottom:8px}
+.cta p{color:var(--gray);margin-bottom:26px;font-size:14px}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* ────── ORÇAMENTO BANNER ────── */
+.orc-banner{background:linear-gradient(135deg,#3a1200,var(--r1),var(--o1));padding:48px 20px;color:#fff;position:relative;overflow:hidden}
+.orc-banner::before{content:'📋';position:absolute;right:-10px;top:-20px;font-size:14rem;opacity:.07;pointer-events:none}
+.orc-banner-in{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.orc-text h2{font-size:26px;font-weight:900;margin-bottom:10px;line-height:1.2}
+.orc-text h2 em{font-style:normal;color:var(--y2)}
+.orc-text p{font-size:13px;color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:20px}
+.orc-steps{display:flex;flex-direction:column;gap:12px}
+.orc-step{display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(255,255,255,.85)}
+.orc-step-num{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;border:1.5px solid rgba(255,255,255,.3)}
+.orc-form-box{background:rgba(255,255,255,.1);backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,.2);border-radius:18px;padding:24px}
+.orc-form-box h3{font-size:15px;font-weight:800;margin-bottom:16px;color:#fff}
+.orc-form-box .fg label{color:rgba(255,255,255,.7)}
+.orc-form-box .fg input,.orc-form-box .fg select,.orc-form-box .fg textarea{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:#fff}
+.orc-form-box .fg input::placeholder,.orc-form-box .fg textarea::placeholder{color:rgba(255,255,255,.4)}
+.orc-form-box .fg input:focus,.orc-form-box .fg select:focus,.orc-form-box .fg textarea:focus{border-color:var(--y2);box-shadow:0 0 0 3px rgba(255,186,8,.15)}
+.orc-form-box .fg select option{background:#3a1200;color:#fff}
+
+/* ────── MARKETPLACE ────── */
+.mkt-head{background:linear-gradient(90deg,#1A0A00,#2D1200);padding:24px 20px;color:#fff}
+.mkt-head-in{max-width:1200px;margin:0 auto}
+.mkt-head h2{font-size:20px;font-weight:800;margin-bottom:12px}
+.mkt-sbar{display:flex;gap:8px;flex-wrap:wrap}
+.mkt-sbar input{flex:1;min-width:180px;padding:10px 16px;border:1.5px solid rgba(255,255,255,.15);border-radius:10px;background:rgba(255,255,255,.08);color:#fff;font-size:14px;outline:none}
+.mkt-sbar input:focus{border-color:var(--y2)}
+.mkt-sbar input::placeholder{color:rgba(255,255,255,.35)}
+.mkt-body{max-width:1200px;margin:0 auto;padding:26px 20px;display:grid;grid-template-columns:230px 1fr;gap:22px}
+.filt{background:var(--white);border-radius:var(--rad);padding:18px;box-shadow:var(--shadow);position:sticky;top:72px;height:fit-content}
+.filt-hd{font-size:14px;font-weight:800;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--lgray);display:flex;justify-content:space-between;align-items:center}
+.fsec{margin-bottom:18px}
+.fsec h4{font-size:10px;font-weight:800;margin-bottom:8px;color:var(--dark);text-transform:uppercase;letter-spacing:.5px}
+.fopt{display:flex;align-items:center;gap:8px;margin-bottom:7px;cursor:pointer}
+.fopt input{accent-color:var(--r2);cursor:pointer;width:14px;height:14px;flex-shrink:0}
+.fopt label{font-size:12px;color:var(--gray);cursor:pointer;flex:1}
+.fopt span{font-size:11px;color:var(--gray)}
+.mkt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pgn{display:flex;gap:6px;justify-content:center;margin-top:24px}
+.pgb{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-size:12px;font-weight:700;color:var(--gray);display:flex;align-items:center;justify-content:center}
+.pgb.on,.pgb:hover{background:linear-gradient(135deg,var(--r2),var(--o2));color:#fff;border-color:transparent}
+
+/* ────── ORCAMENTO PAGE ────── */
+.orc-page-wrap{max-width:860px;margin:0 auto;padding:40px 20px}
+.orc-page-hero{background:linear-gradient(135deg,var(--r1),var(--o1));color:#fff;border-radius:18px;padding:36px;margin-bottom:28px;position:relative;overflow:hidden}
+.orc-page-hero::after{content:'📋';position:absolute;right:10px;bottom:-10px;font-size:8rem;opacity:.12;pointer-events:none}
+.orc-page-hero h1{font-size:24px;font-weight:900;margin-bottom:6px}
+.orc-page-hero p{font-size:13px;color:rgba(255,255,255,.82);line-height:1.65;max-width:520px}
+.orc-card{background:var(--white);border-radius:18px;padding:30px;box-shadow:var(--shadow);margin-bottom:20px}
+.orc-card h2{font-size:17px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.orc-card p.sub{font-size:12px;color:var(--gray);margin-bottom:20px;line-height:1.6}
+.orc-card hr{border:none;border-top:2px solid var(--lgray);margin:20px 0}
+.needs-box{background:var(--lgray);border:2px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}
+.needs-box .nb-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--dark);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.needs-hint{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.need-tag{font-size:11px;padding:5px 10px;border-radius:20px;background:var(--white);border:1.5px solid var(--border);color:var(--gray);cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.need-tag:hover{border-color:var(--o2);color:var(--o1);background:rgba(247,127,0,.05)}
+.need-tag.selected{border-color:var(--o2);background:rgba(247,127,0,.1);color:var(--o1);font-weight:700}
+.needs-textarea{width:100%;min-height:130px;padding:12px 14px;border:2px solid var(--border);border-radius:10px;font-size:14px;outline:none;background:var(--white);color:var(--dark);resize:vertical;line-height:1.6}
+.needs-textarea:focus{border-color:var(--o2);box-shadow:0 0 0 3px rgba(247,127,0,.1)}
+.char-count{text-align:right;font-size:11px;color:var(--gray);margin-top:4px}
+.orc-summary{background:linear-gradient(135deg,var(--lgray),var(--white));border:2px solid var(--border);border-radius:12px;padding:16px;margin-top:16px}
+.orc-summary h4{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:12px;color:var(--dark)}
+.sum-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)}
+.sum-row:last-child{border:none}
+.sum-label{color:var(--gray);font-weight:600}
+.sum-val{color:var(--dark);font-weight:700}
+.orc-success{background:linear-gradient(135deg,#d1fae5,#ecfdf5);border:2px solid #6ee7b7;border-radius:14px;padding:24px;text-align:center}
+.orc-success .si{font-size:3rem;margin-bottom:10px}
+.orc-success h3{font-size:18px;font-weight:800;color:var(--green);margin-bottom:6px}
+.orc-success p{font-size:13px;color:var(--gray);line-height:1.65}
+.orcamentos-list .orc-item{background:var(--white);border-radius:12px;padding:16px;box-shadow:var(--shadow);margin-bottom:12px;border-left:4px solid var(--o2)}
+.orcamentos-list .orc-item.pending{border-color:var(--y1)}
+.orcamentos-list .orc-item.responded{border-color:var(--green)}
+.oi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.oi-prod{font-size:14px;font-weight:800}
+.oi-sup{font-size:12px;color:var(--gray);margin-top:1px}
+.oi-needs{font-size:12px;color:var(--gray);line-height:1.6;margin-bottom:8px;background:var(--lgray);padding:10px 12px;border-radius:8px;border-left:3px solid var(--o3)}
+.oi-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.oi-date{font-size:11px;color:var(--gray)}
+.resp-box{background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:12px;margin-top:10px}
+.resp-box .resp-title{font-size:11px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
+.resp-box p{font-size:12px;color:#166534;line-height:1.6}
+
+/* ────── DETAIL ────── */
+.det-wrap{max-width:1100px;margin:0 auto;padding:30px 20px}
+.bc{font-size:12px;color:var(--gray);margin-bottom:18px;display:flex;align-items:center;gap:6px}
+.bc a{color:var(--o1);font-weight:600}.bc a:hover{text-decoration:underline}
+.det-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start}
+.det-img-box{background:var(--lgray);border-radius:16px;height:320px;display:flex;align-items:center;justify-content:center;font-size:110px;position:relative;box-shadow:var(--shadow)}
+.det-info h1{font-size:22px;font-weight:900;margin-bottom:8px}
+.det-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.det-desc{color:var(--gray);font-size:13px;line-height:1.75;margin-bottom:18px}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.spec{background:var(--lgray);border-radius:10px;padding:11px 13px;border:1px solid var(--border)}
+.spec-l{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);margin-bottom:2px}
+.spec-v{font-size:13px;font-weight:800}
+.sup-box{background:linear-gradient(135deg,var(--lgray),var(--white));border:2px solid var(--border);border-radius:13px;padding:15px;margin-bottom:16px}
+.sb-hd{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.sb-av{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--o1),var(--y1));display:flex;align-items:center;justify-content:center;font-size:18px}
+.sb-name{font-size:14px;font-weight:800}
+.sb-loc{font-size:12px;color:var(--gray)}
+.det-btns{display:flex;gap:8px;flex-wrap:wrap}
+.rv-sec{margin-top:36px}
+.rv-sec h3{font-size:16px;font-weight:800;margin-bottom:14px}
+.rv-card{background:var(--white);border-radius:11px;padding:14px;box-shadow:var(--shadow);margin-bottom:10px;border-left:3px solid var(--o3)}
+.rv-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.rv-name{font-size:13px;font-weight:700}
+.rv-date{font-size:11px;color:var(--gray)}
+.rv-text{font-size:12px;color:var(--gray);line-height:1.65;margin-top:5px}
+.rv-form{background:var(--lgray);border-radius:12px;padding:18px;margin-top:14px;border:1.5px solid var(--border)}
+.rv-form h4{font-size:13px;font-weight:800;margin-bottom:12px}
+.star-row{display:flex;gap:6px;margin-bottom:12px}
+.s-btn{font-size:22px;cursor:pointer;opacity:.3;transition:opacity .1s}
+.s-btn.on{opacity:1}
+
+/* ────── SUPPLIER DASH ────── */
+.dash-wrap{max-width:1200px;margin:0 auto;padding:26px 20px}
+.dash-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:10px}
+.dash-hd h2{font-size:22px;font-weight:900}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+.kpi{background:var(--white);border-radius:var(--rad);padding:18px;box-shadow:var(--shadow);border-top:4px solid var(--o2)}
+.kpi-n{font-size:28px;font-weight:900}
+.kpi-l{font-size:12px;color:var(--gray);margin-top:2px}
+.kpi-t{font-size:11px;color:var(--green);margin-top:5px;font-weight:700}
+.d-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}
+.d-card{background:var(--white);border-radius:var(--rad);padding:18px;box-shadow:var(--shadow)}
+.d-card h3{font-size:14px;font-weight:800;margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid var(--lgray);display:flex;justify-content:space-between;align-items:center}
+.l-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--lgray)}
+.l-row:last-child{border:none}
+.l-ic{width:38px;height:38px;border-radius:9px;background:var(--lgray);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:1px solid var(--border)}
+.l-info{flex:1}.l-name{font-size:13px;font-weight:700}.l-meta{font-size:11px;color:var(--gray)}
+.l-acts{display:flex;gap:5px}
+/* orçamentos no painel do fornecedor */
+.orc-req-item{padding:12px 0;border-bottom:1px solid var(--lgray)}
+.orc-req-item:last-child{border:none}
+.orc-req-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.orc-req-prod{font-size:13px;font-weight:800}
+.orc-req-company{font-size:11px;color:var(--gray)}
+.orc-req-needs{font-size:12px;color:var(--dark);background:var(--lgray);border-radius:8px;padding:8px 10px;border-left:3px solid var(--o3);margin-bottom:8px;line-height:1.55}
+.orc-req-footer{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.orc-req-time{font-size:11px;color:var(--gray);flex:1}
+
+/* ────── ADMIN ────── */
+.adm-layout{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 64px)}
+.adm-side{background:linear-gradient(180deg,#1A0A00,#2D1200)}
+.adm-brand{padding:18px;border-bottom:1px solid rgba(255,255,255,.07)}
+.adm-brand-n{font-size:16px;font-weight:900;color:#fff}
+.adm-brand-s{font-size:10px;color:rgba(255,255,255,.3)}
+.adm-sec{padding:10px 10px 0}
+.adm-sec h5{font-size:10px;font-weight:800;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.7px;padding:0 8px;margin:14px 0 6px}
+.adm-sec a{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:9px;font-size:12px;color:rgba(255,255,255,.55);cursor:pointer;font-weight:600;border:none;background:transparent;width:100%;text-align:left}
+.adm-sec a:hover,.adm-sec a.on{background:rgba(255,186,8,.1);color:var(--y2)}
+.adm-sec a .ai{font-size:14px;width:18px}
+.adm-body{padding:26px;background:var(--bg);overflow-y:auto}
+.adm-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:8px}
+.adm-hd h2{font-size:20px;font-weight:900}
+.adm-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.tbl{background:var(--white);border-radius:var(--rad);box-shadow:var(--shadow);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead th{background:var(--lgray);padding:10px 14px;font-size:10px;font-weight:800;text-align:left;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
+tbody td{padding:11px 14px;font-size:12px;border-bottom:1px solid var(--lgray);vertical-align:middle}
+tbody tr:last-child td{border:none}
+tbody tr:hover{background:rgba(247,127,0,.03)}
+.chart-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.ch-l{min-width:100px;font-size:12px;color:var(--gray);font-weight:600}
+.ch-b{height:20px;border-radius:6px;background:linear-gradient(90deg,var(--r2),var(--o2),var(--y1));display:flex;align-items:center;padding-left:8px;color:var(--dark);font-size:11px;font-weight:800;min-width:20px}
+.audit-row{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--lgray);font-size:12px}
+.au-t{color:var(--gray);min-width:130px;flex-shrink:0}
+.au-u{font-weight:800;color:var(--o1);min-width:55px;flex-shrink:0}
+.au-a{color:var(--dark)}
+
+/* INSTITUCIONAL */
+.inst-wrap{max-width:880px;margin:0 auto;padding:46px 20px}
+.inst-hero{background:linear-gradient(135deg,var(--r1),var(--o1),var(--y1));color:#fff;border-radius:20px;padding:46px;text-align:center;margin-bottom:30px}
+.inst-hero h1{font-size:28px;font-weight:900;margin-bottom:8px}
+.inst-hero p{font-size:13px;opacity:.88;line-height:1.7;max-width:560px;margin:0 auto}
+.inst-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
+.inst-card{background:var(--white);border-radius:var(--rad);padding:20px;box-shadow:var(--shadow);border-top:3px solid var(--o3)}
+.inst-card h3{font-size:14px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.inst-card p,.inst-card li{font-size:12px;color:var(--gray);line-height:1.7}
+.inst-card ul{padding-left:14px}
+.contact-form{background:var(--white);border-radius:var(--rad);padding:24px;box-shadow:var(--shadow)}
+.contact-form h3{font-size:16px;font-weight:800;margin-bottom:16px}
+
+/* NEW PRODUCT */
+.pf-wrap{max-width:800px;margin:0 auto;padding:26px 20px}
+.pf-card{background:var(--white);border-radius:16px;padding:28px;box-shadow:var(--shadow)}
+.pf-card h2{font-size:18px;font-weight:800;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--lgray)}
+.upload-area{border:2px dashed var(--border);border-radius:11px;padding:28px;text-align:center;cursor:pointer;background:var(--lgray);transition:border-color .15s;margin-bottom:16px}
+.upload-area:hover{border-color:var(--o2)}
+.upload-area .u-ic{font-size:28px;margin-bottom:7px}
+.upload-area p{font-size:12px;color:var(--gray)}
+
+@media(max-width:900px){
+  .hero-in,.det-grid,.orc-banner-in{grid-template-columns:1fr}.hero-vis{display:none}
+  .cats-grid,.sup-grid,.prods-grid{grid-template-columns:repeat(2,1fr)}
+  .mkt-body{grid-template-columns:1fr}.filt{display:none}
+  .mkt-grid{grid-template-columns:1fr 1fr}
+  .kpi-row,.d-grid,.inst-grid,.adm-kpis{grid-template-columns:1fr 1fr}
+  .adm-layout{grid-template-columns:1fr}.adm-side{display:none}
+  .ben-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .cats-grid,.sup-grid,.prods-grid,.mkt-grid,.kpi-row,.d-grid,.inst-grid,.adm-kpis,.ben-grid{grid-template-columns:1fr}
+  .nav-links{display:none}.hero h1{font-size:1.9rem}.frow{grid-template-columns:1fr}
+  .orc-page-wrap{padding:20px 14px}
+}
+</style>
+</head>
+<body>
+
+<div id="toast-ct"></div>
+<div id="modal-ov" class="hidden">
+  <div class="m-box">
+    <button class="m-close" onclick="closeModal()">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-in">
+    <div class="logo" onclick="goPage('home')">
+      <span class="lr">Restoc</span><span class="lo">k</span><span style="color:#FF6B6B">a</span>
+      <small>Marketplace B2B de Alimentos</small>
+    </div>
+    <div class="nav-links" id="navlinks">
+      <button id="nb-home" class="active" onclick="goPage('home')">Início</button>
+      <button id="nb-marketplace" onclick="goPage('marketplace')">Anúncios</button>
+      <button id="nb-orcamento" onclick="goPage('orcamento')">Solicitar Orçamento</button>
+      <button id="nb-institucional" onclick="goPage('institucional')">Sobre</button>
+    </div>
+    <div class="nav-right" id="navright"></div>
+  </div>
+</nav>
+
+<!-- ══════ LOGIN ══════ -->
+<div class="page active" id="page-login">
+  <div class="login-bg">
+    <div class="login-box">
+      <div class="login-logo"><span class="lr">Restoc</span><span class="lo">k</span><span style="color:var(--r2)">a</span></div>
+      <div class="login-sub">Acesse sua conta para continuar</div>
+      <div class="fg">
+        <label>E-mail</label>
+        <input type="email" id="l-email" placeholder="seu@email.com" autocomplete="email">
+      </div>
+      <div class="fg">
+        <label>Senha</label>
+        <div class="pw-wrap">
+          <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password">
+          <button class="pw-eye" type="button" onclick="togglePw()">👁️</button>
+        </div>
+      </div>
+      <a class="forgot-link" onclick="toast('Link de recuperação enviado para seu e-mail!','ok')">Esqueci minha senha</a>
+      <button class="btn btn-orange btn-block btn-lg" onclick="doLogin()">Entrar na plataforma</button>
+      <div class="divider">acesso rápido (demonstração)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <button class="btn btn-ghost btn-block btn-sm" onclick="quickLogin('admin')">🛡️ Admin</button>
+        <button class="btn btn-ghost btn-block btn-sm" onclick="quickLogin('supplier')">🏭 Fornecedor</button>
+        <button class="btn btn-ghost btn-block btn-sm" onclick="quickLogin('buyer')">🛒 Comprador</button>
+      </div>
+      <div class="login-foot">Não tem conta? <a onclick="goPage('register')">Criar conta gratuita</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ REGISTER ══════ -->
+<div class="page" id="page-register">
+  <div class="reg-bg">
+    <div class="reg-box">
+      <div class="login-logo" style="margin-bottom:4px"><span class="lr">Restoc</span><span class="lo">k</span><span style="color:var(--r2)">a</span></div>
+      <div class="login-sub">Crie sua conta gratuitamente</div>
+      <div class="role-grid">
+        <div class="role-opt sel" id="ro-buyer" onclick="selRole('buyer')"><div class="ri">🛒</div><div class="rn">Comprador</div><div class="rd">Busco fornecedores</div></div>
+        <div class="role-opt" id="ro-supplier" onclick="selRole('supplier')"><div class="ri">🏭</div><div class="rn">Fornecedor</div><div class="rd">Quero anunciar</div></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>Nome / Empresa <span class="req">*</span></label><input type="text" id="r-name" placeholder="Hotel Bela Vista" autocomplete="organization"></div>
+        <div class="fg"><label>CNPJ <span class="req">*</span></label><input type="text" id="r-cnpj" placeholder="00.000.000/0001-00"></div>
+      </div>
+      <div class="fg"><label>E-mail <span class="req">*</span></label><input type="email" id="r-email" placeholder="seu@email.com" autocomplete="email"></div>
+      <div class="frow">
+        <div class="fg"><label>Senha <span class="req">*</span></label><input type="password" id="r-pass" placeholder="••••••••" autocomplete="new-password"></div>
+        <div class="fg"><label>Confirmar <span class="req">*</span></label><input type="password" id="r-pass2" placeholder="••••••••" autocomplete="new-password"></div>
+      </div>
+      <div id="sup-extra" class="hidden">
+        <div class="frow">
+          <div class="fg"><label>Segmento</label><select id="r-seg"><option>Chips & Snacks</option><option>Castanhas</option><option>Bebidas</option><option>Ingredientes</option><option>Outros</option></select></div>
+          <div class="fg"><label>Região</label><select id="r-reg"><option>Nacional</option><option>São Paulo</option><option>Sul</option><option>Nordeste</option></select></div>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--gray);margin-bottom:14px;line-height:1.6">Ao criar conta você concorda com os <a style="color:var(--o1);font-weight:700" onclick="goPage('institucional')">Termos de Uso</a> e a coleta mínima de dados (LGPD).</p>
+      <button class="btn btn-orange btn-block btn-lg" onclick="doRegister()">Criar Conta</button>
+      <div class="login-foot">Já tem conta? <a onclick="goPage('login')">Entrar</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ HOME ══════ -->
+<div class="page" id="page-home">
+  <section class="hero">
+    <div class="hero-in">
+      <div>
+        <div class="hero-badge">🌶️ Marketplace B2B · Alimentos</div>
+        <h1>Reabasteça seu negócio mais rápido com <em>Restocka</em></h1>
+        <p>Conectamos fornecedores de alimentos a restaurantes, hotéis, distribuidores e redes de varejo. Encontre, compare, solicite orçamentos e contate diretamente.</p>
+        <div class="hero-sbar">
+          <input type="text" id="hs-input" placeholder="Buscar chips, castanhas, bebidas…" onkeydown="if(event.key==='Enter')hsearch()">
+          <button class="btn btn-orange" onclick="hsearch()">Buscar</button>
+        </div>
+        <div class="hero-stats">
+          <div><div class="hs-n">340+</div><div class="hs-l">Fornecedores</div></div>
+          <div><div class="hs-n">2.100+</div><div class="hs-l">Anúncios</div></div>
+          <div><div class="hs-n">800+</div><div class="hs-l">Compradores</div></div>
+          <div><div class="hs-n">4.8★</div><div class="hs-l">Avaliação média</div></div>
+        </div>
+      </div>
+      <div class="hero-vis">
+        <div class="hv-label">Categorias populares</div>
+        <div class="hv-cats">
+          <div class="hv-cat" onclick="filterCat('Chips')"><span class="ic">🍟</span><span>Chips & Snacks</span></div>
+          <div class="hv-cat" onclick="filterCat('Castanhas')"><span class="ic">🥜</span><span>Castanhas</span></div>
+          <div class="hv-cat" onclick="filterCat('Bebidas')"><span class="ic">🥤</span><span>Bebidas</span></div>
+          <div class="hv-cat" onclick="filterCat('Ingredientes')"><span class="ic">🧂</span><span>Ingredientes</span></div>
+        </div>
+        <div class="hv-top">
+          <div class="label">⭐ Melhor avaliado</div>
+          <div class="name">🏆 Mr.Nut Distribuidora</div>
+          <div class="rate">★★★★★ 4.9 · São Paulo, SP</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BANNER DE ORÇAMENTO -->
+  <section class="orc-banner">
+    <div class="orc-banner-in">
+      <div class="orc-text">
+        <h2>Precisa de um volume <em>específico?</em><br>Solicite um orçamento!</h2>
+        <p>Descreva exatamente o que você precisa — quantidade, produto, frequência de pedido — e receba propostas diretamente dos fornecedores.</p>
+        <div class="orc-steps">
+          <div class="orc-step"><div class="orc-step-num">1</div>Descreva suas necessidades detalhadamente</div>
+          <div class="orc-step"><div class="orc-step-num">2</div>Escolha o fornecedor e envie a solicitação</div>
+          <div class="orc-step"><div class="orc-step-num">3</div>Receba a proposta e negocie diretamente</div>
+        </div>
+        <button class="btn btn-yellow btn-lg" style="margin-top:22px" onclick="goPage('orcamento')">📋 Solicitar Orçamento Agora</button>
+      </div>
+      <div class="orc-form-box">
+        <h3>📝 Solicitação Rápida</h3>
+        <div class="fg"><label>Produto desejado</label><select id="orc-quick-prod"><option>Chips de Batata Palha</option><option>Mix de Castanhas Premium</option><option>Amendoim Torrado</option><option>Suco de Laranja</option><option>Castanha de Caju W1</option><option>Água Mineral</option></select></div>
+        <div class="fg"><label>Quantidade (kg ou unidades)</label><input type="text" id="orc-quick-qty" placeholder="Ex: 500kg, 2000 unidades"></div>
+        <div class="fg"><label>Necessidades adicionais</label><textarea id="orc-quick-needs" style="min-height:72px;background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:#fff" placeholder="Frequência de entrega, embalagem preferida, prazo máximo..."></textarea></div>
+        <button class="btn btn-yellow btn-block" onclick="quickOrcamento()">Enviar Solicitação Rápida →</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-hd"><div class="stag">Categorias</div><h2>Explore por categoria</h2><p>Encontre exatamente o que seu negócio precisa</p></div>
+    <div class="cats-grid">
+      <div class="cat-card" onclick="filterCat('Chips')"><div class="ic">🍟</div><div class="cn">Chips & Snacks</div><div class="cc">620 anúncios</div></div>
+      <div class="cat-card" onclick="filterCat('Castanhas')"><div class="ic">🥜</div><div class="cn">Castanhas</div><div class="cc">410 anúncios</div></div>
+      <div class="cat-card" onclick="filterCat('Bebidas')"><div class="ic">🥤</div><div class="cn">Bebidas</div><div class="cc">380 anúncios</div></div>
+      <div class="cat-card" onclick="filterCat('Ingredientes')"><div class="ic">🧂</div><div class="cn">Ingredientes</div><div class="cc">290 anúncios</div></div>
+      <div class="cat-card" onclick="filterCat('Congelados')"><div class="ic">🧊</div><div class="cn">Congelados</div><div class="cc">180 anúncios</div></div>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0">
+    <div class="sec-hd"><div class="stag">Anúncios</div><h2>Produtos mais buscados</h2><p>Anúncios ativos disponíveis agora</p></div>
+    <div class="prods-grid" id="home-prods"></div>
+  </section>
+
+  <section class="ben-bg">
+    <div class="ben-in">
+      <div class="sec-hd" style="color:#fff"><div class="stag" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.2)">Vantagens</div><h2>Por que usar a Restocka?</h2><p style="color:rgba(255,255,255,.7)">Plataforma criada para o mercado B2B alimentício</p></div>
+      <div class="ben-grid">
+        <div class="ben-card"><div class="ic">🔍</div><h3>Encontre Fornecedores</h3><p>Busca avançada com filtros por categoria, região, MOQ e avaliação.</p></div>
+        <div class="ben-card"><div class="ic">📋</div><h3>Solicite Orçamentos</h3><p>Descreva suas necessidades e receba propostas personalizadas dos fornecedores.</p></div>
+        <div class="ben-card"><div class="ic">📊</div><h3>Compare Condições</h3><p>Veja MOQ, prazo de entrega e região de cada anúncio lado a lado.</p></div>
+        <div class="ben-card"><div class="ic">📞</div><h3>Contato Direto</h3><p>Fale com o fornecedor via WhatsApp ou e-mail, sem taxas.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="stag">Comece agora</div>
+    <h2>Pronto para reabastecer seu negócio?</h2>
+    <p>Cadastre-se gratuitamente como comprador ou anuncie seus produtos.</p>
+    <div class="cta-btns">
+      <button class="btn btn-orange btn-lg" onclick="goPage('marketplace')">🛒 Explorar Anúncios</button>
+      <button class="btn btn-yellow btn-lg" onclick="goPage('orcamento')">📋 Solicitar Orçamento</button>
+      <button class="btn btn-red btn-lg" onclick="goPage('register')">🏭 Quero Anunciar</button>
+    </div>
+  </section>
+</div>
+
+<!-- ══════ MARKETPLACE ══════ -->
+<div class="page" id="page-marketplace">
+  <div class="mkt-head">
+    <div class="mkt-head-in">
+      <h2>📦 Anúncios de Produtos</h2>
+      <div class="mkt-sbar">
+        <input type="text" id="mkt-q" placeholder="Buscar produto, marca, fornecedor…" onkeydown="if(event.key==='Enter')applyF()">
+        <button class="btn btn-yellow" onclick="applyF()">🔍 Buscar</button>
+        <button class="btn btn-ghost btn-sm" style="color:#fff;border-color:rgba(255,255,255,.2)" onclick="clearF()">✕ Limpar</button>
+      </div>
+    </div>
+  </div>
+  <div class="mkt-body">
+    <aside class="filt">
+      <div class="filt-hd">Filtros <button class="btn btn-ghost btn-sm" onclick="clearF()">Limpar</button></div>
+      <div class="fsec"><h4>Categoria</h4>
+        <div class="fopt"><input type="checkbox" id="fc1"><label for="fc1">Chips & Snacks</label><span>620</span></div>
+        <div class="fopt"><input type="checkbox" id="fc2"><label for="fc2">Castanhas</label><span>410</span></div>
+        <div class="fopt"><input type="checkbox" id="fc3"><label for="fc3">Bebidas</label><span>380</span></div>
+        <div class="fopt"><input type="checkbox" id="fc4"><label for="fc4">Ingredientes</label><span>290</span></div>
+        <div class="fopt"><input type="checkbox" id="fc5"><label for="fc5">Congelados</label><span>180</span></div>
+      </div>
+      <div class="fsec"><h4>Região</h4>
+        <div class="fopt"><input type="checkbox" id="fr1"><label for="fr1">São Paulo</label></div>
+        <div class="fopt"><input type="checkbox" id="fr2"><label for="fr2">Sul</label></div>
+        <div class="fopt"><input type="checkbox" id="fr3"><label for="fr3">Nordeste</label></div>
+        <div class="fopt"><input type="checkbox" id="fr4"><label for="fr4">Nacional</label></div>
+      </div>
+      <div class="fsec"><h4>Avaliação mínima</h4>
+        <div class="fopt"><input type="radio" name="rat" id="rat4"><label for="rat4">★★★★☆ 4+</label></div>
+        <div class="fopt"><input type="radio" name="rat" id="ratA" checked><label for="ratA">Qualquer</label></div>
+      </div>
+      <div class="fsec"><h4>MOQ máximo</h4>
+        <input type="range" style="width:100%;accent-color:var(--r2)" min="50" max="5000" value="5000" id="moq-r" oninput="document.getElementById('moq-v').textContent=this.value">
+        <div style="font-size:11px;color:var(--gray);margin-top:3px">Até <b id="moq-v">5000</b> unidades</div>
+      </div>
+      <button class="btn btn-red btn-block" style="border-radius:10px" onclick="applyF()">Aplicar Filtros</button>
+    </aside>
+    <div>
+      <div class="mkt-grid" id="mkt-prods"></div>
+      <div class="pgn">
+        <button class="pgb on">1</button><button class="pgb">2</button>
+        <button class="pgb">3</button><button class="pgb">›</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ ORÇAMENTO PAGE ══════ -->
+<div class="page" id="page-orcamento">
+  <div class="orc-page-wrap">
+    <div class="orc-page-hero">
+      <h1>📋 Solicitar Orçamento</h1>
+      <p>Descreva com detalhes o que você precisa. Quanto mais informações você fornecer, mais precisa será a proposta do fornecedor.</p>
+    </div>
+
+    <!-- HISTÓRICO DE SOLICITAÇÕES (visível se logado como comprador) -->
+    <div id="orc-historico-wrap" class="hidden">
+      <div class="orc-card">
+        <h2>📁 Minhas Solicitações</h2>
+        <p class="sub">Acompanhe o status das suas solicitações de orçamento enviadas.</p>
+        <div class="orcamentos-list" id="orc-historico-list"></div>
+      </div>
+    </div>
+
+    <div class="orc-card" id="orc-form-card">
+      <h2>✍️ Nova Solicitação de Orçamento</h2>
+      <p class="sub">Preencha os campos abaixo. Os fornecedores receberão sua solicitação e entrarão em contato com uma proposta personalizada.</p>
+
+      <div class="frow">
+        <div class="fg">
+          <label>Produto / Categoria <span class="req">*</span></label>
+          <select id="orc-prod">
+            <option value="">Selecione...</option>
+            <option>Chips de Batata Palha</option>
+            <option>Mix de Castanhas Premium</option>
+            <option>Amendoim Torrado Salgado</option>
+            <option>Suco de Laranja Natural</option>
+            <option>Castanha de Caju Inteira W1</option>
+            <option>Chips de Mandioca Artesanal</option>
+            <option>Água Mineral</option>
+            <option>Tempero Completo</option>
+            <option>Outro produto</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Fornecedor preferencial</label>
+          <select id="orc-sup">
+            <option value="">Qualquer fornecedor</option>
+            <option>Mr.Nut Distribuidora</option>
+            <option>ChipsBrasil Indústria</option>
+            <option>Bebidas Sul Ltda</option>
+            <option>Ingredientes Nordeste</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- CAIXA DE NECESSIDADES -->
+      <div class="needs-box">
+        <div class="nb-title">📝 Descreva suas necessidades <span class="req">*</span></div>
+
+        <div style="font-size:12px;color:var(--gray);margin-bottom:8px">Clique nas sugestões abaixo para adicionar ao texto ou escreva livremente:</div>
+        <div class="needs-hint" id="hints-container">
+          <span class="need-tag" onclick="addHint(this,'500kg por semana')">📦 500kg/semana</span>
+          <span class="need-tag" onclick="addHint(this,'1000 unidades por pedido')">📦 1000 un/pedido</span>
+          <span class="need-tag" onclick="addHint(this,'entrega em até 3 dias úteis')">🚚 Entrega em 3 dias</span>
+          <span class="need-tag" onclick="addHint(this,'embalagem a vácuo')">📦 Embalagem a vácuo</span>
+          <span class="need-tag" onclick="addHint(this,'pedido recorrente mensal')">🔁 Pedido mensal</span>
+          <span class="need-tag" onclick="addHint(this,'produto sem glúten')">🌾 Sem glúten</span>
+          <span class="need-tag" onclick="addHint(this,'produto sem lactose')">🥛 Sem lactose</span>
+          <span class="need-tag" onclick="addHint(this,'certificação orgânica')">🌿 Certificado orgânico</span>
+          <span class="need-tag" onclick="addHint(this,'marca própria / white label')">🏷️ White label</span>
+          <span class="need-tag" onclick="addHint(this,'prazo de validade mínimo de 6 meses')">📅 Validade 6+ meses</span>
+        </div>
+
+        <textarea
+          class="needs-textarea"
+          id="orc-needs"
+          placeholder="Exemplo: Preciso de 500kg de castanha de caju por semana, embalagem a vácuo de 5kg, entrega em São Paulo em até 3 dias úteis, pedido recorrente com contrato de 6 meses. Aceitamos apenas produto certificado..."
+          oninput="updateCharCount()"
+          maxlength="1000"
+        ></textarea>
+        <div class="char-count"><span id="char-count">0</span>/1000 caracteres</div>
+      </div>
+
+      <div class="frow">
+        <div class="fg">
+          <label>Quantidade estimada <span class="req">*</span></label>
+          <input type="text" id="orc-qty" placeholder="Ex: 500kg, 2000 unidades, 10 caixas">
+        </div>
+        <div class="fg">
+          <label>Frequência de pedido</label>
+          <select id="orc-freq">
+            <option value="">Selecione...</option>
+            <option>Pedido único</option>
+            <option>Semanal</option>
+            <option>Quinzenal</option>
+            <option>Mensal</option>
+            <option>A combinar</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="frow">
+        <div class="fg">
+          <label>Prazo de entrega desejado</label>
+          <select id="orc-prazo">
+            <option value="">Selecione...</option>
+            <option>Urgente (1-2 dias)</option>
+            <option>Curto (3-5 dias)</option>
+            <option>Normal (1-2 semanas)</option>
+            <option>Flexível</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Região de entrega <span class="req">*</span></label>
+          <select id="orc-region">
+            <option value="">Selecione...</option>
+            <option>São Paulo (SP)</option>
+            <option>Rio de Janeiro (RJ)</option>
+            <option>Sul do Brasil</option>
+            <option>Nordeste</option>
+            <option>Centro-Oeste</option>
+            <option>Nacional</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="orc-guest-fields">
+        <hr style="border:none;border-top:2px solid var(--lgray);margin:4px 0 18px">
+        <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:14px">📬 Dados para contato</div>
+        <div class="frow">
+          <div class="fg"><label>Nome / Empresa <span class="req">*</span></label><input type="text" id="orc-nome" placeholder="Hotel Bela Vista"></div>
+          <div class="fg"><label>E-mail <span class="req">*</span></label><input type="email" id="orc-email" placeholder="compras@hotel.com"></div>
+        </div>
+        <div class="fg"><label>WhatsApp</label><input type="text" id="orc-whatsapp" placeholder="(11) 99999-0000"></div>
+      </div>
+
+      <!-- RESUMO -->
+      <div class="orc-summary" id="orc-summary" style="display:none">
+        <h4>📋 Resumo da Solicitação</h4>
+        <div id="orc-summary-rows"></div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+        <button class="btn btn-orange btn-lg" onclick="previewOrc()">👁️ Pré-visualizar</button>
+        <button class="btn btn-red btn-lg" id="orc-submit-btn" onclick="submitOrc()" style="display:none">✅ Enviar Solicitação</button>
+        <button class="btn btn-ghost" onclick="clearOrcForm()">🗑️ Limpar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ DETAIL ══════ -->
+<div class="page" id="page-detail">
+  <div class="det-wrap">
+    <div class="bc">
+      <a onclick="goPage('home')">Início</a> ›
+      <a onclick="goPage('marketplace')">Anúncios</a> ›
+      <span id="det-bc" style="color:var(--gray)">Produto</span>
+    </div>
+    <div class="det-grid">
+      <div>
+        <div class="det-img-box" id="det-img"></div>
+        <div class="rv-sec">
+          <h3>⭐ Avaliações <span style="font-size:13px;font-weight:400;color:var(--gray)" id="rv-count"></span></h3>
+          <div id="rv-list"></div>
+          <div id="rv-form"></div>
+        </div>
+      </div>
+      <div class="det-info">
+        <div class="det-meta">
+          <span class="chip" id="det-cat"></span>
+          <span class="stars" id="det-stars"></span>
+          <span style="font-size:11px;color:var(--gray)" id="det-rc"></span>
+        </div>
+        <h1 id="det-title"></h1>
+        <p class="det-desc" id="det-desc"></p>
+        <div class="specs" id="det-specs"></div>
+        <div class="sup-box">
+          <div class="sb-hd">
+            <div class="sb-av">🏭</div>
+            <div><div class="sb-name" id="det-sname"></div><div class="sb-loc" id="det-sloc"></div></div>
+          </div>
+          <div style="font-size:12px;color:var(--gray);line-height:1.7" id="det-scontact"></div>
+        </div>
+        <div class="det-btns" id="det-btns"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SUPPLIER DASH ══════ -->
+<div class="page" id="page-supplier-dash">
+  <div class="dash-wrap">
+    <div class="dash-hd">
+      <div><h2>🏭 Painel do Fornecedor</h2><div style="font-size:13px;color:var(--gray);margin-top:2px" id="dash-hi"></div></div>
+      <button class="btn btn-orange" onclick="goPage('new-product')">＋ Novo Anúncio</button>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi" style="border-color:var(--o2)"><div class="kpi-n">12</div><div class="kpi-l">Anúncios Ativos</div><div class="kpi-t">↑ 2 este mês</div></div>
+      <div class="kpi" style="border-color:var(--r2)"><div class="kpi-n">1.340</div><div class="kpi-l">Visualizações</div><div class="kpi-t">↑ +18%</div></div>
+      <div class="kpi" style="border-color:var(--y1)"><div class="kpi-n" id="kpi-orc">5</div><div class="kpi-l">Orçamentos Recebidos</div><div class="kpi-t" id="kpi-orc-t">↑ 2 novos</div></div>
+      <div class="kpi" style="border-color:var(--o3)"><div class="kpi-n">4.7</div><div class="kpi-l">Avaliação Média</div><div class="kpi-t">★★★★★</div></div>
+    </div>
+    <div class="d-grid">
+      <div class="d-card">
+        <h3>Meus Anúncios <a onclick="goPage('new-product')" style="font-size:12px;color:var(--o1);font-weight:700">＋ Novo</a></h3>
+        <div id="s-listings"></div>
+      </div>
+      <div class="d-card">
+        <h3>📋 Orçamentos Recebidos <span id="orc-new-badge" style="background:var(--r2);color:#fff;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:800">2 novos</span></h3>
+        <div id="supplier-orcamentos"></div>
+      </div>
+    </div>
+    <div class="d-card">
+      <h3>Perfil da Empresa</h3>
+      <div class="frow">
+        <div class="fg"><label>Nome da empresa</label><input type="text" value="Mr.Nut Distribuidora"></div>
+        <div class="fg"><label>CNPJ</label><input type="text" value="12.345.678/0001-90"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>E-mail comercial</label><input type="email" value="fornecedor@mrnut.com"></div>
+        <div class="fg"><label>WhatsApp</label><input type="text" value="(11) 99999-0000"></div>
+      </div>
+      <button class="btn btn-orange" onclick="toast('Perfil salvo! ✅','ok')">💾 Salvar Alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ NEW PRODUCT ══════ -->
+<div class="page" id="page-new-product">
+  <div class="pf-wrap">
+    <div style="margin-bottom:16px"><button class="btn btn-ghost btn-sm" onclick="goPage('supplier-dash')">← Voltar ao Painel</button></div>
+    <div class="pf-card">
+      <h2>📝 Novo Anúncio de Produto</h2>
+      <div class="upload-area" onclick="toast('Upload simulado! 📷','ok')"><div class="u-ic">📷</div><p>Clique para enviar imagens (JPG, PNG · máx. 5 fotos)</p></div>
+      <div class="fg"><label>Título <span class="req">*</span></label><input type="text" id="np-t" placeholder="Ex.: Chips de Batata Palha Original 500g"></div>
+      <div class="frow">
+        <div class="fg"><label>Categoria</label><select id="np-c"><option>Chips & Snacks</option><option>Castanhas</option><option>Bebidas</option><option>Ingredientes</option><option>Congelados</option></select></div>
+        <div class="fg"><label>Marca</label><input type="text" id="np-b" placeholder="Mr.Nut"></div>
+      </div>
+      <div class="fg"><label>Descrição</label><textarea id="np-d" placeholder="Descreva o produto…"></textarea></div>
+      <div class="frow">
+        <div class="fg"><label>Embalagem</label><input type="text" id="np-u" placeholder="Caixa 24x500g"></div>
+        <div class="fg"><label>MOQ</label><input type="number" id="np-m" placeholder="100"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>Região</label><select id="np-r"><option>Nacional</option><option>São Paulo</option><option>Sul</option><option>Nordeste</option></select></div>
+        <div class="fg"><label>Prazo de Entrega</label><input type="text" id="np-del" placeholder="3–5 dias úteis"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
+        <button class="btn btn-orange" onclick="saveProduct()">✅ Publicar Anúncio</button>
+        <button class="btn btn-ghost" onclick="toast('Salvo como rascunho','ok')">💾 Rascunho</button>
+        <button class="btn btn-ghost" onclick="goPage('supplier-dash')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ ADMIN ══════ -->
+<div class="page" id="page-admin">
+  <div class="adm-layout">
+    <aside class="adm-side">
+      <div class="adm-brand"><div class="adm-brand-n">Resto<span style="color:var(--o3)">ka</span></div><div class="adm-brand-s">Painel Admin</div></div>
+      <div class="adm-sec">
+        <h5>Gestão</h5>
+        <a id="as-dashboard" class="on" onclick="admTab('dashboard')"><span class="ai">📊</span>Dashboard</a>
+        <a id="as-listings" onclick="admTab('listings')"><span class="ai">📦</span>Anúncios</a>
+        <a id="as-orcamentos" onclick="admTab('orcamentos')"><span class="ai">📋</span>Orçamentos</a>
+        <a id="as-users" onclick="admTab('users')"><span class="ai">👥</span>Usuários</a>
+        <a id="as-reviews" onclick="admTab('reviews')"><span class="ai">⭐</span>Avaliações</a>
+        <h5>Relatórios</h5>
+        <a id="as-reports" onclick="admTab('reports')"><span class="ai">📈</span>Relatórios</a>
+        <a id="as-audit" onclick="admTab('audit')"><span class="ai">🔐</span>Auditoria</a>
+        <h5>Conta</h5>
+        <a onclick="doLogout()"><span class="ai">🚪</span>Sair</a>
+      </div>
+    </aside>
+    <div class="adm-body" id="adm-body"></div>
+  </div>
+</div>
+
+<!-- ══════ INSTITUCIONAL ══════ -->
+<div class="page" id="page-institucional">
+  <div class="inst-wrap">
+    <div class="inst-hero"><h1>🌽 Sobre a Restocka</h1><p>Plataforma B2B de anúncios que conecta fornecedores de alimentos a compradores. Hub centralizado sem pagamento/checkout.</p></div>
+    <div class="inst-grid">
+      <div class="inst-card"><h3>🎯 Nossa Missão</h3><p>Reduzir o tempo e esforço para conectar compradores e fornecedores do setor alimentício, incluindo a solicitação de orçamentos personalizados.</p></div>
+      <div class="inst-card"><h3>📋 Regras de Uso</h3><ul><li>Anúncios devem ser de produtos alimentícios reais</li><li>Fornecedores precisam ter CNPJ ativo</li><li>Avaliações devem ser honestas</li><li>Proibido spam e dados falsos</li></ul></div>
+      <div class="inst-card"><h3>🔒 Privacidade (LGPD)</h3><p>Coletamos apenas dados necessários. Seus dados não são vendidos. Você pode solicitar exclusão pelo suporte.</p></div>
+      <div class="inst-card"><h3>🏭 Para Fornecedores</h3><ul><li>Pré-cadastro com CNPJ obrigatório</li><li>Receba solicitações de orçamento</li><li>Painel de gestão completo</li><li>Visibilidade para compradores B2B</li></ul></div>
+    </div>
+    <div class="contact-form">
+      <h3>📩 Fale Conosco</h3>
+      <div class="frow">
+        <div class="fg"><label>Nome</label><input type="text" placeholder="Seu nome"></div>
+        <div class="fg"><label>E-mail</label><input type="email" placeholder="seu@email.com"></div>
+      </div>
+      <div class="fg"><label>Assunto</label><select><option>Dúvida geral</option><option>Problema técnico</option><option>Denúncia</option><option>Parceria</option></select></div>
+      <div class="fg"><label>Mensagem</label><textarea placeholder="Descreva sua dúvida…"></textarea></div>
+      <button class="btn btn-orange" onclick="toast('Mensagem enviada! Retornaremos em 24h ✅','ok')">📨 Enviar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ DATA ═══ */
+const USERS=[
+  {email:'admin@restocka.com',  pass:'admin123', name:'Admin Restocka',       role:'admin'},
+  {email:'fornecedor@mrnut.com',pass:'mrnut123', name:'Mr.Nut Distribuidora', role:'supplier'},
+  {email:'comprador@hotel.com', pass:'hotel123', name:'Hotel Majestic',       role:'buyer'}
+];
+const PRODS=[
+  {id:1,name:'Chips de Batata Palha Original',supplier:'Mr.Nut Distribuidora',cat:'Chips & Snacks',region:'Nacional',moq:100,unit:'Caixa 24×500g',brand:'Mr.Nut',rating:4.9,revCount:38,desc:'Batata palha crocante, levemente salgada, ideal para restaurantes e hotéis.',delivery:'3–5 dias úteis',contact:'WhatsApp (11) 99999-0000',ic:'🍟',bg:'#fff3e0',badge:'Destaque'},
+  {id:2,name:'Mix de Castanhas Premium',supplier:'Mr.Nut Distribuidora',cat:'Castanhas',region:'Nacional',moq:50,unit:'Saco 10kg',brand:'Mr.Nut',rating:4.8,revCount:24,desc:'Blend com castanha de caju, amêndoas, nozes e macadâmia. Sem sal.',delivery:'5–7 dias úteis',contact:'WhatsApp (11) 99999-0000',ic:'🥜',bg:'#fef9e7',badge:'Mais Vendido'},
+  {id:3,name:'Amendoim Torrado Salgado',supplier:'Mr.Nut Distribuidora',cat:'Castanhas',region:'São Paulo',moq:200,unit:'Saco 25kg',brand:'Mr.Nut',rating:4.6,revCount:15,desc:'Amendoim torrado em forno industrial, perfeito para bares e petiscarias.',delivery:'2–4 dias úteis',contact:'Tel (11) 3000-0000',ic:'🥜',bg:'#fffde7',badge:''},
+  {id:4,name:'Suco de Laranja 100% Natural',supplier:'Bebidas Sul Ltda',cat:'Bebidas',region:'Sul',moq:500,unit:'Caixa 12×1L',brand:'NatureSul',rating:4.5,revCount:19,desc:'Suco integral sem conservantes, pasteurizado.',delivery:'4–6 dias úteis',contact:'contato@bevidassul.com.br',ic:'🥤',bg:'#e8f5e9',badge:''},
+  {id:5,name:'Castanha de Caju Inteira W1',supplier:'Ingredientes Nordeste',cat:'Castanhas',region:'Nordeste',moq:100,unit:'Caixa 5kg',brand:'CajuNordeste',rating:4.9,revCount:31,desc:'Castanha selecionada, grau exportação W1.',delivery:'7–10 dias úteis',contact:'WhatsApp (85) 99900-0000',ic:'🥜',bg:'#fce4ec',badge:'Premium'},
+  {id:6,name:'Chips de Mandioca Artesanal',supplier:'ChipsBrasil Indústria',cat:'Chips & Snacks',region:'São Paulo',moq:300,unit:'Caixa 20×200g',brand:'ChipsBrasil',rating:4.3,revCount:11,desc:'Chips de mandioca assada com tempero de ervas.',delivery:'3–5 dias úteis',contact:'(19) 3000-1111',ic:'🍟',bg:'#f3e5f5',badge:'Novo'},
+  {id:7,name:'Água Mineral sem Gás 500ml',supplier:'Bebidas Sul Ltda',cat:'Bebidas',region:'Nacional',moq:1000,unit:'Fardo 24×500ml',brand:'AquaPura',rating:4.4,revCount:8,desc:'Água mineral natural com laudo atualizado.',delivery:'5–8 dias úteis',contact:'bebidassul@email.com',ic:'💧',bg:'#e3f2fd',badge:''},
+  {id:8,name:'Tempero Completo sem Pimenta',supplier:'Ingredientes Nordeste',cat:'Ingredientes',region:'Nordeste',moq:50,unit:'Saco 1kg',brand:'TemperoNE',rating:4.7,revCount:22,desc:'Blend de especiarias para cozinhas industriais.',delivery:'5–7 dias úteis',contact:'WhatsApp (85) 99900-0001',ic:'🧂',bg:'#e8f5e9',badge:''}
+];
+const REVIEWS={
+  1:[{user:'Restaurante Bela Vista',stars:5,comment:'Produto excelente, entrega pontual!',date:'10/06/2025'},{user:'Hotel Majestic',stars:5,comment:'Qualidade acima da média.',date:'05/06/2025'}],
+  2:[{user:'Cantina do Porto',stars:5,comment:'Mix premium de verdade!',date:'08/06/2025'}],
+  5:[{user:'Distribuidora Alpha',stars:5,comment:'Castanha W1 impecável.',date:'12/06/2025'}]
+};
+
+// Banco de orçamentos (simulado)
+let ORCAMENTOS=[
+  {id:1,prod:'Mix de Castanhas Premium',supplier:'Mr.Nut Distribuidora',company:'Hotel Majestic',qty:'200kg',needs:'Entrega semanal em São Paulo, embalagem de 5kg a vácuo, produto sem adição de sal.',freq:'Semanal',prazo:'Normal (1-2 semanas)',region:'São Paulo (SP)',date:'12/06/2025',status:'responded',resposta:'Olá Hotel Majestic! Podemos atender 200kg semanais com embalagem a vácuo de 5kg. Preço: R$ 45,00/kg para volume semanal. Entregamos às terças. Entre em contato pelo WhatsApp para fechar!'},
+  {id:2,prod:'Chips de Batata Palha Original',supplier:'Mr.Nut Distribuidora',company:'Hotel Majestic',qty:'500 unidades',needs:'Pedido mensal, caixas de 24 unidades, prazo máximo 5 dias.',freq:'Mensal',prazo:'Curto (3-5 dias)',region:'São Paulo (SP)',date:'08/06/2025',status:'pending',resposta:null},
+];
+
+let S={user:null,favs:[],curProd:null,admCurTab:'dashboard',regRole:'buyer',selStar:0,orcPreviewed:false};
+
+/* ═══ UTILS ═══ */
+function starsOf(r){return '★'.repeat(Math.floor(r))+'☆'.repeat(5-Math.floor(r));}
+function val(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function toast(msg,type='ok'){
+  const el=document.createElement('div');el.className='t-msg '+(type==='err'?'err':'');el.textContent=msg;
+  document.getElementById('toast-ct').appendChild(el);setTimeout(()=>el.remove(),3300);
+}
+function openModal(html){document.getElementById('modal-body').innerHTML=html;document.getElementById('modal-ov').classList.remove('hidden');}
+function closeModal(){document.getElementById('modal-ov').classList.add('hidden');}
+
+/* ═══ NAV ═══ */
+function renderNav(){
+  const nr=document.getElementById('navright');
+  ['nb-dash','nb-adm'].forEach(id=>{const e=document.getElementById(id);if(e)e.remove();});
+  if(S.user){
+    const avc={buyer:'u-av-y',supplier:'u-av-o',admin:'u-av-r'};
+    const rlab={buyer:'Comprador',supplier:'Fornecedor',admin:'Admin'};
+    const rbc={buyer:'ub-buyer',supplier:'ub-supplier',admin:'ub-admin'};
+    nr.innerHTML=`<div class="u-chip" onclick="goArea()"><div class="u-av ${avc[S.user.role]}">${S.user.name[0]}</div><span class="u-name">${S.user.name.split(' ')[0]}</span><span class="u-badge ${rbc[S.user.role]}">${rlab[S.user.role]}</span></div><button class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.15)" onclick="doLogout()">Sair</button>`;
+    const nl=document.getElementById('navlinks');
+    if(S.user.role==='supplier'&&!document.getElementById('nb-dash')){
+      const b=document.createElement('button');b.id='nb-dash';b.textContent='Meu Painel';b.onclick=()=>goPage('supplier-dash');nl.appendChild(b);
+    }
+    if(S.user.role==='admin'&&!document.getElementById('nb-adm')){
+      const b=document.createElement('button');b.id='nb-adm';b.textContent='Admin';b.onclick=()=>goPage('admin');nl.appendChild(b);
+    }
+  } else {
+    nr.innerHTML=`<button class="btn btn-outline btn-sm" style="border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.8)" onclick="goPage('login')">Entrar</button><button class="btn btn-orange btn-sm" onclick="goPage('register')">Cadastrar</button>`;
+  }
+}
+function goArea(){
+  if(!S.user)return;
+  if(S.user.role==='supplier') goPage('supplier-dash');
+  else if(S.user.role==='admin') goPage('admin');
+  else goPage('home');
+}
+
+/* ═══ PAGES ═══ */
+function goPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  const el=document.getElementById('page-'+p);
+  if(el){el.classList.add('active');window.scrollTo(0,0);}
+  document.querySelectorAll('.nav-links button').forEach(b=>b.classList.remove('active'));
+  const nb=document.getElementById('nb-'+p);if(nb)nb.classList.add('active');
+  if(p==='home') renderHomeProds();
+  if(p==='marketplace') renderMkt(PRODS);
+  if(p==='supplier-dash') renderDash();
+  if(p==='admin'){S.admCurTab='dashboard';admTab('dashboard');}
+  if(p==='orcamento') renderOrcPage();
+}
+
+/* ═══ AUTH ═══ */
+function togglePw(){const i=document.getElementById('l-pass');i.type=i.type==='password'?'text':'password';}
+function doLogin(){
+  const e=val('l-email'),p=val('l-pass');
+  if(!e||!p){toast('Preencha e-mail e senha','err');return;}
+  const u=USERS.find(x=>x.email===e&&x.pass===p);
+  if(!u){toast('E-mail ou senha incorretos!','err');return;}
+  loginSuccess(u);
+}
+function quickLogin(role){loginSuccess(USERS.find(x=>x.role===role));}
+function loginSuccess(u){
+  S.user=u;renderNav();
+  if(u.role==='admin') goPage('admin');
+  else if(u.role==='supplier') goPage('supplier-dash');
+  else goPage('home');
+  toast(`Bem-vindo, ${u.name.split(' ')[0]}! 👋`,'ok');
+}
+function doLogout(){S.user=null;S.favs=[];renderNav();goPage('login');toast('Você saiu da conta','ok');}
+function doRegister(){
+  const n=val('r-name'),e=val('r-email'),p=val('r-pass'),p2=val('r-pass2');
+  if(!n||!e){toast('Preencha nome e e-mail','err');return;}
+  if(p&&p!==p2){toast('Senhas não coincidem','err');return;}
+  S.user={name:n,email:e,role:S.regRole};renderNav();
+  if(S.regRole==='supplier') goPage('supplier-dash');else goPage('home');
+  toast('Conta criada! 🎉','ok');
+}
+function selRole(r){
+  S.regRole=r;
+  ['buyer','supplier'].forEach(x=>document.getElementById('ro-'+x).classList.toggle('sel',x===r));
+  document.getElementById('sup-extra').classList.toggle('hidden',r!=='supplier');
+}
+
+/* ═══ PRODUCTS ═══ */
+function pCard(p){
+  const fav=S.favs.includes(p.id);
+  return `<div class="p-card" onclick="openProd(${p.id})">
+    <div class="p-img" style="background:${p.bg}">
+      <span>${p.ic}</span>
+      ${p.badge?`<span class="p-badge">${p.badge}</span>`:''}
+      <button class="p-fav" onclick="event.stopPropagation();toggleFav(${p.id})">${fav?'❤️':'🤍'}</button>
+    </div>
+    <div class="p-body">
+      <div class="p-name">${p.name}</div>
+      <div class="p-sup">🏭 ${p.supplier}</div>
+      <div class="p-meta"><span class="p-moq">MOQ: ${p.moq} un</span><span class="stars">${starsOf(p.rating)}</span></div>
+      <div class="chips-row" style="margin-bottom:9px"><span class="chip">${p.cat}</span><span class="chip">📍 ${p.region}</span></div>
+      <div class="p-card-btns">
+        <button class="btn btn-ghost" onclick="event.stopPropagation();openOrcFromProd('${p.name}','${p.supplier}')">📋 Orçamento</button>
+        <button class="btn btn-red" onclick="event.stopPropagation();contactSup('${p.supplier}')">📞 Contato</button>
+      </div>
+    </div>
+  </div>`;
+}
+function renderHomeProds(){document.getElementById('home-prods').innerHTML=PRODS.slice(0,4).map(pCard).join('');}
+function renderMkt(list){
+  const el=document.getElementById('mkt-prods');if(!el)return;
+  el.innerHTML=list.length?list.map(pCard).join(''):`<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--gray)">😔 Nenhum anúncio encontrado.</div>`;
+}
+
+function openProd(id){
+  const p=PRODS.find(x=>x.id===id);if(!p)return;
+  S.curProd=p;
+  document.getElementById('det-bc').textContent=p.name;
+  document.getElementById('det-img').innerHTML=`<span style="font-size:100px">${p.ic}</span>${p.badge?`<span class="p-badge">${p.badge}</span>`:''}`;
+  document.getElementById('det-cat').textContent=p.cat;
+  document.getElementById('det-stars').textContent=starsOf(p.rating);
+  document.getElementById('det-rc').textContent=`(${p.revCount} avaliações)`;
+  document.getElementById('det-title').textContent=p.name;
+  document.getElementById('det-desc').textContent=p.desc;
+  document.getElementById('det-specs').innerHTML=[
+    ['Marca',p.brand],['MOQ',p.moq+' un'],['Embalagem',p.unit],
+    ['Região',p.region],['Entrega',p.delivery],['Avaliação',p.rating+' ★']
+  ].map(([l,v])=>`<div class="spec"><div class="spec-l">${l}</div><div class="spec-v">${v}</div></div>`).join('');
+  document.getElementById('det-sname').textContent=p.supplier;
+  document.getElementById('det-sloc').textContent='📍 '+p.region;
+  document.getElementById('det-scontact').innerHTML='<strong>Contato:</strong><br>'+p.contact;
+  const fav=S.favs.includes(p.id);
+  document.getElementById('det-btns').innerHTML=`
+    <button class="btn btn-orange btn-lg" onclick="contactSup('${p.supplier}')">📞 Contatar</button>
+    <button class="btn btn-yellow btn-lg" onclick="openOrcFromProd('${p.name}','${p.supplier}')">📋 Solicitar Orçamento</button>
+    <button class="btn btn-ghost btn-lg" id="fb-${p.id}" onclick="toggleFav(${p.id});renderFavBtn(${p.id})">${fav?'❤️ Favoritado':'🤍 Favoritar'}</button>`;
+  renderRvs(p.id);
+  goPage('detail');
+}
+function renderFavBtn(id){const b=document.getElementById('fb-'+id);if(b)b.innerHTML=S.favs.includes(id)?'❤️ Favoritado':'🤍 Favoritar';}
+function renderRvs(id){
+  const rs=REVIEWS[id]||[];
+  document.getElementById('rv-count').textContent=`(${rs.length})`;
+  document.getElementById('rv-list').innerHTML=rs.length
+    ?rs.map(r=>`<div class="rv-card"><div class="rv-top"><span class="rv-name">👤 ${r.user}</span><span class="rv-date">${r.date}</span></div><div class="stars">${starsOf(r.stars)}</div><div class="rv-text">${r.comment}</div></div>`).join('')
+    :'<p style="font-size:13px;color:var(--gray);padding:10px 0">Nenhuma avaliação ainda.</p>';
+  const rf=document.getElementById('rv-form');
+  if(S.user&&S.user.role==='buyer'){
+    rf.innerHTML=`<div class="rv-form"><h4>✍️ Sua Avaliação</h4><div class="star-row">${[1,2,3,4,5].map(i=>`<span class="s-btn" data-v="${i}" onclick="setStar(${i})">★</span>`).join('')}</div><div class="fg" style="margin-bottom:12px"><textarea id="rv-text" style="min-height:70px" placeholder="Escreva seu comentário…"></textarea></div><button class="btn btn-orange btn-sm" onclick="submitRv(${id})">Enviar</button></div>`;
+  } else if(!S.user){
+    rf.innerHTML=`<div style="font-size:13px;color:var(--gray);padding:12px;background:var(--lgray);border-radius:10px;margin-top:12px"><a onclick="goPage('login')" style="color:var(--r2);font-weight:700;cursor:pointer">Faça login</a> para avaliar.</div>`;
+  } else rf.innerHTML='';
+}
+function setStar(v){S.selStar=v;document.querySelectorAll('.s-btn').forEach(s=>s.classList.toggle('on',+s.dataset.v<=v));}
+function submitRv(id){
+  if(!S.selStar){toast('Selecione uma nota','err');return;}
+  const c=val('rv-text');if(!c){toast('Escreva um comentário','err');return;}
+  if(!REVIEWS[id])REVIEWS[id]=[];
+  REVIEWS[id].unshift({user:S.user.name,stars:S.selStar,comment:c,date:new Date().toLocaleDateString('pt-BR')});
+  S.selStar=0;renderRvs(id);toast('Avaliação enviada! ⭐','ok');
+}
+
+/* ═══ FILTERS ═══ */
+function applyF(){
+  const q=(document.getElementById('mkt-q').value||'').toLowerCase().trim();
+  renderMkt(PRODS.filter(p=>!q||(p.name+' '+p.brand+' '+p.supplier+' '+p.cat).toLowerCase().includes(q)));
+}
+function clearF(){const mq=document.getElementById('mkt-q');if(mq)mq.value='';renderMkt(PRODS);}
+function filterCat(cat){goPage('marketplace');setTimeout(()=>{const mq=document.getElementById('mkt-q');if(mq){mq.value=cat;applyF();}},80);}
+function hsearch(){const v=document.getElementById('hs-input').value;goPage('marketplace');setTimeout(()=>{const mq=document.getElementById('mkt-q');if(mq){mq.value=v;applyF();}},80);}
+
+/* ═══ FAVORITES ═══ */
+function toggleFav(id){
+  if(!S.user){toast('Faça login para favoritar','err');return;}
+  const i=S.favs.indexOf(id);
+  if(i===-1){S.favs.push(id);toast('Adicionado ❤️','ok');}else{S.favs.splice(i,1);toast('Removido dos favoritos','ok');}
+}
+
+/* ═══ CONTACT ═══ */
+function contactSup(sup){
+  if(!S.user){goPage('login');return;}
+  openModal(`<div style="font-size:17px;font-weight:800;margin-bottom:4px">📞 Contatar ${sup}</div>
+    <div style="font-size:13px;color:var(--gray);margin-bottom:18px">Dados de contato do fornecedor</div>
+    <div style="background:var(--lgray);border-radius:11px;padding:14px;font-size:13px;line-height:1.9;border:1.5px solid var(--border)">
+      <div>📱 <strong>WhatsApp:</strong> (11) 99999-0000</div>
+      <div>📧 <strong>E-mail:</strong> fornecedor@mrnut.com</div>
+      <div>☎️ <strong>Telefone:</strong> (11) 3000-0000</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <a href="https://wa.me/5511999990000" target="_blank" class="btn btn-success" style="flex:1">💬 WhatsApp</a>
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal()">Fechar</button>
+    </div>`);
+}
+
+/* ═══ ORÇAMENTO ═══ */
+function updateCharCount(){
+  const t=document.getElementById('orc-needs');
+  const c=document.getElementById('char-count');
+  if(t&&c) c.textContent=t.value.length;
+}
+
+function addHint(el,text){
+  el.classList.toggle('selected');
+  const ta=document.getElementById('orc-needs');
+  if(!ta)return;
+  if(el.classList.contains('selected')){
+    ta.value=ta.value?(ta.value.trimEnd()+', '+text):text;
+  } else {
+    ta.value=ta.value.replace(', '+text,'').replace(text+', ','').replace(text,'').trim().replace(/,$/,'').trim();
+  }
+  updateCharCount();
+}
+
+function renderOrcPage(){
+  S.orcPreviewed=false;
+  const sumEl=document.getElementById('orc-summary');
+  if(sumEl) sumEl.style.display='none';
+  const sbtn=document.getElementById('orc-submit-btn');
+  if(sbtn) sbtn.style.display='none';
+  // Mostrar histórico se comprador logado
+  const hw=document.getElementById('orc-historico-wrap');
+  if(hw){
+    if(S.user&&S.user.role==='buyer'){
+      hw.classList.remove('hidden');
+      renderOrcHistorico();
+    } else {
+      hw.classList.add('hidden');
+    }
+  }
+  // Esconder campos de contato se logado
+  const gf=document.getElementById('orc-guest-fields');
+  if(gf) gf.style.display=(S.user&&S.user.role==='buyer')?'none':'block';
+}
+
+function renderOrcHistorico(){
+  const mineOrc=ORCAMENTOS.filter(o=>S.user&&o.company===S.user.name);
+  const el=document.getElementById('orc-historico-list');
+  if(!el)return;
+  if(!mineOrc.length){el.innerHTML='<p style="font-size:13px;color:var(--gray);padding:10px 0">Você ainda não enviou nenhuma solicitação.</p>';return;}
+  el.innerHTML=mineOrc.map(o=>`
+    <div class="orc-item ${o.status}">
+      <div class="oi-top">
+        <div><div class="oi-prod">📦 ${o.prod}</div><div class="oi-sup">🏭 ${o.supplier} · ${o.qty}</div></div>
+        <span class="status-badge ${o.status==='responded'?'sb-active':'sb-pending'}">${o.status==='responded'?'✅ Respondido':'⏳ Aguardando'}</span>
+      </div>
+      <div class="oi-needs">${o.needs}</div>
+      ${o.resposta?`<div class="resp-box"><div class="resp-title">💬 Resposta do Fornecedor</div><p>${o.resposta}</p></div>`:''}
+      <div class="oi-footer"><span class="oi-date">📅 ${o.date}</span>${o.status==='responded'?`<button class="btn btn-sm btn-success" onclick="contactSup('${o.supplier}')">📞 Entrar em Contato</button>`:''}</div>
+    </div>`).join('');
+}
+
+function openOrcFromProd(prodName,supName){
+  goPage('orcamento');
+  setTimeout(()=>{
+    const ps=document.getElementById('orc-prod');
+    if(ps){for(let o of ps.options){if(o.text===prodName){ps.value=o.value;break;}}}
+    const ss=document.getElementById('orc-sup');
+    if(ss){for(let o of ss.options){if(o.text===supName){ss.value=o.value;break;}}}
+    toast('Produto pré-selecionado! Preencha suas necessidades 📋','ok');
+  },100);
+}
+
+function previewOrc(){
+  const prod=val('orc-prod'),qty=val('orc-qty'),needs=val('orc-needs'),region=val('orc-region');
+  if(!prod){toast('Selecione o produto desejado','err');return;}
+  if(!qty){toast('Informe a quantidade estimada','err');return;}
+  if(!needs||needs.length<10){toast('Descreva suas necessidades com mais detalhes (mín. 10 caracteres)','err');return;}
+  if(!region){toast('Selecione a região de entrega','err');return;}
+  if(!S.user){
+    if(!val('orc-nome')||!val('orc-email')){toast('Informe nome e e-mail para contato','err');return;}
+  }
+  const sup=val('orc-sup')||'Qualquer fornecedor';
+  const freq=val('orc-freq')||'A combinar';
+  const prazo=val('orc-prazo')||'A combinar';
+  const nome=S.user?S.user.name:val('orc-nome');
+  document.getElementById('orc-summary-rows').innerHTML=[
+    ['📦 Produto',prod],
+    ['🏭 Fornecedor',sup],
+    ['⚖️ Quantidade',qty],
+    ['📋 Necessidades',needs.substring(0,80)+(needs.length>80?'…':'')],
+    ['🔁 Frequência',freq],
+    ['🚚 Prazo',prazo],
+    ['📍 Região',region],
+    ['👤 Solicitante',nome],
+  ].map(([l,v])=>`<div class="sum-row"><span class="sum-label">${l}</span><span class="sum-val">${v}</span></div>`).join('');
+  const sumEl=document.getElementById('orc-summary');
+  sumEl.style.display='block';
+  document.getElementById('orc-submit-btn').style.display='inline-flex';
+  sumEl.scrollIntoView({behavior:'smooth',block:'center'});
+  S.orcPreviewed=true;
+  toast('Revise o resumo e confirme o envio ✅','ok');
+}
+
+function submitOrc(){
+  if(!S.orcPreviewed){toast('Clique em Pré-visualizar primeiro','err');return;}
+  const newOrc={
+    id:ORCAMENTOS.length+1,
+    prod:val('orc-prod'),
+    supplier:val('orc-sup')||'Mr.Nut Distribuidora',
+    company:S.user?S.user.name:val('orc-nome'),
+    qty:val('orc-qty'),
+    needs:val('orc-needs'),
+    freq:val('orc-freq')||'A combinar',
+    prazo:val('orc-prazo')||'A combinar',
+    region:val('orc-region'),
+    date:new Date().toLocaleDateString('pt-BR'),
+    status:'pending',
+    resposta:null
+  };
+  ORCAMENTOS.push(newOrc);
+  // Mostrar sucesso
+  document.getElementById('orc-form-card').innerHTML=`
+    <div class="orc-success">
+      <div class="si">🎉</div>
+      <h3>Solicitação enviada com sucesso!</h3>
+      <p>Sua solicitação de orçamento para <strong>${newOrc.prod}</strong> foi enviada para <strong>${newOrc.supplier}</strong>.<br><br>
+      O fornecedor receberá suas necessidades e entrará em contato em breve pelo e-mail ou WhatsApp informado.</p>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap">
+        <button class="btn btn-orange" onclick="location.reload()">📋 Nova Solicitação</button>
+        <button class="btn btn-ghost" onclick="goPage('marketplace')">🛒 Ver Anúncios</button>
+      </div>
+    </div>`;
+  toast('Orçamento enviado! O fornecedor entrará em contato 📋','ok');
+  if(S.user&&S.user.role==='buyer') renderOrcHistorico();
+}
+
+function clearOrcForm(){
+  ['orc-prod','orc-sup','orc-qty','orc-freq','orc-prazo','orc-region','orc-nome','orc-email','orc-whatsapp'].forEach(id=>{
+    const el=document.getElementById(id);if(el){if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';}
+  });
+  const tn=document.getElementById('orc-needs');if(tn)tn.value='';
+  document.querySelectorAll('.need-tag').forEach(t=>t.classList.remove('selected'));
+  const s=document.getElementById('orc-summary');if(s)s.style.display='none';
+  const sb=document.getElementById('orc-submit-btn');if(sb)sb.style.display='none';
+  updateCharCount();
+  toast('Formulário limpo','ok');
+}
+
+function quickOrcamento(){
+  const prod=val('orc-quick-prod'),qty=val('orc-quick-qty'),needs=val('orc-quick-needs');
+  if(!qty){toast('Informe a quantidade','err');return;}
+  if(!S.user){goPage('login');toast('Faça login para enviar solicitações','err');return;}
+  ORCAMENTOS.push({id:ORCAMENTOS.length+1,prod,supplier:'Mr.Nut Distribuidora',company:S.user.name,qty,needs:needs||'Conforme solicitação rápida',freq:'A combinar',prazo:'A combinar',region:'A combinar',date:new Date().toLocaleDateString('pt-BR'),status:'pending',resposta:null});
+  toast('Solicitação rápida enviada! ✅','ok');
+  document.getElementById('orc-quick-qty').value='';
+  document.getElementById('orc-quick-needs').value='';
+}
+
+/* ═══ SUPPLIER DASH ═══ */
+function renderDash(){
+  if(!S.user)return;
+  const hi=document.getElementById('dash-hi');
+  if(hi) hi.textContent='Bem-vindo de volta, '+S.user.name+' 👋';
+  // KPI orçamentos
+  const pendentes=ORCAMENTOS.filter(o=>o.status==='pending').length;
+  const kn=document.getElementById('kpi-orc');if(kn)kn.textContent=ORCAMENTOS.length;
+  const kt=document.getElementById('kpi-orc-t');if(kt)kt.textContent=`↑ ${pendentes} pendentes`;
+  const nb=document.getElementById('orc-new-badge');if(nb)nb.textContent=pendentes+' novos';
+  // Anúncios
+  const items=[
+    {ic:'🍟',name:'Chips de Batata Palha',meta:'MOQ: 100 · Chips & Snacks',st:'active'},
+    {ic:'🥜',name:'Mix de Castanhas Premium',meta:'MOQ: 50 · Castanhas',st:'active'},
+    {ic:'🥜',name:'Amendoim Torrado Salgado',meta:'MOQ: 200 · Castanhas',st:'paused'},
+    {ic:'🌰',name:'Castanha de Caju Inteira',meta:'MOQ: 100 · Castanhas',st:'draft'},
+  ];
+  const lbl={active:'Ativo',paused:'Pausado',draft:'Rascunho'};
+  const el=document.getElementById('s-listings');
+  if(el) el.innerHTML=items.map(x=>`
+    <div class="l-row">
+      <div class="l-ic">${x.ic}</div>
+      <div class="l-info"><div class="l-name">${x.name}</div><div class="l-meta">${x.meta}</div></div>
+      <span class="status-badge sb-${x.st}">${lbl[x.st]}</span>
+      <div class="l-acts"><button class="btn btn-sm btn-ghost" onclick="goPage('new-product')">✏️</button><button class="btn btn-sm btn-danger" onclick="toast('Removido','ok')">🗑️</button></div>
+    </div>`).join('');
+  // Orçamentos recebidos
+  const so=document.getElementById('supplier-orcamentos');
+  if(so) so.innerHTML=ORCAMENTOS.length?ORCAMENTOS.map(o=>`
+    <div class="orc-req-item">
+      <div class="orc-req-top">
+        <div><div class="orc-req-prod">📦 ${o.prod}</div><div class="orc-req-company">👤 ${o.company} · ${o.qty}</div></div>
+        <span class="status-badge ${o.status==='responded'?'sb-active':'sb-pending'}">${o.status==='responded'?'✅ Respondido':'⏳ Pendente'}</span>
+      </div>
+      <div class="orc-req-needs">${o.needs}</div>
+      <div class="orc-req-footer">
+        <span class="orc-req-time">📅 ${o.date} · ${o.freq} · ${o.region}</span>
+        ${o.status==='pending'?`<button class="btn btn-sm btn-orange" onclick="responderOrc(${o.id})">✍️ Responder</button>`:`<button class="btn btn-sm btn-ghost" onclick="contactSup('${o.company}')">📞 Contatar</button>`}
+      </div>
+    </div>`).join(''):'<p style="font-size:13px;color:var(--gray);padding:10px 0">Nenhuma solicitação recebida ainda.</p>';
+}
+
+function responderOrc(id){
+  const o=ORCAMENTOS.find(x=>x.id===id);if(!o)return;
+  openModal(`
+    <div style="font-size:17px;font-weight:800;margin-bottom:4px">✍️ Responder Orçamento</div>
+    <div style="font-size:13px;color:var(--gray);margin-bottom:16px">Solicitação de <strong>${o.company}</strong> para <strong>${o.prod}</strong></div>
+    <div style="background:var(--lgray);border-radius:10px;padding:12px;font-size:12px;color:var(--dark);margin-bottom:16px;border-left:3px solid var(--o3);line-height:1.6"><strong>Necessidades do cliente:</strong><br>${o.needs}</div>
+    <div class="fg"><label>Sua Proposta <span class="req">*</span></label><textarea id="resp-text" style="min-height:120px" placeholder="Ex: Olá! Podemos atender ${o.qty} de ${o.prod}. Nosso preço para esse volume é R$ X,XX/kg. Entregamos em até 3 dias úteis em ${o.region}. Entre em contato pelo WhatsApp para fechar o pedido!"></textarea></div>
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="btn btn-orange btn-block" onclick="enviarResposta(${id})">✅ Enviar Proposta</button>
+      <button class="btn btn-ghost btn-block" onclick="closeModal()">Cancelar</button>
+    </div>`);
+}
+
+function enviarResposta(id){
+  const r=val('resp-text');
+  if(!r){toast('Escreva sua proposta','err');return;}
+  const o=ORCAMENTOS.find(x=>x.id===id);
+  if(o){o.status='responded';o.resposta=r;}
+  closeModal();renderDash();
+  toast('Proposta enviada ao comprador! ✅','ok');
+}
+
+function saveProduct(){
+  if(!val('np-t')){toast('Informe o título','err');return;}
+  toast('Anúncio enviado para aprovação! ✅','ok');goPage('supplier-dash');
+}
+
+/* ═══ ADMIN ═══ */
+function admTab(tab){
+  S.admCurTab=tab;
+  document.querySelectorAll('.adm-sec a[id^="as-"]').forEach(a=>a.classList.remove('on'));
+  const act=document.getElementById('as-'+tab);if(act)act.classList.add('on');
+  const B=document.getElementById('adm-body');if(!B)return;
+  const chart=(rows)=>rows.map(([l,v,m])=>`<div class="chart-row"><div class="ch-l">${l}</div><div class="ch-b" style="width:${Math.max(v/m*85,6)}%">${v}</div></div>`).join('');
+  const kpis=`<div class="adm-kpis">
+    <div class="kpi" style="border-color:var(--o2)"><div class="kpi-n">2.140</div><div class="kpi-l">Total de Anúncios</div></div>
+    <div class="kpi" style="border-color:var(--r2)"><div class="kpi-n">340</div><div class="kpi-l">Fornecedores</div></div>
+    <div class="kpi" style="border-color:var(--y1)"><div class="kpi-n">820</div><div class="kpi-l">Compradores</div></div>
+    <div class="kpi" style="border-color:var(--o3)"><div class="kpi-n">${ORCAMENTOS.length}</div><div class="kpi-l">Orçamentos</div></div>
+  </div>`;
+
+  if(tab==='dashboard'){
+    B.innerHTML=`<div class="adm-hd"><h2>📊 Dashboard</h2></div>${kpis}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+      <div class="d-card"><h3>Anúncios por Categoria</h3>${chart([['Chips & Snacks',620,620],['Castanhas',410,620],['Bebidas',380,620],['Ingredientes',290,620],['Congelados',180,620]])}</div>
+      <div class="d-card"><h3>Cadastros por Mês</h3>${chart([['Jan',45,103],['Fev',62,103],['Mar',78,103],['Abr',54,103],['Mai',91,103],['Jun',103,103]])}</div>
+    </div>`;
+  } else if(tab==='listings'){
+    B.innerHTML=`<div class="adm-hd"><h2>📦 Anúncios</h2></div>${kpis}
+    <div class="tbl"><table>
+      <thead><tr><th>Produto</th><th>Fornecedor</th><th>Categoria</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
+      <tbody>${[
+        ['Chips de Batata Palha','Mr.Nut','Chips & Snacks','pending','10/06'],
+        ['Mix de Castanhas','Mr.Nut','Castanhas','active','08/06'],
+        ['Suco de Laranja','Bebidas Sul','Bebidas','pending','07/06'],
+        ['Castanha W1','Ing. Nordeste','Castanhas','active','03/06'],
+      ].map(([n,s,c,st,d])=>`<tr>
+        <td><strong>${n}</strong></td><td>${s}</td><td><span class="chip">${c}</span></td>
+        <td><span class="status-badge sb-${st}">${{active:'Ativo',pending:'Pendente',paused:'Pausado'}[st]}</span></td>
+        <td style="color:var(--gray)">${d}</td>
+        <td><div style="display:flex;gap:5px">
+          ${st==='pending'?`<button class="btn btn-sm btn-success" onclick="toast('Aprovado ✅','ok')">✅ Aprovar</button><button class="btn btn-sm btn-danger" onclick="openReject()">❌ Reprovar</button>`:''}
+          ${st==='active'?`<button class="btn btn-sm btn-ghost" onclick="toast('Pausado','ok')">⏸ Pausar</button>`:''}
+        </div></td></tr>`).join('')}
+      </tbody></table></div>`;
+  } else if(tab==='orcamentos'){
+    B.innerHTML=`<div class="adm-hd"><h2>📋 Solicitações de Orçamento</h2></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Produto</th><th>Solicitante</th><th>Fornecedor</th><th>Qtd.</th><th>Necessidades</th><th>Status</th><th>Data</th></tr></thead>
+      <tbody>${ORCAMENTOS.map(o=>`<tr>
+        <td><strong>${o.prod}</strong></td>
+        <td>${o.company}</td>
+        <td>${o.supplier}</td>
+        <td style="font-weight:700;color:var(--o1)">${o.qty}</td>
+        <td style="font-size:11px;color:var(--gray);max-width:180px">${o.needs.substring(0,60)}${o.needs.length>60?'…':''}</td>
+        <td><span class="status-badge ${o.status==='responded'?'sb-active':'sb-pending'}">${o.status==='responded'?'✅ Respondido':'⏳ Pendente'}</span></td>
+        <td style="color:var(--gray)">${o.date}</td>
+      </tr>`).join('')}
+      </tbody></table></div>`;
+  } else if(tab==='users'){
+    B.innerHTML=`<div class="adm-hd"><h2>👥 Usuários</h2></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Nome</th><th>Perfil</th><th>E-mail</th><th>Status</th><th>Ações</th></tr></thead>
+      <tbody>${[
+        ['Mr.Nut Distribuidora','Fornecedor','fornecedor@mrnut.com','Ativo'],
+        ['Hotel Majestic','Comprador','comprador@hotel.com','Ativo'],
+        ['ChipsBrasil Indústria','Fornecedor','chips@email.com','Ativo'],
+        ['Maria Restaurante','Comprador','maria@rest.com','Bloqueado'],
+      ].map(([n,r,e,st])=>`<tr>
+        <td><strong>${n}</strong></td>
+        <td><span class="status-badge ${r==='Fornecedor'?'sb-active':'sb-pending'}">${r}</span></td>
+        <td style="color:var(--gray)">${e}</td>
+        <td><span class="status-badge ${st==='Ativo'?'sb-active':'sb-draft'}">${st}</span></td>
+        <td><button class="btn btn-sm ${st==='Ativo'?'btn-danger':'btn-success'}" onclick="toast('Status atualizado','ok')">${st==='Ativo'?'🔒 Bloquear':'🔓 Desbloquear'}</button></td>
+      </tr>`).join('')}
+      </tbody></table></div>`;
+  } else if(tab==='reviews'){
+    B.innerHTML=`<div class="adm-hd"><h2>⭐ Avaliações</h2></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Avaliador</th><th>Produto</th><th>Nota</th><th>Comentário</th><th>Status</th><th>Ações</th></tr></thead>
+      <tbody>${[
+        ['João Comprador','Chips de Batata',5,'Produto excelente!','Visível'],
+        ['Maria Restaurante','Mix Castanhas',1,'Péssimo!!!','Visível'],
+        ['Cantina do Porto','Amendoim',4,'Boa qualidade','Visível'],
+      ].map(([u,p,s,c,st])=>`<tr>
+        <td>${u}</td><td>${p}</td>
+        <td><span class="stars">${'★'.repeat(s)}</span></td>
+        <td style="font-size:12px;color:var(--gray)">${c}</td>
+        <td><span class="status-badge ${st==='Visível'?'sb-active':'sb-draft'}">${st}</span></td>
+        <td><button class="btn btn-sm btn-danger" onclick="toast('Ocultada','ok')">🙈 Ocultar</button></td>
+      </tr>`).join('')}
+      </tbody></table></div>`;
+  } else if(tab==='reports'){
+    B.innerHTML=`<div class="adm-hd"><h2>📈 Relatórios</h2></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+      <div class="d-card"><h3>Avaliação por Fornecedor</h3>${chart([['Mr.Nut',4.9,5],['Ing. Nordeste',4.7,5],['Bebidas Sul',4.5,5],['ChipsBrasil',4.3,5]])}</div>
+      <div class="d-card"><h3>Orçamentos por Status</h3>${chart([['Respondidos',ORCAMENTOS.filter(o=>o.status==='responded').length,Math.max(ORCAMENTOS.length,1)],['Pendentes',ORCAMENTOS.filter(o=>o.status==='pending').length,Math.max(ORCAMENTOS.length,1)]])}</div>
+      <div class="d-card"><h3>Exportar</h3>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">
+          <button class="btn btn-ghost" onclick="toast('Exportado ✅','ok')">📄 Fornecedores (CSV)</button>
+          <button class="btn btn-ghost" onclick="toast('Exportado ✅','ok')">📄 Anúncios (CSV)</button>
+          <button class="btn btn-ghost" onclick="toast('Exportado ✅','ok')">📄 Orçamentos (CSV)</button>
+        </div>
+      </div>
+    </div>`;
+  } else if(tab==='audit'){
+    B.innerHTML=`<div class="adm-hd"><h2>🔐 Auditoria</h2></div>
+    <div class="d-card">${[
+      ['2025-06-13 10:34','admin','Aprovou anúncio "Chips de Batata Palha"'],
+      ['2025-06-13 10:20','admin','Ocultou avaliação do usuário maria@email.com'],
+      ['2025-06-13 09:15','admin','Bloqueou usuário "Maria Restaurante"'],
+      ['2025-06-12 16:44','admin','Reprovou anúncio — imagem inadequada'],
+      ['2025-06-12 14:30','admin','Desbloqueou "ChipsBrasil Indústria"'],
+      ['2025-06-11 11:00','admin','Aprovou orçamento entre Hotel Majestic e Mr.Nut'],
+    ].map(([t,u,a])=>`<div class="audit-row"><div class="au-t">🕐 ${t}</div><div class="au-u">${u}</div><div class="au-a">${a}</div></div>`).join('')}</div>`;
+  }
+}
+
+function openReject(){
+  openModal(`<div style="font-size:17px;font-weight:800;margin-bottom:4px">❌ Reprovar Anúncio</div>
+    <div class="fg" style="margin-top:16px"><label>Motivo</label><select><option>Imagem inadequada</option><option>Descrição incompleta</option><option>Produto não permitido</option></select></div>
+    <div class="fg"><label>Observação</label><textarea placeholder="Mensagem ao fornecedor…"></textarea></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-danger btn-block" onclick="toast('Reprovado e fornecedor notificado','ok');closeModal()">Confirmar</button>
+      <button class="btn btn-ghost btn-block" onclick="closeModal()">Cancelar</button>
+    </div>`);
+}
+
+/* INIT */
+renderNav();
+</script>
+</body>
+</html>
