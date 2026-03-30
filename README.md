@@ -1,120 +1,179 @@
-```sh
-Utilize o site <https://www.toptal.com/developers/gitignore> para gerar seu arquivo gitignore e apague este campo.
-
-Vide tutoriais do PI.
-```
-
-# FECAP - Fundação de Comércio Álvares Penteado
-
 <p align="center">
-<a href= "https://www.fecap.br/"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhZPrRa89Kma0ZZogxm0pi-tCn_TLKeHGVxywp-LXAFGR3B1DPouAJYHgKZGV0XTEf4AE&usqp=CAU" alt="FECAP - Fundação de Comércio Álvares Penteado" border="0"></a>
+  <img src="./imagens/logo.jpeg" alt="DeuBug Logo" width="300"/>
 </p>
 
-# Nome do Projeto 
-
-## Nome do Grupo Deubug?
-
-## Integrantes: <a href="https://www.linkedin.com/in/victorbarq/">Arthur Henrique Dos Anjos Ferreira</a>, <a href="https://www.linkedin.com/in/victorbarq/">Guilherme Augusto Castilho</a>, <a href="https://www.linkedin.com/in/victorbarq/">Matheus Fadini Reis Parada</a>,<a href="https://www.linkedin.com/in/victorbarq/">Ryan Santos</a>, <a href="https://www.linkedin.com/in/victorbarq/">William Takuya Takeuchi Takaki</a>
-
-## Professores Orientadores: <a href="https://www.linkedin.com/in/victorbarq/">Dr. Victor Von Doom</a>, <a href="https://www.linkedin.com/in/victorbarq/">Me. Saitama</a>, <a href="https://www.linkedin.com/in/victorbarq/">Dr. Strange</a>, <a href="https://www.linkedin.com/in/victorbarq/">Me. Yoda</a>, <a href="https://www.linkedin.com/in/victorbarq/">Dr. Gero</a>
-
-## Descrição
+<h1 align="center">💻 DeuBug? - Marketplace B2B Mr.Nut</h1>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/27ea9e56-61a5-42f8-aab4-b7a0f799472a">
-  <br>
-  Game by <a href="https://gemini.google.com/">Gemini</a>
-  
+  <b>Projeto Interdisciplinar - Ciência da Computação | FECAP</b>
 </p>
 
+---
 
-De um a dois parágrafos sobre o que é seu projeto e o que ele faz.
-<br><br>
-Meu projeto ajuda estudantes FECAP a configurarem seus githubs.
-<br><br>
-May the force be with you!
-<br><br>
+## 📌 Sobre o Projeto
 
-## 🛠 Estrutura de pastas
+Este projeto foi desenvolvido como parte do **Projeto Interdisciplinar (PI)** da FECAP.
 
--Raiz<br>
-|<br>
-|-->documentos<br>
-  &emsp;|-->antigos<br>
-  &emsp;|Documentação.docx<br>
-|-->executáveis<br>
-  &emsp;|-->windows<br>
-  &emsp;|-->android<br>
-  &emsp;|-->HTML<br>
-|-->imagens<br>
-|-->src<br>
-  &emsp;|-->Backend<br>
-  &emsp;|-->Frontend<br>
-|readme.md<br>
+A aplicação consiste na plataforma **Mr.Nut**, um **Marketplace B2B (Business to Business)** voltado ao setor alimentício, com o objetivo de conectar **fornecedores e compradores**, como restaurantes, hotéis, distribuidores e mercados.
 
-A pasta raiz contem dois arquivos que devem ser alterados:
+A plataforma funciona como um **hub de anúncios**, permitindo que fornecedores publiquem seus produtos e compradores encontrem opções de forma eficiente. O sistema não realiza pagamentos, sendo focado na comunicação e negociação entre as partes.
 
-<b>README.MD</b>: Arquivo que serve como guia e explicação geral sobre seu projeto. O mesmo que você está lendo agora.
+---
 
-Há também 4 pastas que seguem da seguinte forma:
+## 🎯 Objetivo Geral
 
-<b>documentos</b>: Toda a documentação estará nesta pasta.
+Desenvolver uma plataforma web que facilite a conexão entre empresas do setor alimentício, organizando anúncios e melhorando a experiência de busca e negociação.
 
-<b>executáveis</b>: Binários e executáveis do projeto devem estar nesta pasta.
+---
 
-<b>imagens</b>: Imagens do sistema
+## 🎯 Objetivos Específicos
 
-<b>src</b>: Pasta que contém o código fonte.
+* Implementar sistema de cadastro e autenticação
+* Criar controle de acesso por perfil (Fornecedor, Comprador e Administrador)
+* Desenvolver CRUD completo de anúncios
+* Implementar sistema de busca e filtros
+* Permitir avaliações de fornecedores e anúncios
+* Criar painel administrativo para moderação
+* Modelar e implementar banco de dados relacional
+* Permitir solicitação de orçamentos
+* Possibilitar realização de pedidos (sem pagamento integrado)
 
-## 🛠 Instalação
+---
 
-<b>Android:</b>
+## 👥 Integrantes
 
-Faça o Download do JOGO.apk no seu celular.
-Execute o APK e siga as instruções de seu telefone.
+* Arthur Henrique dos Anjos Ferreira
+* Guilherme Augusto Castilho
+* Matheus Fadini Reis Parada
+* Ryan Santos
+* William Takuya Takeuchi Takaki
 
-```sh
-Coloque código do prompt de comnando se for necessário
-```
+---
 
-<b>Windows:</b>
+## 🏢 Nome da Equipe
 
-Não há instalação! Apenas executável!
-Encontre o JOGO.exe na pasta executáveis e execute-o como qualquer outro programa.
+**DeuBug?**
 
-```sh
-Coloque código do prompt de comnando se for necessário
-```
+---
 
-<b>HTML:</b>
+## ⚙️ Tecnologias Utilizadas
 
-Não há instalação!
-Encontre o index.html na pasta executáveis e execute-o como uma página WEB (através de algum browser).
+* Frontend: HTML, CSS e JavaScript
+* Backend: Node.js + Express
+* Banco de Dados: MySQL
+* Ferramentas: Git, GitHub, Postman
 
-## 💻 Configuração para Desenvolvimento
+---
 
-Descreva como instalar todas as dependências para desenvolvimento e como rodar um test-suite automatizado de algum tipo. Se necessário, faça isso para múltiplas plataformas.
+## 🏗️ Estrutura do Projeto
 
-Para abrir este projeto você necessita das seguintes ferramentas:
+/backend
+/documentos
+/frontend
+/imagens
+/MySql-BD
+/src
+.gitignore
+README.md
 
--<a href="https://godotengine.org/download">GODOT</a>
+---
 
-```sh
-make install
-npm test
-Coloque código do prompt de comnando se for necessário
-```
+## 🔐 Funcionalidades
 
-## 📋 Licença/License
-Utilize o link <https://chooser-beta.creativecommons.org/> para fazer uma licença CC BY 4.0.
+### 👤 Fornecedor
 
-## 🎓 Referências
+* Cadastro e login
+* Gerenciamento de anúncios
+* Upload de imagens
 
-Aqui estão as referências usadas no projeto.
+### 🛒 Comprador
 
-1. <https://github.com/iuricode/readme-template>
-2. <https://github.com/gabrieldejesus/readme-model>
-3. <https://chooser-beta.creativecommons.org/>
-4. <https://freesound.org/>
-5. <https://www.toptal.com/developers/gitignore>
-6. Músicas por: <a href="https://freesound.org/people/DaveJf/sounds/616544/"> DaveJf </a> e <a href="https://freesound.org/people/DRFX/sounds/338986/"> DRFX </a> ambas com Licença CC 0.
+* Busca por produtos e fornecedores
+* Aplicação de filtros
+* Visualização de anúncios
+* Sistema de favoritos
+* Avaliações
+* Solicitação de orçamentos
+* Realização de pedidos
+
+### 🛠️ Administrador
+
+* Aprovação de anúncios
+* Moderação de usuários
+* Controle de avaliações
+* Relatórios
+
+---
+
+## 🗄️ Banco de Dados
+
+👉 [Acessar documentação](./MySql-BD/README.md)
+
+---
+
+## 🚀 Execução do Projeto
+
+O projeto encontra-se em desenvolvimento.
+
+As instruções completas de execução serão disponibilizadas após a finalização das etapas de implementação.
+
+---
+
+## 📁 Entregas do Projeto
+
+👉 [Acessar documentos](./documentos)
+
+---
+
+## 📊 Metodologia
+
+O projeto segue uma abordagem incremental:
+
+1. Levantamento de requisitos
+2. Modelagem do sistema
+3. Desenvolvimento do backend
+4. Integração com frontend
+5. Testes e validações
+6. Documentação e entrega final
+
+---
+
+## 📅 Cronograma
+
+* Semanas 1-2: Planejamento
+* Semanas 3-4: Modelagem
+* Semanas 5-6: Backend
+* Semanas 7-8: Módulo Fornecedor
+* Semanas 9-10: Módulo Comprador
+* Semanas 11-12: Testes
+* Semana 13: Entrega final
+
+---
+
+## 📈 Diferenciais do Projeto
+
+* Sistema de solicitação de orçamentos
+* Funcionalidade de pedidos
+* Interface simples e intuitiva
+* Estrutura organizada
+
+---
+
+## 📌 Requisitos Não Funcionais
+
+* Responsividade
+* Segurança de dados
+* Controle de acesso
+* Boa usabilidade
+
+---
+
+## 📢 Status do Projeto
+
+🚧 Em desenvolvimento
+
+---
+
+## 📬 Observação
+
+Projeto acadêmico desenvolvido para fins educacionais na FECAP.
