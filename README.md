@@ -107,7 +107,7 @@ README.md
 
 ## 🗄️ Banco de Dados
 
-👉 [Acessar documentação](./MySql-BD/README.md)
+👉 [Acessar documentação](https://app.brmodeloweb.com/#!/publicview/69ca55c2b2c06f82f93ab5b1)
 
 ---
 
