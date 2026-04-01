@@ -1,17 +1,5 @@
--- ========================================
--- LIMPAR BANCO ANTIGO (OPCIONAL)
--- ========================================
-DROP DATABASE IF EXISTS mrnut;
-
--- ========================================
--- CRIAR BANCO NOVO
--- ========================================
-CREATE DATABASE IF NOT EXISTS reestocka;
+CREATE DATABASE reestocka;
 USE reestocka;
-
--- ========================================
--- TABELAS
--- ========================================
 
 CREATE TABLE cliente (
     id_cliente INT AUTO_INCREMENT PRIMARY KEY,
@@ -66,20 +54,15 @@ CREATE TABLE pedido (
     status VARCHAR(50),
     frete DECIMAL(10,2),
     FOREIGN KEY (id_resposta) REFERENCES resposta_orcamento(id_resposta)
-);
+); 
 
 CREATE TABLE favoritos (
     id_favorito INT AUTO_INCREMENT PRIMARY KEY,
     id_cliente INT,
     id_anuncio INT,
-    UNIQUE (id_cliente, id_anuncio),
     FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente),
     FOREIGN KEY (id_anuncio) REFERENCES anuncio(id_anuncio)
 );
-
--- ========================================
--- DADOS DE TESTE (ORDEM CORRETA)
--- ========================================
 
 INSERT INTO cliente (nome, email, senha)
 VALUES ('Arthur', 'arthur@email.com', '123');
@@ -90,20 +73,15 @@ VALUES ('Fornecedor 1', 'fornecedor@email.com', '123');
 INSERT INTO produto (nome, descricao, preco)
 VALUES ('Produto Teste', 'Descrição teste', 100.00);
 
--- PRECISA EXISTIR ANTES
-INSERT INTO anuncio (id_fornecedor, id_produto)
-VALUES (1, 1);
+ALTER TABLE favoritos
+ADD CONSTRAINT unique_favorito UNIQUE (id_cliente, id_anuncio);
 
--- AGORA FAVORITO FUNCIONA
 INSERT INTO favoritos (id_cliente, id_anuncio)
 VALUES (1, 1);
 
--- ========================================
--- TESTES
--- ========================================
+INSERT INTO anuncio (id_fornecedor, id_produto)
+VALUES (1, 1);
 
-SELECT * FROM cliente;
-SELECT * FROM fornecedor;
-SELECT * FROM produto;
-SELECT * FROM anuncio;
 SELECT * FROM favoritos;
+
+SELECT * FROM anuncio;
