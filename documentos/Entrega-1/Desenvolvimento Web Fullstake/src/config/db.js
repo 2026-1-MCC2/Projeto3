@@ -3,8 +3,8 @@ const mysql = require('mysql2');
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '', // 🔥 coloca sua senha aqui
-  database: 'reestocka'
+  password: '', // sua senha aqui
+  database: 'marketplace_b2b'
 });
 
 connection.connect((err) => {
