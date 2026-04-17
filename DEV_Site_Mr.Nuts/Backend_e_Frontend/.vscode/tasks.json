@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Connect to GitHub Repo",
+			"type": "shell",
+			"command": "git init && git remote add origin https://github.com/2026-1-MCC2/Projeto3"
+		},
+		{
+			"label": "Connect to GitHub Repo",
+			"type": "shell",
+			"command": "git init; git remote add origin https://github.com/2026-1-MCC2/Projeto3"
+		}
+	]
+}
