@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Produtos</title>
+</head>
+<body>
+
+  <h1>Lista de Produtos</h1>
+  <ul id="lista"></ul>
+
+  <script>
+    fetch('http://localhost:3000/anuncios')
+      .then(res => res.json())
+      .then(data => {
+        const lista = document.getElementById('lista');
+
+        data.forEach(produto => {
+          const li = document.createElement('li');
+          li.innerText = produto.nome + " - " + produto.marca;
+          lista.appendChild(li);
+        });
+      })
+      .catch(err => console.log(err));
+  </script>
+
+</body>
+</html>
