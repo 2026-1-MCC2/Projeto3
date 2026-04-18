@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const imagem = req.file ? req.file.path : null;
 
 // LISTAR TODOS OS PRODUTOS
 exports.listar = (req, res) => {
@@ -32,7 +33,8 @@ exports.criar = (req, res) => {
     prazo_entrega,
     status,
     fornecedor_id,
-    categoria_id
+    categoria_id,
+    imagem
   } = req.body;
 
   if (!nome || !descricao || !fornecedor_id || !categoria_id) {
@@ -47,7 +49,7 @@ exports.criar = (req, res) => {
 
   db.query(
     sql,
-    [nome, descricao, marca, moq, unidade, regiao, prazo_entrega, status || 'pending', fornecedor_id, categoria_id],
+    [nome, descricao, marca, moq, unidade, regiao, prazo_entrega, status || 'pending', fornecedor_id, categoria_id,imagem],
     (err, result) => {
       if (err) return res.status(500).json({ erro: err });
 

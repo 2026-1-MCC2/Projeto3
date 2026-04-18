@@ -6,6 +6,7 @@ const app = express();
 
 app.use(cors()); // 👈 FALTAVA ISSO
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 const anunciosRoutes = require('./routes/anuncios');
 app.use('/anuncios', anunciosRoutes);

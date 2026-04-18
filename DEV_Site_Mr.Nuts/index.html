@@ -1,17 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+  <meta charset="UTF-8">
   <title>Produtos</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
   <h1>Lista de Produtos</h1>
-  <ul id="lista"></ul>
+  <div class="header">Marketplace B2B</div>
+  <div id="lista" class="grid"></div>
+  <script src="js/script.js"></script>
 
   <script>
     fetch('http://localhost:3000/anuncios')
       .then(res => res.json())
       .then(data => {
+        console.log("DADOS:", data);
         const lista = document.getElementById('lista');
 
         data.forEach(produto => {
