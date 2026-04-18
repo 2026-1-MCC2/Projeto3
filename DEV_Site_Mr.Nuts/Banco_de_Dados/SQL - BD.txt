@@ -280,4 +280,14 @@ VALUES ('Fornecedor 1', 'fornecedor@email.com', '123', 'supplier');
 INSERT INTO fornecedores (usuario_id, nome_empresa, cnpj)
 VALUES (1, 'Empresa Teste', '12345678000199');
 
+INSERT INTO produtos 
+(nome, descricao, marca, moq, unidade, regiao, prazo_entrega, status, fornecedor_id, categoria_id,imagem)
+VALUES 
+('Produto Teste', 'Teste', 'Marca X', 10, 'Caixa', 'SP', '5 dias', 'pending', 1, 1);
+
+SELECT * FROM produtos;
+
+
 SELECT * FROM fornecedores;
+
+ALTER TABLE produtos ADD imagem VARCHAR(255);
