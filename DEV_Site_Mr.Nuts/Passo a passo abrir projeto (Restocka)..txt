@@ -1,0 +1,26 @@
+1) Rodar banco de dados:
+Iniciar XAMPP, abrir a pasta DEV-site, Banco de dado e abrir doc.text banco de dados, copiar e colar no MySQL e rodar.  
+
+2)Abrir o projeto no VScode:
+Abrir a pasta DEV-site no vs code, entrar em src, server.js. 
+
+3) Baixar extensões e aplicar comandos:
+Extensão VScode:
+ Live server
+
+Comandos:
+npm install cors
+npm instal dotenv
+npm install mysql2
+npm install multer
+
+*Certificar que o caminho no terminal esteja DEV-site -> Backend_e_Frontend*
+
+4)Conectar com o banco de dados:
+Comando: node scr/server.js
+
+*Certificar que o caminho no terminal esteja DEV-site -> Backend_e_Frontend*
+
+5) Abrir HTML
+Botão direito cima do arquivo INDEX -> Abrir com o live server.
+
