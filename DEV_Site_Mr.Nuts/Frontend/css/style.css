@@ -1,0 +1,128 @@
+*{
+  box-sizing:border-box;
+  font-family:'Segoe UI',Inter,Arial,sans-serif
+}
+
+body{
+  margin:0;
+  background:#f3f5f8;
+  color:#1f2d3d
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 40px;
+  background:#fff;
+  box-shadow:0 4px 14px rgba(0,0,0,.08)
+}
+
+.logo{height:42px}
+
+.nav-btn{
+  background:none;
+  border:none;
+  margin-left:20px;
+  font-weight:600;
+  cursor:pointer
+}
+
+.btn-outline{
+  border:2px solid #ff7a00;
+  padding:8px 20px;
+  border-radius:10px;
+  background:transparent;
+  color:#ff7a00;
+  font-weight:600;
+  margin-left:20px
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 80px 60px;
+
+  background-image: url("../images/Logo_Restocka_site.png");
+  background-size: cover;
+  background-size: 100%;
+  background-position: 70% 28%; /* <<< DESCE E COLOCA MAIS PRO LADO DIREITO A IMAGEM */
+  background-repeat: no-repeat;
+
+  color: #fff;
+}
+
+.hero-img{width:100%;max-width:420px}
+
+.hero-text h1{
+  font-size:42px;
+  margin-bottom:14px
+}
+
+.hero-text p{
+  font-size:18px;
+  opacity:.9
+}
+
+.hero-actions{
+  margin-top:26px
+}
+
+.btn-primary{
+  background:#fff;
+  color:#ff6a00;
+  padding:14px 28px;
+  border:none;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer
+}
+
+.btn-secondary{
+  background:transparent;
+  border:2px solid #fff;
+  color:#fff;
+  padding:14px 28px;
+  border-radius:12px;
+  margin-left:14px
+}
+
+.features{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+  padding:70px
+}
+
+.card{
+  background:#fff;
+  padding:30px;
+  border-radius:16px;
+  box-shadow:0 10px 32px rgba(0,0,0,.08)
+}
+
+.card h3{color:#ff6a00}
+
+.banner{
+  background:#fff;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  padding:70px;
+  gap:40px
+}
+
+.banner img{
+  width:100%;
+  border-radius:16px
+}
+
+.banner-text h2{
+  font-size:34px
+}
+
+footer{
+  text-align:center;
+  padding:30px;
+  font-size:14px;
+  opacity:.6
+}
