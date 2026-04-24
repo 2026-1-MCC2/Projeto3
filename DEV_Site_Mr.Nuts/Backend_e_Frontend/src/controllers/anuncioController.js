@@ -1,5 +1,7 @@
 const db = require('../config/db');
-const imagem = req.file ? req.file.path : null;
+exports.criarAnuncio = async (req, res) => {
+  const imagem = req.file ? req.file.path : null;
+}
 
 // LISTAR TODOS OS PRODUTOS
 exports.listar = (req, res) => {

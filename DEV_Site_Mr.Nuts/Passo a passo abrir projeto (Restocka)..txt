@@ -17,7 +17,7 @@ npm install multer
 *Certificar que o caminho no terminal esteja DEV-site -> Backend_e_Frontend*
 
 4)Conectar com o banco de dados:
-Comando: node scr/server.js
+Comando: node src/server.js
 
 *Certificar que o caminho no terminal esteja DEV-site -> Backend_e_Frontend*
 
