@@ -1,0 +1,114 @@
+.hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 80px 60px;
+    min-height: 520px;
+    align-items: center;
+  
+    background-image:
+      linear-gradient(
+        rgba(255, 106, 0, .70),
+        rgba(255, 122, 0, .70)
+      ),
+      url("../images/Logo_Restocka_site.png");
+  
+    background-size: cover;
+    background-position: 70% 28%;
+    background-repeat: no-repeat;
+  
+    color: #fff;
+  }
+  
+  .hero-text {
+    max-width: 570px;
+  }
+  
+  .hero-text h1 {
+    font-size: 42px;
+    margin-bottom: 14px;
+    line-height: 1.15;
+  }
+  
+  .hero-text p {
+    font-size: 18px;
+    opacity: .9;
+    line-height: 1.5;
+  }
+  
+  .hero-actions {
+    margin-top: 26px;
+  }
+  
+  .features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding: 70px;
+  }
+  
+  .card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, .08);
+    transition: .2s;
+  }
+  
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, .12);
+  }
+  
+  .card h3 {
+    color: #ff6a00;
+    margin-top: 0;
+  }
+  
+  .card p {
+    color: #5d6b7a;
+    line-height: 1.5;
+  }
+  
+  .banner {
+    background: #fff;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 70px;
+    gap: 40px;
+  }
+  
+  .banner img {
+    width: 100%;
+    border-radius: 16px;
+  }
+  
+  .banner-text h2 {
+    font-size: 34px;
+  }
+  
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+      padding: 70px 30px;
+      text-align: center;
+      background-position: center;
+    }
+  
+    .hero-text {
+      margin: 0 auto;
+    }
+  
+    .hero-text h1 {
+      font-size: 34px;
+    }
+  
+    .features {
+      grid-template-columns: 1fr;
+      padding: 40px 24px;
+    }
+  
+    .banner {
+      grid-template-columns: 1fr;
+      padding: 40px 24px;
+    }
+  }

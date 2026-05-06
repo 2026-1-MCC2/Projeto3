@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastrar Fornecedor | Restocka</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/fornecedor.css">
+</head>
+<body>
+
+  <!-- TOPO -->
+  <header class="topbar">
+    <div class="logo">
+      <a href="index.html">Restocka</a>
+    </div>
+
+    <nav>
+      <a href="index.html" class="nav-btn">Início</a>
+      <a href="marketplace.html" class="nav-btn">Marketplace</a>
+      <a href="login.html" class="btn-outline">Entrar</a>
+    </nav>
+  </header>
+
+  <!-- CADASTRO FORNECEDOR -->
+  <main class="fornecedor-container">
+    <section class="fornecedor-box">
+      <h1>Cadastrar fornecedor</h1>
+      <p>Preencha os dados abaixo para anunciar seus produtos.</p>
+
+      <form>
+        <div class="form-group">
+          <label for="empresa">Nome da empresa</label>
+          <input type="text" id="empresa" name="empresa" placeholder="Digite o nome da empresa" required>
+        </div>
+
+        <div class="form-group">
+          <label for="cnpj">CNPJ</label>
+          <input type="text" id="cnpj" name="cnpj" placeholder="Digite o CNPJ" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">E-mail comercial</label>
+          <input type="email" id="email" name="email" placeholder="Digite o e-mail comercial" required>
+        </div>
+
+        <div class="form-group">
+          <label for="telefone">Telefone</label>
+          <input type="tel" id="telefone" name="telefone" placeholder="Digite o telefone" required>
+        </div>
+
+        <button type="submit" class="btn-primary">Cadastrar fornecedor</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Restocka • Todos os direitos reservados</p>
+  </footer>
+
+</body>
+</html>

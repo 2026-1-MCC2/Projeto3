@@ -1,0 +1,61 @@
+.login-container {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 24px;
+  
+    background-image:
+      linear-gradient(
+        rgba(243, 245, 248, .92),
+        rgba(243, 245, 248, .92)
+      ),
+      url("../images/Logo_Restocka_site.png");
+  
+    background-size: 650px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  
+  .login-box {
+    width: 100%;
+    max-width: 430px;
+    background: #fff;
+    padding: 34px;
+    border-radius: 18px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .10);
+  }
+  
+  .login-box h1 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #ff6a00;
+    font-size: 32px;
+  }
+  
+  .login-box p {
+    color: #5d6b7a;
+    margin-bottom: 26px;
+  }
+  
+  .login-box .btn-primary {
+    width: 100%;
+    background: #ff6a00;
+    color: #fff;
+    margin-top: 8px;
+  }
+  
+  .login-box .btn-primary:hover {
+    background: #e85f00;
+  }
+  
+  .login-footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 14px;
+  }
+  
+  .login-footer a {
+    color: #ff6a00;
+    font-weight: 700;
+  }

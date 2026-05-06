@@ -1,0 +1,168 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Inter, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f3f5f8;
+  color: #1f2d3d;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* TOPO */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 40px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ff6a00;
+}
+
+.logo img {
+  height: 42px;
+}
+
+/* NAVEGAÇÃO */
+nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  color: #1f2d3d;
+  font-size: 15px;
+  transition: .2s;
+}
+
+.nav-btn:hover {
+  color: #ff6a00;
+}
+
+/* BOTÕES */
+.btn-outline {
+  border: 2px solid #ff7a00;
+  padding: 8px 20px;
+  border-radius: 10px;
+  background: transparent;
+  color: #ff7a00;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn-outline:hover {
+  background: #ff7a00;
+  color: #fff;
+}
+
+.btn-primary {
+  background: #fff;
+  color: #ff6a00;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-block;
+  transition: .2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .15);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 12px;
+  margin-left: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-block;
+  transition: .2s;
+}
+
+.btn-secondary:hover {
+  background: #fff;
+  color: #ff6a00;
+}
+
+/* FORMULÁRIOS */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 13px 14px;
+  border: 1px solid #d8dde6;
+  border-radius: 10px;
+  outline: none;
+  font-size: 15px;
+  background: #fff;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: #ff7a00;
+  box-shadow: 0 0 0 3px rgba(255, 122, 0, .15);
+}
+
+/* RODAPÉ */
+footer {
+  text-align: center;
+  padding: 30px;
+  font-size: 14px;
+  opacity: .6;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+  .topbar {
+    padding: 16px 24px;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-secondary {
+    margin-left: 0;
+    margin-top: 12px;
+  }
+}

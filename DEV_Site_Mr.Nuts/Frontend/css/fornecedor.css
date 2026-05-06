@@ -1,0 +1,50 @@
+.fornecedor-container {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 24px;
+  
+    background-image:
+      linear-gradient(
+        rgba(243, 245, 248, .92),
+        rgba(243, 245, 248, .92)
+      ),
+      url("../images/Logo_Restocka_site.png");
+  
+    background-size: 650px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  
+  .fornecedor-box {
+    width: 100%;
+    max-width: 620px;
+    background: #fff;
+    padding: 36px;
+    border-radius: 18px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .10);
+  }
+  
+  .fornecedor-box h1 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #ff6a00;
+    font-size: 32px;
+  }
+  
+  .fornecedor-box p {
+    color: #5d6b7a;
+    margin-bottom: 26px;
+  }
+  
+  .fornecedor-box .btn-primary {
+    background: #ff6a00;
+    color: #fff;
+    width: 100%;
+    margin-top: 8px;
+  }
+  
+  .fornecedor-box .btn-primary:hover {
+    background: #e85f00;
+  }
