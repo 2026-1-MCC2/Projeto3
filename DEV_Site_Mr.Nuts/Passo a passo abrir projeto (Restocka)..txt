@@ -9,10 +9,12 @@ Extensão VScode:
  Live server
 
 Comandos:
-npm install cors
-npm instal dotenv
-npm install mysql2
-npm install multer
+npm.cmd install cors
+npm.cmd instal dotenv
+npm.cmd install multer
+npm.cmd install express
+npm.cmd install mysql2
+
 
 *Certificar que o caminho no terminal esteja DEV-site -> Backend_e_Frontend*
 

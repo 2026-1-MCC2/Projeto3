@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel do Fornecedor</title>
+  <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">Área do Fornecedor</div>
+</header>
+
+<main style="padding:40px;">
+  <h1>Fornecedor</h1>
+  <p>Gerencie seus produtos.</p>
+
+  <div class="card">
+    <h3>Cadastrar Produto</h3>
+    <p>Adicione novos itens ao marketplace.</p>
+  </div>
+
+  <div class="card">
+    <h3>Meus Anúncios</h3>
+    <p>Veja seus produtos cadastrados.</p>
+  </div>
+</main>
+
+
+<script>
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    
+    if (usuario.role !== 'supplier') {
+      alert('Você precisa fazer login');
+      window.location.href = 'login.html';
+    }
+    </script>
+    
+
+</body>
+</html>

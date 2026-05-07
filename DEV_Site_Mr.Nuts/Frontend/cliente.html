@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Área do Cliente</title>
+  <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">Restocka Cliente</div>
+</header>
+
+<main style="padding:40px;">
+  <h1>Bem-vindo</h1>
+  <p>Explore produtos e fornecedores.</p>
+
+  <div class="card">
+    <h3>Marketplace</h3>
+    <p>Veja produtos disponíveis.</p>
+  </div>
+
+  <div class="card">
+    <h3>Pedidos</h3>
+    <p>Acompanhe seus pedidos.</p>
+  </div>
+</main>
+
+
+<script>
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    
+    if (usuario.role !== 'buyer') {
+      alert('Você precisa fazer login');
+      window.location.href = 'login.html';
+    }
+    </script>
+    
+
+</body>
+</html>

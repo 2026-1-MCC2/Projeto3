@@ -29,7 +29,7 @@
       <h1>Entrar</h1>
       <p>Acesse sua conta para continuar.</p>
 
-      <form>
+      <form id="loginForm">
         <div class="form-group">
           <label for="email">E-mail</label>
           <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
@@ -45,10 +45,61 @@
 
       <p class="login-footer">
         Ainda não tem conta?
-        <a href="fornecedor.html">Cadastre-se como fornecedor</a>
+        <a href="fornecedor.html">Cadastre-se</a>
       </p>
+     
+    <p class="login-footer">
+      admin@demo.com - 123456 <br>
+      cliente@demo.com - 123456 <br>
+      fornecedor@demo.com - 123456 <br>
+    </p>
+
     </section>
   </main>
-
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+    
+      const email = document.getElementById('email').value;
+      const senha = document.getElementById('senha').value;
+    
+      try {
+        const response = await fetch('http://localhost:3000/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, senha })
+        });
+    
+        const data = await response.json();
+    
+        if (!response.ok) {
+          alert(data.erro || 'Erro no login');
+          return;
+        }
+    
+        // LOGIN OK
+        alert('Login realizado com sucesso!');
+    
+        // SALVA O USUÁRIO AQUI
+        localStorage.setItem('usuario', JSON.stringify(data.usuario));
+    
+        // REDIRECIONAMENTO POR TIPO
+        console.log(data.usuario);
+        if (data.usuario.role === 'admin') {
+          window.location.href = 'admin.html';
+        } else if (data.usuario.role === 'supplier') {
+          window.location.href = 'fornecedor.html';
+        } else {
+          window.location.href = 'cliente.html';
+        }
+    
+      } catch (error) {
+        console.error(error);
+        alert('Erro ao conectar com o servidor');
+      }
+    });
+    </script>
 </body>
 </html>

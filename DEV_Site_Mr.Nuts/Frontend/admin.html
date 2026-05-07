@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Admin</title>
+  <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">Restocka Admin</div>
+</header>
+
+<main style="padding:40px;">
+  <h1>Painel Administrativo</h1>
+  <p>Bem-vindo, administrador.</p>
+
+  <div class="card">
+    <h3>Gerenciar Produtos</h3>
+    <p>Aprovar ou reprovar anúncios.</p>
+  </div>
+
+  <div class="card">
+    <h3>Usuários</h3>
+    <p>Visualizar e gerenciar contas.</p>
+  </div>
+</main>
+ 
+
+<script>
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    
+    // verifica se está logado
+    if (!usuario) {
+      alert('Você precisa fazer login');
+      window.location.href = 'login.html';
+    }
+    
+    // verifica se é admin
+    if (usuario.role !== 'admin') {
+      alert('Acesso negado');
+      window.location.href = 'login.html';
+    }
+    </script>
+    
+
+</body>
+</html>
