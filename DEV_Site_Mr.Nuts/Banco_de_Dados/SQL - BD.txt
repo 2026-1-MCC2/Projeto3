@@ -301,3 +301,16 @@ VALUES
 SELECT * FROM produtos;
 
 SELECT * FROM fornecedores;
+
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE usuarios
+SET senha_hash = '$2b$10$/jjZ66UW1h2Opa.ZyZSj5eolkiWnXWvuAPbJ3vmtyitflYF/4mW8a';
+DESCRIBE produtos;
+SELECT * FROM categorias;
+SELECT * FROM usuarios WHERE id = 1;
+ALTER TABLE produtos ADD preco DECIMAL(10,2);
+
+ALTER TABLE produtos 
+ADD preco DECIMAL(10,2);
+SELECT * FROM produtos
