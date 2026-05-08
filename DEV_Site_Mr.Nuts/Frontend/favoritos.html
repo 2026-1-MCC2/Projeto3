@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Favoritos | Restocka</title>
+
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/marketplace.css">
+</head>
+<body>
+
+<script>
+const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+if (!usuario || usuario.role !== 'buyer') {
+  window.location.href = 'login.html';
+}
+</script>
+
+<header class="topbar">
+  <div class="logo">
+    <a href="cliente.html">Restocka</a>
+  </div>
+
+  <nav>
+    <a href="cliente.html" class="nav-btn">Marketplace</a>
+    <a href="favoritos.html" class="nav-btn">Favoritos</a>
+
+    <button onclick="logout()" class="btn-outline">Sair</button>
+  </nav>
+</header>
+
+<main class="marketplace-container">
+
+  <section class="marketplace-header">
+    <h1>Meus Favoritos</h1>
+    <p>Produtos que você salvou</p>
+  </section>
+
+  <section id="favoritos" class="products-grid">
+  </section>
+
+</main>
+
+<script>
+
+function logout() {
+  localStorage.removeItem('usuario');
+  window.location.href = 'login.html';
+}
+
+function carregarFavoritos() {
+  const container = document.getElementById('favoritos');
+  const favoritos = JSON.parse(localStorage.getItem('favoritos')) || [];
+
+  container.innerHTML = '';
+
+  if (favoritos.length === 0) {
+    container.innerHTML = '<p>Nenhum produto nos favoritos.</p>';
+    return;
+  }
+
+  favoritos.forEach(produto => {
+    container.innerHTML += `
+      <article class="product-card">
+        <div class="product-image"></div>
+
+        <h3>${produto.nome}</h3>
+
+        <p>Fornecedor: ${produto.fornecedor_nome || 'Não informado'}</p>
+
+        <strong>${produto.preco ? 'R$ ' + produto.preco : ''}</strong>
+
+        <button onclick="removerFavorito(${produto.id})">
+          Remover
+        </button>
+      </article>
+    `;
+  });
+}
+
+function removerFavorito(id) {
+  let favoritos = JSON.parse(localStorage.getItem('favoritos')) || [];
+
+  favoritos = favoritos.filter(p => p.id !== id);
+
+  localStorage.setItem('favoritos', JSON.stringify(favoritos));
+
+  carregarFavoritos();
+}
+
+carregarFavoritos();
+
+</script>
+
+</body>
+</html>

@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8">
-    <title>Marketplace | Cliente</title>
-  
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/cliente.css">
-  </head>
-  
+<head>
+  <meta charset="UTF-8">
+  <title>Marketplace | Restocka</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/marketplace.css">
+</head>
+
 <body>
 
 <!-- PROTEÇÃO -->
@@ -20,64 +21,120 @@ if (!usuario || usuario.role !== 'buyer') {
 }
 </script>
 
+<!-- TOPO -->
 <header class="topbar">
   <div class="logo">
-    <strong>Restocka</strong>
+    <a href="cliente.html">Restocka</a>
   </div>
 
-  <nav class="menu">
-    #Marketplace</a>
-    #Pedidos</a>
-    #Favoritos</a>
+  <nav>
+    <a href="cliente.html" class="nav-btn">Marketplace</a>
+    <a href="favoritos.html" class="nav-btn">Favoritos</a>
+
+    <button onclick="irConfig()" class="nav-btn">Configurações</button>
+    <button onclick="logout()" class="btn-outline">Sair</button>
   </nav>
-
-  <div class="user-actions">
-    <button onclick="irConfig()">Configurações</button>
-    <button onclick="logout()">Sair</button>
-  </div>
 </header>
 
-<main>
+<!-- MARKETPLACE -->
+<main class="marketplace-container">
 
-  <h1>Produtos disponíveis</h1>
+  <section class="marketplace-header">
+    <h1>Marketplace</h1>
+    <p>Bem-vindo, <strong id="nomeUsuario"></strong></p>
+  </section>
 
-  <div id="produtos" class="produtos-grid">
-    <!-- produtos vão aparecer aqui -->
-  </div>
+  <section id="produtos" class="products-grid">
+    <!-- produtos carregam aqui -->
+  </section>
 
 </main>
 
+<footer>
+  <p>© 2026 Restocka • Todos os direitos reservados</p>
+</footer>
+
 <script>
 
-// LOGOUT
+// mostrar nome
+document.getElementById('nomeUsuario').innerText = usuario.nome;
+
+
+// logout
 function logout() {
   localStorage.removeItem('usuario');
   window.location.href = 'login.html';
 }
 
-// IR PARA CONFIGURAÇÕES
+
+// ir config
 function irConfig() {
   window.location.href = 'cliente-config.html';
 }
 
-// BUSCAR PRODUTOS DO BACKEND
+
+// adicionar favorito
+function adicionarFavorito(id) {
+  const produto = produtos.find(p => p.id === id);
+
+  if (!produto) return;
+
+  let favoritos = JSON.parse(localStorage.getItem('favoritos')) || [];
+
+  const existe = favoritos.find(p => p.id === id);
+
+  if (existe) {
+    alert('Produto já está nos favoritos');
+    return;
+  }
+
+  favoritos.push(produto);
+  localStorage.setItem('favoritos', JSON.stringify(favoritos));
+
+  alert('Produto adicionado aos favoritos');
+}
+
+
+// botão orçamento
+function solicitar(id) {
+  alert('Solicitar orçamento do produto ID: ' + id);
+}
+
+
+let produtos = []; // GLOBAL
+
+// carregar produtos
 async function carregarProdutos() {
   try {
     const response = await fetch('http://localhost:3000/anuncios');
-    const produtos = await response.json();
-
+    produtos = await response.json(); 
     const container = document.getElementById('produtos');
     container.innerHTML = '';
 
+    if (produtos.length === 0) {
+      container.innerHTML = '<p>Nenhum produto disponível.</p>';
+      return;
+    }
+
     produtos.forEach(produto => {
       container.innerHTML += `
-        <div class="card-produto">
+        <article class="product-card">
+          <div class="product-image"></div>
+
           <h3>${produto.nome}</h3>
-          <p>${produto.descricao}</p>
-          <p><strong>Marca:</strong> ${produto.marca || '-'}</p>
-          <p><strong>MOQ:</strong> ${produto.moq}</p>
-          <button onclick="verProduto(${produto.id})">Ver detalhes</button>
-        </div>
+
+          <p>Fornecedor: ${produto.fornecedor_nome || 'Não informado'}</p>
+
+          <strong>${produto.preco ? 'R$ ' + produto.preco : ''}</strong>
+
+          <button onclick="adicionarFavorito(${produto.id})">
+            Favoritar
+          </button>
+
+          <a href="#" class="btn-primary" onclick="solicitar(${produto.id})">
+            Solicitar orçamento
+          </a>
+        </article>
       `;
     });
 
@@ -86,14 +143,37 @@ async function carregarProdutos() {
   }
 }
 
-// VER DETALHES
-function verProduto(id) {
-  alert('Abrir produto ID: ' + id);
+
+//  FAVORITO
+function adicionarFavorito(id) {
+  const produto = produtos.find(p => p.id === id);
+
+  if (!produto) return;
+
+  let favoritos = JSON.parse(localStorage.getItem('favoritos')) || [];
+
+  const existe = favoritos.find(p => p.id === id);
+
+  if (existe) {
+    alert('Produto já está nos favoritos');
+    return;
+  }
+
+  favoritos.push(produto);
+  localStorage.setItem('favoritos', JSON.stringify(favoritos));
+
+  alert('Produto adicionado aos favoritos');
 }
 
-// CARREGAR AUTOMATICAMENTE
-carregarProdutos();
 
+// botão orçamento
+function solicitar(id) {
+  alert('Solicitar orçamento do produto ID: ' + id);
+}
+
+
+// iniciar
+carregarProdutos();
 </script>
 
 </body>
