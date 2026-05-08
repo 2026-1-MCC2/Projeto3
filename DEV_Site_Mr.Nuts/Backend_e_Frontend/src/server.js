@@ -6,7 +6,6 @@ bcrypt.hash('123456', 10).then(hash => {
 });
 
 
-
 const cors = require('cors');
 const express = require('express');
 require('dotenv').config();
@@ -19,6 +18,7 @@ app.use('/uploads', express.static('uploads'));
 
 // ROTAS
 const anunciosRoutes = require('./routes/anuncios');
+
 app.use('/anuncios', anunciosRoutes);
 
 // ROTA DE LOGIN 

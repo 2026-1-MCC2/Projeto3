@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/fornecedor.css">
 </head>
+
 <body>
 
 <script>
@@ -23,11 +24,6 @@ if (!usuario || usuario.role !== 'supplier') {
     <strong>Área do Fornecedor</strong>
   </div>
 
-  <nav class="menu">
-    <a href="#">Meus Produtos</a>
-    <a href="#">Cadastrar Produto</a>
-  </nav>
-
   <div class="user-actions">
     <button onclick="irConfig()">Configurações</button>
     <button onclick="logout()">Sair</button>
@@ -35,21 +31,35 @@ if (!usuario || usuario.role !== 'supplier') {
 </header>
 
 <main>
+
   <h1>Painel do Fornecedor</h1>
 
-  <div class="card">
+  <!-- FORMULÁRIO -->
+  <section class="card">
     <h3>Cadastrar Produto</h3>
-    <p>Adicione novos produtos ao marketplace.</p>
-  </div>
 
-  <div class="card">
-    <h3>Meus Anúncios</h3>
-    <p>Gerencie seus produtos cadastrados.</p>
-  </div>
+    <input type="text" id="nome" placeholder="Nome do produto">
+    <input type="text" id="descricao" placeholder="Descrição">
+    <input type="text" id="marca" placeholder="Marca">
+    <input type="text" id="preco" placeholder="Preço (ex: 59,90)">
+    <input type="number" id="moq" placeholder="Quantidade mínima">
+
+    <input type="file" id="imagem">
+
+    <button onclick="cadastrarProduto()">Cadastrar</button>
+  </section>
+
+  <!-- LISTA -->
+  <section class="card">
+    <h3>Meus Produtos</h3>
+    <div id="meusProdutos"></div>
+  </section>
+
 </main>
 
 <script>
 
+// CONFIG
 function irConfig() {
   window.location.href = 'fornecedor-config.html';
 }
@@ -58,6 +68,83 @@ function logout() {
   localStorage.removeItem('usuario');
   window.location.href = 'login.html';
 }
+
+
+// ✅ CADASTRAR PRODUTO
+async function cadastrarProduto() {
+  const nome = document.getElementById('nome').value;
+  const descricao = document.getElementById('descricao').value;
+  const marca = document.getElementById('marca').value;
+  const preco = document.getElementById('preco').value.replace(',', '.');
+  const moq = document.getElementById('moq').value;
+  const imagem = document.getElementById('imagem').files[0];
+
+  if (!nome || !descricao) {
+    alert('Preencha nome e descrição');
+    return;
+  }
+
+  if (preco && isNaN(preco)) {
+    alert('Preço inválido');
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append('nome', nome);
+  formData.append('descricao', descricao);
+  formData.append('marca', marca);
+  formData.append('preco', preco);
+  formData.append('moq', moq);
+
+  // ✅ ESSA LINHA É A MAIS IMPORTANTE
+  formData.append('fornecedor_id', usuario.id);
+
+  if (imagem) {
+    formData.append('imagem', imagem);
+  }
+
+  try {
+    const response = await fetch('http://localhost:3000/anuncios', {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.erro || 'Erro ao cadastrar produto');
+      return;
+    }
+
+    alert('Produto cadastrado com sucesso');
+
+    limparFormulario();
+    carregarMeusProdutos();
+
+  } catch (error) {
+    console.error(error);
+    alert('Erro ao conectar com o servidor');
+  }
+}
+
+
+// ✅ LIMPAR FORM
+function limparFormulario() {
+  document.getElementById('nome').value = '';
+  document.getElementById('descricao').value = '';
+  document.getElementById('marca').value = '';
+  document.getElementById('preco').value = '';
+  document.getElementById('moq').value = '';
+  document.getElementById('imagem').value = '';
+}
+
+
+// CARREGAR PRODUTOS DO FORNECEDOR 
+async function carregarMeusProdutos() { try { const resposta = await fetch(`http://localhost:3000/anuncios/fornecedor/${usuario.id}`); const produtos = await resposta.json(); const container = document.getElementById('meusProdutos'); container.innerHTML = ''; if (produtos.length === 0) { container.innerHTML = '<p>Nenhum produto cadastrado.</p>'; return; } produtos.forEach(produto => { container.innerHTML += ` <div style="border:1px solid #ddd; padding:10px; margin:10px 0; border-radius:8px;"> <h4>${produto.nome}</h4> <p>${produto.descricao}</p> <p><strong>Preço:</strong> R$ ${produto.preco || '-'}</p> ${ produto.imagem ? `<img src="http://localhost:3000/uploads/${produto.imagem}" width="120">` : '' } </div> `; }); } catch (error) { console.error('Erro ao carregar produtos:', error); } }
+
+//  INICIAR
+carregarMeusProdutos();
 
 </script>
 
