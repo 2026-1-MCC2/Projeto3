@@ -1,41 +1,100 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Área do Cliente</title>
-  <link rel="stylesheet" href="css/global.css">
-</head>
+  <head>
+    <meta charset="UTF-8">
+    <title>Marketplace | Cliente</title>
+  
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/cliente.css">
+  </head>
+  
 <body>
 
+<!-- PROTEÇÃO -->
+<script>
+const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+if (!usuario || usuario.role !== 'buyer') {
+  alert('Acesso negado');
+  window.location.href = 'login.html';
+}
+</script>
+
 <header class="topbar">
-  <div class="logo">Restocka Cliente</div>
+  <div class="logo">
+    <strong>Restocka</strong>
+  </div>
+
+  <nav class="menu">
+    #Marketplace</a>
+    #Pedidos</a>
+    #Favoritos</a>
+  </nav>
+
+  <div class="user-actions">
+    <button onclick="irConfig()">Configurações</button>
+    <button onclick="logout()">Sair</button>
+  </div>
 </header>
 
-<main style="padding:40px;">
-  <h1>Bem-vindo</h1>
-  <p>Explore produtos e fornecedores.</p>
+<main>
 
-  <div class="card">
-    <h3>Marketplace</h3>
-    <p>Veja produtos disponíveis.</p>
+  <h1>Produtos disponíveis</h1>
+
+  <div id="produtos" class="produtos-grid">
+    <!-- produtos vão aparecer aqui -->
   </div>
 
-  <div class="card">
-    <h3>Pedidos</h3>
-    <p>Acompanhe seus pedidos.</p>
-  </div>
 </main>
 
-
 <script>
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    
-    if (usuario.role !== 'buyer') {
-      alert('Você precisa fazer login');
-      window.location.href = 'login.html';
-    }
-    </script>
-    
+
+// LOGOUT
+function logout() {
+  localStorage.removeItem('usuario');
+  window.location.href = 'login.html';
+}
+
+// IR PARA CONFIGURAÇÕES
+function irConfig() {
+  window.location.href = 'cliente-config.html';
+}
+
+// BUSCAR PRODUTOS DO BACKEND
+async function carregarProdutos() {
+  try {
+    const response = await fetch('http://localhost:3000/anuncios');
+    const produtos = await response.json();
+
+    const container = document.getElementById('produtos');
+    container.innerHTML = '';
+
+    produtos.forEach(produto => {
+      container.innerHTML += `
+        <div class="card-produto">
+          <h3>${produto.nome}</h3>
+          <p>${produto.descricao}</p>
+          <p><strong>Marca:</strong> ${produto.marca || '-'}</p>
+          <p><strong>MOQ:</strong> ${produto.moq}</p>
+          <button onclick="verProduto(${produto.id})">Ver detalhes</button>
+        </div>
+      `;
+    });
+
+  } catch (error) {
+    console.error('Erro ao carregar produtos:', error);
+  }
+}
+
+// VER DETALHES
+function verProduto(id) {
+  alert('Abrir produto ID: ' + id);
+}
+
+// CARREGAR AUTOMATICAMENTE
+carregarProdutos();
+
+</script>
 
 </body>
 </html>

@@ -2,63 +2,64 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Cadastrar Fornecedor | Restocka</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Fornecedor</title>
 
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/fornecedor.css">
 </head>
 <body>
 
-  <!-- TOPO -->
-  <header class="topbar">
-    <div class="logo">
-      <a href="index.html">Restocka</a>
-    </div>
+<script>
+const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-    <nav>
-      <a href="index.html" class="nav-btn">Início</a>
-      <a href="marketplace.html" class="nav-btn">Marketplace</a>
-      <a href="login.html" class="btn-outline">Entrar</a>
-    </nav>
-  </header>
+if (!usuario || usuario.role !== 'supplier') {
+  alert('Acesso negado');
+  window.location.href = 'login.html';
+}
+</script>
 
-  <!-- CADASTRO FORNECEDOR -->
-  <main class="fornecedor-container">
-    <section class="fornecedor-box">
-      <h1>Cadastrar fornecedor</h1>
-      <p>Preencha os dados abaixo para anunciar seus produtos.</p>
+<header class="topbar">
+  <div class="logo">
+    <strong>Área do Fornecedor</strong>
+  </div>
 
-      <form>
-        <div class="form-group">
-          <label for="empresa">Nome da empresa</label>
-          <input type="text" id="empresa" name="empresa" placeholder="Digite o nome da empresa" required>
-        </div>
+  <nav class="menu">
+    <a href="#">Meus Produtos</a>
+    <a href="#">Cadastrar Produto</a>
+  </nav>
 
-        <div class="form-group">
-          <label for="cnpj">CNPJ</label>
-          <input type="text" id="cnpj" name="cnpj" placeholder="Digite o CNPJ" required>
-        </div>
+  <div class="user-actions">
+    <button onclick="irConfig()">Configurações</button>
+    <button onclick="logout()">Sair</button>
+  </div>
+</header>
 
-        <div class="form-group">
-          <label for="email">E-mail comercial</label>
-          <input type="email" id="email" name="email" placeholder="Digite o e-mail comercial" required>
-        </div>
+<main>
+  <h1>Painel do Fornecedor</h1>
 
-        <div class="form-group">
-          <label for="telefone">Telefone</label>
-          <input type="tel" id="telefone" name="telefone" placeholder="Digite o telefone" required>
-        </div>
+  <div class="card">
+    <h3>Cadastrar Produto</h3>
+    <p>Adicione novos produtos ao marketplace.</p>
+  </div>
 
-        <button type="submit" class="btn-primary">Cadastrar fornecedor</button>
-      </form>
-    </section>
-  </main>
+  <div class="card">
+    <h3>Meus Anúncios</h3>
+    <p>Gerencie seus produtos cadastrados.</p>
+  </div>
+</main>
 
-  <!-- FOOTER -->
-  <footer>
-    <p>© 2026 Restocka • Todos os direitos reservados</p>
-  </footer>
+<script>
+
+function irConfig() {
+  window.location.href = 'fornecedor-config.html';
+}
+
+function logout() {
+  localStorage.removeItem('usuario');
+  window.location.href = 'login.html';
+}
+
+</script>
 
 </body>
 </html>

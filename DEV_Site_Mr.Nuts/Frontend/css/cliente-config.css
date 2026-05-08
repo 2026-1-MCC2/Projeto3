@@ -1,0 +1,49 @@
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+  }
+  
+  .menu a {
+    text-decoration: none;
+  }
+  
+  main {
+    padding: 40px;
+    max-width: 700px;
+    margin: auto;
+  }
+  
+  .card {
+    background: #fff;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  
+  button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: #ff6a00;
+    color: white;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background: #e65c00;
+  }
+  
+  .logout {
+    background: #333;
+  }

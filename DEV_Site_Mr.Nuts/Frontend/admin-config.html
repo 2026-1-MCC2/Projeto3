@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Configuração de Conta</title>
+
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/admin-config.css">
+</head>
+<body>
+
+<!-- PROTEÇÃO -->
+<script>
+const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+if (!usuario || usuario.role !== 'admin') {
+  alert('Acesso negado');
+  window.location.href = 'login.html';
+}
+</script>
+
+<header class="topbar">
+  <div class="logo">
+    <strong>Configuração de Conta</strong>
+  </div>
+
+  <nav class="menu">
+    <a href="admin.html">Voltar ao painel</a>
+  </nav>
+</header>
+
+<main>
+
+  <h1>Dados da Conta</h1>
+
+  <!-- DADOS -->
+  <section class="card">
+    <h3>Informações básicas</h3>
+
+    <label>Nome</label>
+    <input type="text" id="nome">
+
+    <label>Email</label>
+    <input type="email" id="email">
+
+  </section>
+
+  <!-- ALTERAR SENHA -->
+  <section class="card">
+    <h3>Alterar senha</h3>
+
+    <label>Nova senha</label>
+    <input type="password" id="novaSenha">
+
+    <label>Confirmar nova senha</label>
+    <input type="password" id="confirmarSenha">
+
+    <button onclick="alterarConta()">Salvar alterações</button>
+  </section>
+
+  <!-- LOGOUT -->
+  <section class="card">
+    <h3>Sessão</h3>
+    <button onclick="logout()">Sair da conta</button>
+  </section>
+
+</main>
+
+<script>
+
+// preencher dados automaticamente
+document.getElementById('nome').value = usuario.nome;
+document.getElementById('email').value = usuario.email;
+
+
+//  ALTERAR CONTA (INTEGRADO COM BACKEND)
+async function alterarConta() {
+  const nome = document.getElementById('nome').value;
+  const email = document.getElementById('email').value;
+  const senha = document.getElementById('novaSenha').value;
+  const confirmar = document.getElementById('confirmarSenha').value;
+
+  if (senha && senha !== confirmar) {
+    alert('As senhas não coincidem');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`http://localhost:3000/auth/usuario/${usuario.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ nome, email, senha })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.erro || 'Erro ao atualizar');
+      return;
+    }
+
+    // atualizar localStorage
+    const usuarioAtualizado = {
+      ...usuario,
+      nome,
+      email
+    };
+
+    localStorage.setItem('usuario', JSON.stringify(usuarioAtualizado));
+
+    alert('Dados atualizados com sucesso');
+
+  } catch (error) {
+    console.error(error);
+    alert('Erro ao conectar com servidor');
+  }
+}
+
+
+//  LOGOUT
+function logout() {
+  localStorage.removeItem('usuario');
+  window.location.href = 'login.html';
+}
+
+</script>
+
+</body>
+</html>

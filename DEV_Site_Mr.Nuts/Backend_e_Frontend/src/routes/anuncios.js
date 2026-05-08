@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/anuncioController');
-const upload = require('../../../uploads/upload');
+const upload = require('../upload');
 
 router.get('/', controller.listar);
 router.get('/:id', controller.buscarPorId);

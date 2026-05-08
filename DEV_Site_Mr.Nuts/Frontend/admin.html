@@ -2,47 +2,90 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Painel Admin</title>
+  <title>Painel Admin | Restocka</title>
+
+  <link rel="stylesheet" href="css/admin.css">
   <link rel="stylesheet" href="css/global.css">
 </head>
 <body>
 
+<script>
+const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+if (!usuario || usuario.role !== 'admin') {
+  alert('Acesso negado');
+  window.location.href = 'login.html';
+}
+</script>
+
 <header class="topbar">
-  <div class="logo">Restocka Admin</div>
+  <div class="logo">
+    <strong>Restocka Admin</strong>
+  </div>
+
+  <nav class="menu">
+    <a href="#">Dashboard</a>
+    <a href="#">Usuários</a>
+    <a href="#">Produtos</a>
+    <a href="#">Fornecedores</a>
+    <a href="#">Relatórios</a>
+  </nav>
+
+  <div class="user-menu">
+    <button onclick="toggleMenu()">Configurações</button>
+
+    <div class="dropdown" id="dropdown">
+      <p class="user-name">
+        <span id="nomeUsuario"></span>
+      </p>
+      <button onclick="abrirConta()">Configuração de conta</button>
+      <button onclick="logout()">Sair</button>
+    </div>
+  </div>
 </header>
 
-<main style="padding:40px;">
-  <h1>Painel Administrativo</h1>
-  <p>Bem-vindo, administrador.</p>
+<main>
+  <h1>Bem-vindo ao Painel Administrativo</h1>
 
   <div class="card">
     <h3>Gerenciar Produtos</h3>
-    <p>Aprovar ou reprovar anúncios.</p>
+    <p>Aprovar, editar ou remover produtos.</p>
   </div>
 
   <div class="card">
     <h3>Usuários</h3>
-    <p>Visualizar e gerenciar contas.</p>
+    <p>Visualizar clientes e fornecedores.</p>
+  </div>
+
+  <div class="card">
+    <h3>Fornecedores</h3>
+    <p>Gerenciar fornecedores cadastrados.</p>
+  </div>
+
+  <div class="card">
+    <h3>Relatórios</h3>
+    <p>Analisar desempenho do marketplace.</p>
   </div>
 </main>
- 
 
 <script>
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    
-    // verifica se está logado
-    if (!usuario) {
-      alert('Você precisa fazer login');
-      window.location.href = 'login.html';
-    }
-    
-    // verifica se é admin
-    if (usuario.role !== 'admin') {
-      alert('Acesso negado');
-      window.location.href = 'login.html';
-    }
-    </script>
-    
+document.getElementById('nomeUsuario').innerText = usuario.nome;
+
+function toggleMenu() {
+  const menu = document.getElementById('dropdown');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+function abrirConta() {
+  window.location.href = 'admin-config.html';
+}
+
+
+function logout() {
+  localStorage.removeItem('usuario');
+  window.location.href = 'login.html';
+}
+</script>
 
 </body>
 </html>
