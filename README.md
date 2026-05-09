@@ -107,8 +107,8 @@ README.md
 
 ## 🗄️ Banco de Dados
 
-👉 [Acessar documentação](https://app.brmodeloweb.com/#!/publicview/69ca55c2b2c06f82f93ab5b1)
-
+👉 [Diagrama](https://app.brmodeloweb.com/#!/publicview/69ca55c2b2c06f82f93ab5b1)
+👉 [Tables SQL](https://github.com/2026-1-MCC2/Projeto3/blob/main/documentos/Entrega-2/Projeto%20em%20Banco%20de%20Dados/ENTREGA2%20BD.txt)
 ---
 
 ## 🚀 Execução do Projeto
