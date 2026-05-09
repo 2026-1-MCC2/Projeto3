@@ -112,3 +112,36 @@
       padding: 40px 24px;
     }
   }
+ /* FOOTER */
+
+.footer {
+  background: #111827;
+  color: white;
+  margin-top: 60px;
+  padding: 60px 24px 25px;
+  text-align: center;
+}
+
+.footer-content h2 {
+  font-size: 34px;
+  color: #ff6a00;
+  margin-bottom: 14px;
+}
+
+.footer-content p {
+  max-width: 600px;
+  margin: 0 auto;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.footer-bottom {
+  margin-top: 35px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+.footer-bottom p {
+  color: #94a3b8;
+  font-size: 14px;
+}
