@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/anuncioController');
-const upload = require('../../upload');
+const upload = require('../uploads/upload');
 
 // ✅ LISTAR TODOS OS PRODUTOS
 router.get('/', controller.listar);
