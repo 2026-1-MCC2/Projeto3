@@ -1,0 +1,44 @@
+CREATE DATABASE IF NOT EXISTS marketplace_b2b
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+ 
+USE marketplace_b2b;
+
+CREATE TABLE produtos (
+    id            INT          UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    fornecedor_id INT          UNSIGNED NOT NULL,
+    categoria_id  SMALLINT     UNSIGNED NOT NULL,
+    nome          VARCHAR(200) NOT NULL,
+    marca         VARCHAR(100),
+    descricao     TEXT,
+    moq           INT          UNSIGNED NOT NULL DEFAULT 1,   -- Minimum Order Quantity
+    unidade       VARCHAR(80),                                 -- ex: 'Caixa 24un', 'Saco 10kg'
+    regiao        VARCHAR(80),
+    prazo_entrega VARCHAR(80),
+    icone         VARCHAR(10),
+    badge         VARCHAR(40),                                 -- ex: 'Destaque', 'Novo', 'Premium'
+    status        ENUM('active','pending','paused','draft') NOT NULL DEFAULT 'pending',
+    motivo_reprovacao VARCHAR(255),                            -- preenchido pelo admin ao reprovar
+    criado_em     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id) ON DELETE CASCADE,
+    FOREIGN KEY (categoria_id)  REFERENCES categorias(id)
+);
+
+
+CREATE TABLE avaliacoes (
+    id          INT      UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    produto_id  INT      UNSIGNED NOT NULL,
+    usuario_id  INT      UNSIGNED NOT NULL,
+    estrelas    TINYINT  UNSIGNED NOT NULL CHECK (estrelas BETWEEN 1 AND 5),
+    comentario  TEXT,
+    visivel     BOOLEAN  NOT NULL DEFAULT TRUE,
+    criado_em   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_avaliacao_usuario_produto (produto_id, usuario_id),
+    FOREIGN KEY (produto_id)  REFERENCES produtos(id)  ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id)  REFERENCES usuarios(id)  ON DELETE CASCADE
+);
+ 
+
+ 
+SS
