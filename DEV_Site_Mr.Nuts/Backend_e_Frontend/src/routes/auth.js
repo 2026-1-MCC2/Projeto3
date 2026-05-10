@@ -28,6 +28,7 @@ router.post('/login', (req, res) => {
 
     try {
       const senhaValida = await bcrypt.compare(senha, usuario.senha_hash);
+      
 
       if (!senhaValida) {
         return res.status(401).json({ erro: 'Senha inválida' });
@@ -55,6 +56,14 @@ router.post('/login', (req, res) => {
 router.put('/usuario/:id', async (req, res) => {
   const { id } = req.params;
   const { nome, email, senha } = req.body;
+  const bcrypt = require('bcrypt');
+  const senha_hash = await bcrypt.hash(senha, 10);
+
+await db.query(
+  'INSERT INTO usuarios (nome, email, senha_hash) VALUES (?, ?, ?)',
+  [nome, email, senha_hash]
+);
+
 
   // validação básica
   if (!nome || !email) {
