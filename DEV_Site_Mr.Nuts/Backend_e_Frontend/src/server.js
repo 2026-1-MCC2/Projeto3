@@ -1,4 +1,7 @@
 // pré definição de senha 123456cd
+const connection = require('./config/db');
+
+
 const bcrypt = require('bcrypt');
 
 bcrypt.hash('123456', 10).then(hash => {
@@ -8,7 +11,6 @@ bcrypt.hash('123456', 10).then(hash => {
 
 const cors = require('cors');
 const express = require('express');
-require('dotenv').config();
 
 const app = express();
 
