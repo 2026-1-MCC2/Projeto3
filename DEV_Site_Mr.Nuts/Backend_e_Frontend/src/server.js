@@ -30,6 +30,5 @@ app.use('/auth', authRoutes);
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`SERVIDOR NOVO RODANDO🔥 na porta ${PORT}`);
+  console.log(`SERVIDOR NOVO RODANDO🔥🔥🔥 na porta ${PORT}`);
 });
-
