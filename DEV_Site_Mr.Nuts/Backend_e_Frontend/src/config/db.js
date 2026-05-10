@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 // Verificação das variáveis de ambiente
-const requiredEnv = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME', 'PORT'];
+const requiredEnv = ['DB_HOST', 'DB_USER', 'DB_NAME', 'PORT'];
 const missingEnv = requiredEnv.filter(env => !process.env[env]);
 
 if (missingEnv.length > 0) {

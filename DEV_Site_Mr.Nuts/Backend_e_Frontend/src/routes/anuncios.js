@@ -13,7 +13,7 @@ router.get('/fornecedor/:id', controller.listarPorFornecedor);
 router.get('/:id', controller.buscarPorId);
 
 // ✅ CRIAR PRODUTO (COM IMAGEM)
-router.post('/', upload.single('imagem'), controller.criar);
+router.post('/', controller.criar);
 
 // ✅ ATUALIZAR PRODUTO
 router.put('/:id', upload.single('imagem'), controller.atualizar);
