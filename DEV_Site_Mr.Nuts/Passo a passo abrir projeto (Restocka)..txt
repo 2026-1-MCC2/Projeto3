@@ -1,5 +1,6 @@
 1) Rodar banco de dados:
-Iniciar XAMPP, abrir a pasta DEV-site, Banco de dado e abrir doc.text banco de dados, copiar e colar no MySQL e rodar.  
+Iniciar XAMPP, abrir a pasta DEV-site, Banco de dado e abrir doc.text banco de dados, 
+criar primeiro uma senha no mysql:99745623 e depois copiar e colar no MySQL e rodar.  
 
 2)Abrir o projeto no VScode:
 Abrir a pasta DEV-site no vs code, entrar em src, server.js. 
