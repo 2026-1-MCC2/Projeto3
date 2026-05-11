@@ -1,34 +1,62 @@
-// pré definição de senha 123456cd
+// ✅ CONEXÃO COM BANCO
+
 const connection = require('./config/db');
 
 
-const bcrypt = require('bcrypt');
-
-bcrypt.hash('123456', 10).then(hash => {
-  console.log(hash);
-});
-
+// ✅ DEPENDÊNCIAS
 
 const cors = require('cors');
 const express = require('express');
 
+
+// ✅ APP
+
 const app = express();
 
-app.use(cors());
-app.use(express.json());
-app.use('/uploads', express.static('uploads'));
 
-// ROTAS
+// ✅ MIDDLEWARES
+
+app.use(cors());
+
+app.use(express.json());
+
+
+// ✅ SERVIR IMAGENS
+
+app.use(
+  '/uploads',
+  express.static('uploads')
+);
+
+
+// ✅ ROTAS DE PRODUTOS
+
 const anunciosRoutes = require('./routes/anuncios');
 
-app.use('/anuncios', anunciosRoutes);
+app.use(
+  '/anuncios',
+  anunciosRoutes
+);
 
-// ROTA DE LOGIN 
+
+// ✅ ROTAS DE AUTH
+
 const authRoutes = require('./routes/auth');
-app.use('/auth', authRoutes);
+
+app.use(
+  '/auth',
+  authRoutes
+);
+
+
+// ✅ SERVIDOR
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`SERVIDOR NOVO RODANDO🔥🔥🔥 na porta ${PORT}`);
+
+  console.log(
+    `SERVIDOR RODANDO 🔥 na porta ${PORT}`
+  );
+
 });

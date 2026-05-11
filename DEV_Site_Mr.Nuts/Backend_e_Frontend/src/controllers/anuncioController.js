@@ -2,6 +2,7 @@ const db = require('../config/db');
 
 
 // ✅ LISTAR TODOS OS PRODUTOS
+
 exports.listar = (req, res) => {
 
   const sql = `
@@ -11,10 +12,13 @@ exports.listar = (req, res) => {
   db.query(sql, (err, results) => {
 
     if (err) {
+
       console.error(err);
+
       return res.status(500).json({
         erro: 'Erro ao listar produtos'
       });
+
     }
 
     res.json(results);
@@ -25,6 +29,7 @@ exports.listar = (req, res) => {
 
 
 // ✅ LISTAR PRODUTOS DO FORNECEDOR
+
 exports.listarPorFornecedor = (req, res) => {
 
   const { id } = req.params;
@@ -37,11 +42,13 @@ exports.listarPorFornecedor = (req, res) => {
   db.query(sql, [id], (err, results) => {
 
     if (err) {
+
       console.error(err);
 
       return res.status(500).json({
         erro: 'Erro ao buscar produtos'
       });
+
     }
 
     res.json(results);
@@ -52,6 +59,7 @@ exports.listarPorFornecedor = (req, res) => {
 
 
 // ✅ BUSCAR PRODUTO POR ID
+
 exports.buscarPorId = (req, res) => {
 
   const { id } = req.params;
@@ -64,11 +72,13 @@ exports.buscarPorId = (req, res) => {
   db.query(sql, [id], (err, results) => {
 
     if (err) {
+
       console.error(err);
 
       return res.status(500).json({
         erro: 'Erro ao buscar produto'
       });
+
     }
 
     if (results.length === 0) {
@@ -87,23 +97,26 @@ exports.buscarPorId = (req, res) => {
 
 
 // ✅ CRIAR PRODUTO
+
 exports.criar = (req, res) => {
 
   console.log(req.body);
 
-  const {
-    nome,
-    descricao,
-    marca,
-    moq,
-    fornecedor_id
-  } = req.body;
+  const nome = req.body.nome;
+  const descricao = req.body.descricao;
+  const marca = req.body.marca;
+  const preco = req.body.preco;
+  const moq = req.body.moq;
+  const fornecedorId = req.body.fornecedor_id;
 
-  // ✅ valores padrão
   const categoria_id = 1;
-  const imagem = null;
 
-  // ✅ validação
+  // ✅ IMAGEM
+
+  const imagem = req.file
+    ? req.file.filename
+    : null;
+
   if (!nome || !descricao) {
 
     return res.status(400).json({
@@ -118,21 +131,23 @@ exports.criar = (req, res) => {
       nome,
       descricao,
       marca,
+      preco,
       moq,
       fornecedor_id,
       categoria_id,
       imagem,
       status
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
     nome,
     descricao,
     marca || 'Sem marca',
+    preco || null,
     moq || 1,
-    fornecedor_id || 1,
+    fornecedorId || 1,
     categoria_id,
     imagem,
     'active'
@@ -161,70 +176,107 @@ exports.criar = (req, res) => {
 
 
 // ✅ ATUALIZAR PRODUTO
+
 exports.atualizar = (req, res) => {
 
   const { id } = req.params;
 
-  const {
-    nome,
-    descricao,
-    marca,
-    moq,
-    preco
-  } = req.body;
+  const nome = req.body.nome;
+  const descricao = req.body.descricao;
+  const marca = req.body.marca;
+  const preco = req.body.preco;
+  const moq = req.body.moq;
 
-  const sql = `
-    UPDATE produtos
-    SET
-      nome = ?,
-      descricao = ?,
-      marca = ?,
-      moq = ?,
-      preco = ?
-    WHERE id = ?
-  `;
+  const imagem = req.file
+    ? req.file.filename
+    : null;
 
-  db.query(
-    sql,
-    [
+  let sql;
+  let values;
+
+  // ✅ COM IMAGEM
+
+  if (imagem) {
+
+    sql = `
+      UPDATE produtos
+      SET
+        nome = ?,
+        descricao = ?,
+        marca = ?,
+        preco = ?,
+        moq = ?,
+        imagem = ?
+      WHERE id = ?
+    `;
+
+    values = [
       nome,
       descricao,
       marca,
-      moq,
       preco,
+      moq,
+      imagem,
       id
-    ],
-    (err, result) => {
+    ];
 
-      if (err) {
+  } else {
 
-        console.error(err);
+    // ✅ SEM IMAGEM
 
-        return res.status(500).json({
-          erro: 'Erro ao atualizar produto'
-        });
+    sql = `
+      UPDATE produtos
+      SET
+        nome = ?,
+        descricao = ?,
+        marca = ?,
+        preco = ?,
+        moq = ?
+      WHERE id = ?
+    `;
 
-      }
+    values = [
+      nome,
+      descricao,
+      marca,
+      preco,
+      moq,
+      id
+    ];
 
-      if (result.affectedRows === 0) {
+  }
 
-        return res.status(404).json({
-          erro: 'Produto não encontrado'
-        });
+  db.query(sql, values, (err, result) => {
 
-      }
+    if (err) {
 
-      res.json({
-        mensagem: 'Produto atualizado com sucesso'
+      console.error(err);
+
+      return res.status(500).json({
+        erro: 'Erro ao atualizar produto'
       });
 
     }
-  );
+
+    if (result.affectedRows === 0) {
+
+      return res.status(404).json({
+        erro: 'Produto não encontrado'
+      });
+
+    }
+
+    res.json({
+      mensagem: 'Produto atualizado com sucesso'
+    });
+
+  });
 
 };
 
 
 // ✅ DELETAR PRODUTO
+
 exports.deletar = (req, res) => {
 
   const { id } = req.params;
