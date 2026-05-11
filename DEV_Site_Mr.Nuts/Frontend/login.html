@@ -57,49 +57,116 @@
     </section>
   </main>
   <script>
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-    
-      const email = document.getElementById('email').value;
-      const senha = document.getElementById('senha').value;
-    
-      try {
-        const response = await fetch('http://localhost:3000/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email, senha })
-        });
-    
-        const data = await response.json();
-    
-        if (!response.ok) {
-          alert(data.erro || 'Erro no login');
-          return;
-        }
 
-        alert ('Login realizado com sucesso!');
-      } catch (error){
-        console.error('Erro na requisição:', error);
-        alert('Falha ao conectar como o servidor');
-      }
+    document
+      .getElementById('loginForm')
     
-        // LOGIN OK
-        // SALVA O USUÁRIO AQUI
-        localStorage.setItem('usuario', JSON.stringify(data.usuario.role));
+      .addEventListener(
+        'submit',
+        async function(e) {
     
-        // REDIRECIONAMENTO POR TIPO
-        console.log(data.usuario);
-        if (data.usuario.role === 'admin') {
-          window.location.href = 'admin.html';
-        } else if (data.usuario.role === 'supplier') {
-          window.location.href = 'fornecedor.html';
-        } else {
-          window.location.href = 'cliente.html';
+          e.preventDefault();
+    
+          const email =
+            document.getElementById('email').value;
+    
+          const senha =
+            document.getElementById('senha').value;
+    
+          try {
+    
+            const response =
+              await fetch(
+                'http://localhost:3000/auth/login',
+                {
+                  method: 'POST',
+    
+                  headers: {
+                    'Content-Type':
+                      'application/json'
+                  },
+    
+                  body: JSON.stringify({
+                    email,
+                    senha
+                  })
+                }
+              );
+    
+            const data =
+              await response.json();
+    
+            // ✅ ERRO LOGIN
+    
+            if (!response.ok) {
+    
+              alert(
+                data.erro ||
+                'Erro no login'
+              );
+    
+              return;
+    
+            }
+    
+            // ✅ LOGIN OK
+    
+            alert(
+              'Login realizado com sucesso!'
+            );
+    
+            // ✅ SALVAR USUÁRIO INTEIRO
+    
+            localStorage.setItem(
+              'usuario',
+              JSON.stringify(data.usuario)
+            );
+    
+            console.log(data.usuario);
+    
+            // ✅ REDIRECIONAR
+    
+            if (
+              data.usuario.role === 'admin'
+            ) {
+    
+              window.location.href =
+                'admin.html';
+    
+            }
+    
+            else if (
+              data.usuario.role === 'supplier'
+            ) {
+    
+              window.location.href =
+                'fornecedor.html';
+    
+            }
+    
+            else {
+    
+              window.location.href =
+                'cliente.html';
+    
+            }
+    
+          } catch (error) {
+    
+            console.error(
+              'Erro na requisição:',
+              error
+            );
+    
+            alert(
+              'Falha ao conectar com o servidor'
+            );
+    
+          }
+    
         }
+      );
     
-      });
     </script>
 </body>
 </html>

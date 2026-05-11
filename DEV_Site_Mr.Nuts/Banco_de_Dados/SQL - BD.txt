@@ -1,316 +1,472 @@
---  MARKETPLACE B2B – Banco de Dados MySQL
---  Estrutura genérica baseada na arquitetura do Restocka
---  (sem dados fixos – pronto para qualquer nicho)
 -- ============================================================
- 
-CREATE DATABASE IF NOT EXISTS marketplace_b2b
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
- 
+-- MARKETPLACE B2B – BANCO CORRIGIDO
+-- RESTOCKA
+-- ============================================================
+
+DROP DATABASE IF EXISTS marketplace_b2b;
+
+CREATE DATABASE marketplace_b2b
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
 USE marketplace_b2b;
- 
+
 -- ============================================================
--- 1. USUÁRIOS
--- Três perfis: admin, supplier (fornecedor) e buyer (comprador)
+-- USUÁRIOS
 -- ============================================================
+
 CREATE TABLE usuarios (
-    id            INT          UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    nome          VARCHAR(120) NOT NULL,
-    email         VARCHAR(150) NOT NULL UNIQUE,
-    senha_hash    VARCHAR(255) NOT NULL,
-    role          ENUM('admin','supplier','buyer') NOT NULL DEFAULT 'buyer',
-    status        ENUM('ativo','bloqueado','pendente') NOT NULL DEFAULT 'pendente',
-    avatar_url    VARCHAR(255),
-    criado_em     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    nome VARCHAR(120) NOT NULL,
+
+    email VARCHAR(150) NOT NULL UNIQUE,
+
+    senha_hash VARCHAR(255) NOT NULL,
+
+    role ENUM(
+        'admin',
+        'supplier',
+        'buyer'
+    ) NOT NULL DEFAULT 'buyer',
+
+    status ENUM(
+        'ativo',
+        'bloqueado',
+        'pendente'
+    ) NOT NULL DEFAULT 'ativo',
+
+    avatar_url VARCHAR(255),
+
+    criado_em DATETIME NOT NULL
+    DEFAULT CURRENT_TIMESTAMP,
+
+    atualizado_em DATETIME NOT NULL
+    DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP
+
 );
- 
+
 -- ============================================================
--- 2. FORNECEDORES
--- Perfil estendido para usuários com role = 'supplier'
+-- FORNECEDORES
 -- ============================================================
+
 CREATE TABLE fornecedores (
-    id            INT          UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    usuario_id    INT          UNSIGNED NOT NULL UNIQUE,
-    nome_empresa  VARCHAR(160) NOT NULL,
-    cnpj          CHAR(18)     NOT NULL UNIQUE,
-    regiao        VARCHAR(80),
-    whatsapp      VARCHAR(20),
-    telefone      VARCHAR(20),
+
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    usuario_id INT UNSIGNED NOT NULL UNIQUE,
+
+    nome_empresa VARCHAR(160) NOT NULL,
+
+    cnpj CHAR(18) NOT NULL UNIQUE,
+
+    regiao VARCHAR(80),
+
+    whatsapp VARCHAR(20),
+
+    telefone VARCHAR(20),
+
     email_contato VARCHAR(150),
-    site_url      VARCHAR(255),
-    descricao     TEXT,
-    logo_url      VARCHAR(255),
-    criado_em     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+
+    site_url VARCHAR(255),
+
+    descricao TEXT,
+
+    logo_url VARCHAR(255),
+
+    criado_em DATETIME NOT NULL
+    DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
+
 );
- 
+
 -- ============================================================
--- 3. CATEGORIAS
--- Categorias de produtos do marketplace
+-- CATEGORIAS
 -- ============================================================
+
 CREATE TABLE categorias (
-    id        SMALLINT    UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    nome      VARCHAR(80) NOT NULL UNIQUE,
-    icone     VARCHAR(10),
+
+    id SMALLINT UNSIGNED
+    AUTO_INCREMENT PRIMARY KEY,
+
+    nome VARCHAR(80) NOT NULL UNIQUE,
+
+    icone VARCHAR(10),
+
     descricao VARCHAR(255),
-    ativa     BOOLEAN NOT NULL DEFAULT TRUE
+
+    ativa BOOLEAN NOT NULL DEFAULT TRUE
+
 );
- 
+
 -- ============================================================
--- 4. PRODUTOS (Anúncios)
--- Cada anúncio pertence a um fornecedor e a uma categoria
--- Status 'pending' = aguarda aprovação do admin
+-- PRODUTOS
 -- ============================================================
+
 CREATE TABLE produtos (
-    id            INT          UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    fornecedor_id INT          UNSIGNED NOT NULL,
-    categoria_id  SMALLINT     UNSIGNED NOT NULL,
-    nome          VARCHAR(200) NOT NULL,
-    marca         VARCHAR(100),
-    descricao     TEXT,
-    moq           INT          UNSIGNED NOT NULL DEFAULT 1,   -- Minimum Order Quantity
-    unidade       VARCHAR(80),                                 -- ex: 'Caixa 24un', 'Saco 10kg'
-    regiao        VARCHAR(80),
+
+    id INT UNSIGNED
+    AUTO_INCREMENT PRIMARY KEY,
+
+    fornecedor_id INT UNSIGNED NOT NULL,
+
+    categoria_id SMALLINT UNSIGNED NOT NULL,
+
+    nome VARCHAR(200) NOT NULL,
+
+    marca VARCHAR(100),
+
+    descricao TEXT,
+
+    preco DECIMAL(10,2),
+
+    imagem VARCHAR(255),
+
+    moq INT UNSIGNED NOT NULL DEFAULT 1,
+
+    unidade VARCHAR(80),
+
+    regiao VARCHAR(80),
+
     prazo_entrega VARCHAR(80),
-    icone         VARCHAR(10),
-    badge         VARCHAR(40),                                 -- ex: 'Destaque', 'Novo', 'Premium'
-    status        ENUM('active','pending','paused','draft') NOT NULL DEFAULT 'pending',
-    motivo_reprovacao VARCHAR(255),                            -- preenchido pelo admin ao reprovar
-    criado_em     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id) ON DELETE CASCADE,
-    FOREIGN KEY (categoria_id)  REFERENCES categorias(id)
+
+    icone VARCHAR(10),
+
+    badge VARCHAR(40),
+
+    status ENUM(
+        'active',
+        'pending',
+        'paused',
+        'draft'
+    ) NOT NULL DEFAULT 'active',
+
+    motivo_reprovacao VARCHAR(255),
+
+    criado_em DATETIME NOT NULL
+    DEFAULT CURRENT_TIMESTAMP,
+
+    atualizado_em DATETIME NOT NULL
+    DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (fornecedor_id)
+    REFERENCES fornecedores(id)
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (categoria_id)
+    REFERENCES categorias(id)
+
 );
- 
+
 -- ============================================================
--- 5. IMAGENS DE PRODUTOS
--- Um produto pode ter múltiplas imagens
+-- FAVORITOS
 -- ============================================================
-CREATE TABLE produto_imagens (
-    id         INT     UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    produto_id INT     UNSIGNED NOT NULL,
-    url        VARCHAR(255) NOT NULL,
-    principal  BOOLEAN NOT NULL DEFAULT FALSE,
-    ordem      TINYINT UNSIGNED NOT NULL DEFAULT 0,
-    FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE
-);
- 
--- ============================================================
--- 6. AVALIAÇÕES
--- Um comprador avalia um produto uma única vez
--- ============================================================
-CREATE TABLE avaliacoes (
-    id          INT      UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    produto_id  INT      UNSIGNED NOT NULL,
-    usuario_id  INT      UNSIGNED NOT NULL,
-    estrelas    TINYINT  UNSIGNED NOT NULL CHECK (estrelas BETWEEN 1 AND 5),
-    comentario  TEXT,
-    visivel     BOOLEAN  NOT NULL DEFAULT TRUE,
-    criado_em   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY uq_avaliacao_usuario_produto (produto_id, usuario_id),
-    FOREIGN KEY (produto_id)  REFERENCES produtos(id)  ON DELETE CASCADE,
-    FOREIGN KEY (usuario_id)  REFERENCES usuarios(id)  ON DELETE CASCADE
-);
- 
--- ============================================================
--- 7. FAVORITOS
--- Compradores podem favoritar produtos
--- ============================================================
+
 CREATE TABLE favoritos (
+
     usuario_id INT UNSIGNED NOT NULL,
+
     produto_id INT UNSIGNED NOT NULL,
-    criado_em  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (usuario_id, produto_id),
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)  ON DELETE CASCADE,
-    FOREIGN KEY (produto_id) REFERENCES produtos(id)  ON DELETE CASCADE
+
+    criado_em DATETIME NOT NULL
+    DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (
+        usuario_id,
+        produto_id
+    ),
+
+    FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (produto_id)
+    REFERENCES produtos(id)
+    ON DELETE CASCADE
+
 );
- 
+
 -- ============================================================
--- 8. ORÇAMENTOS
--- Solicitações de orçamento feitas por compradores a fornecedores
+-- AVALIAÇÕES
 -- ============================================================
+
+CREATE TABLE avaliacoes (
+
+    id INT UNSIGNED
+    AUTO_INCREMENT PRIMARY KEY,
+
+    produto_id INT UNSIGNED NOT NULL,
+
+    usuario_id INT UNSIGNED NOT NULL,
+
+    estrelas TINYINT UNSIGNED NOT NULL,
+
+    comentario TEXT,
+
+    visivel BOOLEAN NOT NULL DEFAULT TRUE,
+
+    criado_em DATETIME NOT NULL
+    DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (produto_id)
+    REFERENCES produtos(id)
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
+
+);
+
+-- ============================================================
+-- ORÇAMENTOS
+-- ============================================================
+
 CREATE TABLE orcamentos (
-    id               INT          UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    produto_id       INT          UNSIGNED,                      -- pode ser NULL se produto livre
-    produto_nome     VARCHAR(200) NOT NULL,                      -- snapshot no momento do pedido
-    fornecedor_id    INT          UNSIGNED,
-    fornecedor_nome  VARCHAR(160) NOT NULL,                      -- snapshot
-    comprador_id     INT          UNSIGNED,                      -- NULL se visitante não logado
-    empresa_nome     VARCHAR(160),
-    quantidade       VARCHAR(80),
-    necessidades     TEXT,
-    frequencia       VARCHAR(80),                                 -- ex: 'Semanal', 'Mensal'
-    prazo_desejado   VARCHAR(80),                                 -- ex: 'Curto (3-5 dias)'
-    regiao_entrega   VARCHAR(80),
-    status           ENUM('pending','responded','closed','cancelled') NOT NULL DEFAULT 'pending',
-    resposta         TEXT,                                        -- resposta do fornecedor
-    respondido_em    DATETIME,
-    criado_em        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    atualizado_em    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (produto_id)    REFERENCES produtos(id)     ON DELETE SET NULL,
-    FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id) ON DELETE SET NULL,
-    FOREIGN KEY (comprador_id)  REFERENCES usuarios(id)     ON DELETE SET NULL
+
+    id INT UNSIGNED
+    AUTO_INCREMENT PRIMARY KEY,
+
+    produto_id INT UNSIGNED,
+
+    fornecedor_id INT UNSIGNED,
+
+    comprador_id INT UNSIGNED,
+
+    produto_nome VARCHAR(200),
+
+    fornecedor_nome VARCHAR(160),
+
+    empresa_nome VARCHAR(160),
+
+    quantidade VARCHAR(80),
+
+    necessidades TEXT,
+
+    frequencia VARCHAR(80),
+
+    prazo_desejado VARCHAR(80),
+
+    regiao_entrega VARCHAR(80),
+
+    status ENUM(
+        'pending',
+        'responded',
+        'closed',
+        'cancelled'
+    ) NOT NULL DEFAULT 'pending',
+
+    resposta TEXT,
+
+    respondido_em DATETIME,
+
+    criado_em DATETIME NOT NULL
+    DEFAULT CURRENT_TIMESTAMP,
+
+    atualizado_em DATETIME NOT NULL
+    DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (produto_id)
+    REFERENCES produtos(id)
+    ON DELETE SET NULL,
+
+    FOREIGN KEY (fornecedor_id)
+    REFERENCES fornecedores(id)
+    ON DELETE SET NULL,
+
+    FOREIGN KEY (comprador_id)
+    REFERENCES usuarios(id)
+    ON DELETE SET NULL
+
 );
- 
+
 -- ============================================================
--- 9. CONTATOS (Formulário institucional)
--- Mensagens enviadas pelo "Fale Conosco"
+-- CONTATOS
 -- ============================================================
+
 CREATE TABLE contatos (
-    id        INT          UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    nome      VARCHAR(120) NOT NULL,
-    email     VARCHAR(150) NOT NULL,
-    assunto   VARCHAR(120) NOT NULL,
-    mensagem  TEXT         NOT NULL,
-    lido      BOOLEAN      NOT NULL DEFAULT FALSE,
-    criado_em DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
+
+    id INT UNSIGNED
+    AUTO_INCREMENT PRIMARY KEY,
+
+    nome VARCHAR(120) NOT NULL,
+
+    email VARCHAR(150) NOT NULL,
+
+    assunto VARCHAR(120) NOT NULL,
+
+    mensagem TEXT NOT NULL,
+
+    lido BOOLEAN NOT NULL DEFAULT FALSE,
+
+    criado_em DATETIME NOT NULL
+    DEFAULT CURRENT_TIMESTAMP
+
 );
- 
+
 -- ============================================================
--- 10. AUDITORIA
--- Registro de todas as ações realizadas por administradores
+-- AUDITORIA
 -- ============================================================
+
 CREATE TABLE auditoria (
-    id          BIGINT   UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    usuario_id  INT      UNSIGNED NOT NULL,
-    acao        VARCHAR(255) NOT NULL,
-    entidade    VARCHAR(60),                                     -- ex: 'produto', 'usuario'
-    entidade_id INT      UNSIGNED,
-    ip          VARCHAR(45),
-    criado_em   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+
+    id BIGINT UNSIGNED
+    AUTO_INCREMENT PRIMARY KEY,
+
+    usuario_id INT UNSIGNED NOT NULL,
+
+    acao VARCHAR(255) NOT NULL,
+
+    entidade VARCHAR(60),
+
+    entidade_id INT UNSIGNED,
+
+    ip VARCHAR(45),
+
+    criado_em DATETIME NOT NULL
+    DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+
 );
- 
+
 -- ============================================================
--- 11. VIEWS ÚTEIS
+-- DADOS INICIAIS
 -- ============================================================
- 
--- Rating médio por produto
-CREATE OR REPLACE VIEW vw_rating_produtos AS
-    SELECT
-        produto_id,
-        ROUND(AVG(estrelas), 1) AS rating_medio,
-        COUNT(*)                AS total_avaliacoes
-    FROM avaliacoes
-    WHERE visivel = TRUE
-    GROUP BY produto_id;
- 
--- Listagem completa de produtos com rating e fornecedor
-CREATE OR REPLACE VIEW vw_produtos_completo AS
-    SELECT
-        p.id,
-        p.nome,
-        p.marca,
-        p.descricao,
-        p.moq,
-        p.unidade,
-        p.regiao,
-        p.prazo_entrega,
-        p.icone,
-        p.badge,
-        p.status,
-        c.nome                           AS categoria,
-        f.nome_empresa                   AS fornecedor,
-        COALESCE(r.rating_medio,     0)  AS rating,
-        COALESCE(r.total_avaliacoes, 0)  AS total_avaliacoes,
-        p.criado_em
-    FROM produtos p
-    JOIN categorias   c ON c.id = p.categoria_id
-    JOIN fornecedores f ON f.id = p.fornecedor_id
-    LEFT JOIN vw_rating_produtos r ON r.produto_id = p.id;
- 
--- Orçamentos com dados do comprador
-CREATE OR REPLACE VIEW vw_orcamentos_completo AS
-    SELECT
-        o.id,
-        o.produto_nome,
-        o.fornecedor_nome,
-        COALESCE(u.nome, o.empresa_nome) AS comprador,
-        o.quantidade,
-        o.frequencia,
-        o.prazo_desejado,
-        o.regiao_entrega,
-        o.necessidades,
-        o.status,
-        o.resposta,
-        o.respondido_em,
-        o.criado_em
-    FROM orcamentos o
-    LEFT JOIN usuarios u ON u.id = o.comprador_id;
- 
--- Ranking de fornecedores por nota média
-CREATE OR REPLACE VIEW vw_ranking_fornecedores AS
-    SELECT
-        f.id,
-        f.nome_empresa,
-        f.regiao,
-        ROUND(AVG(a.estrelas), 1) AS rating_medio,
-        COUNT(a.id)               AS total_avaliacoes
-    FROM fornecedores f
-    JOIN produtos   p ON p.fornecedor_id = f.id
-    JOIN avaliacoes a ON a.produto_id    = p.id
-    WHERE a.visivel = TRUE
-    GROUP BY f.id, f.nome_empresa, f.regiao
-    ORDER BY rating_medio DESC;
- 
--- ============================================================
--- 12. ÍNDICES DE PERFORMANCE
--- ============================================================
-CREATE INDEX idx_produtos_status        ON produtos(status);
-CREATE INDEX idx_produtos_categoria     ON produtos(categoria_id);
-CREATE INDEX idx_produtos_fornecedor    ON produtos(fornecedor_id);
-CREATE INDEX idx_orcamentos_status      ON orcamentos(status);
-CREATE INDEX idx_orcamentos_comprador   ON orcamentos(comprador_id);
-CREATE INDEX idx_orcamentos_fornecedor  ON orcamentos(fornecedor_id);
-CREATE INDEX idx_avaliacoes_produto     ON avaliacoes(produto_id);
-CREATE INDEX idx_auditoria_usuario      ON auditoria(usuario_id);
-CREATE INDEX idx_auditoria_criado       ON auditoria(criado_em);
-CREATE FULLTEXT INDEX ft_produtos_busca ON produtos(nome, descricao, marca);
- 
--- ============================================================
--- FIM DO SCRIPT
 
 INSERT INTO categorias (nome)
-VALUES ('Categoria Teste');
-
-INSERT INTO usuarios (nome, email, senha_hash, role)
-VALUES ('Fornecedor 1', 'fornecedor@email.com', '123', 'supplier');
-
-INSERT INTO fornecedores (usuario_id, nome_empresa, cnpj)
-VALUES (1, 'Empresa Teste', '12345678000199');
-
+VALUES
+('Categoria Teste');
 
 -- ============================================================
--- USUÁRIOS DE DEMONSTRAÇÃO (LOGIN)
+-- USUÁRIOS DEMO
+-- SENHA DE TODOS: 123456
 -- ============================================================
 
-INSERT INTO usuarios (nome, email, senha_hash, role, status)
-VALUES 
-('Administrador Demo', 'admin@demo.com', '$2b$10$wH8K6FzK9H5Yw0zQz3WZQ.uCz3Z2Z9w0D1mQ9TbH8j6XrP8G0H0yO', 'admin', 'ativo'),
-('Fornecedor Demo', 'fornecedor@demo.com', '$2b$10$YQJk1n8E6vT7Wj2Lw8cN4uZpHkM6L9eQF8D1aXzW7S3T0G9P2hJm.', 'supplier', 'ativo'),
-('Cliente Demo', 'cliente@demo.com', '$2b$10$X9mK1D7fP8Q2sT6BvH5L0eZxF3N4WcYw8Jk9R1Tg6U2I7OeL3ZpH2', 'buyer', 'ativo');
+INSERT INTO usuarios
+(
+    nome,
+    email,
+    senha_hash,
+    role,
+    status
+)
+VALUES
 
-ALTER TABLE produtos ADD imagem VARCHAR(255);
+(
+    'Administrador Demo',
+    'admin@demo.com',
+    '$2b$10$Q0RgRMI/4fsO08i17VW0heJ22ISMq.iGswZBAAvEFGE3kN9n3g6QG',
+    'admin',
+    'ativo'
+),
 
-INSERT INTO produtos 
-(nome, descricao, marca, moq, unidade, regiao, prazo_entrega, status, fornecedor_id, categoria_id,imagem)
-VALUES 
-('Produto Teste', 'Teste', 'Marca X', 10, 'Caixa', 'SP', '5 dias', 'pending', 1, 1);
+(
+    'Fornecedor Demo',
+    'fornecedor@demo.com',
+    '$2b$10$Q0RgRMI/4fsO08i17VW0heJ22ISMq.iGswZBAAvEFGE3kN9n3g6QG',
+    'supplier',
+    'ativo'
+),
 
-SELECT * FROM produtos;
+(
+    'Cliente Demo',
+    'cliente@demo.com',
+    '$2b$10$Q0RgRMI/4fsO08i17VW0heJ22ISMq.iGswZBAAvEFGE3kN9n3g6QG',
+    'buyer',
+    'ativo'
+);
+
+-- ============================================================
+-- FORNECEDOR DEMO
+-- ============================================================
+
+INSERT INTO fornecedores
+(
+    usuario_id,
+    nome_empresa,
+    cnpj,
+    email_contato
+)
+VALUES
+(
+    2,
+    'Empresa Demo',
+    '12.345.678/0001-99',
+    'fornecedor@demo.com'
+);
+
+-- ============================================================
+-- PRODUTO DEMO
+-- ============================================================
+
+INSERT INTO produtos
+(
+    fornecedor_id,
+    categoria_id,
+    nome,
+    marca,
+    descricao,
+    preco,
+    imagem,
+    moq,
+    unidade,
+    regiao,
+    prazo_entrega,
+    status
+)
+VALUES
+(
+    1,
+    1,
+    'Produto Teste',
+    'Marca X',
+    'Produto de demonstração',
+    19.90,
+    NULL,
+    10,
+    'Caixa',
+    'SP',
+    '5 dias',
+    'active'
+);
+
+-- ============================================================
+-- ÍNDICES
+-- ============================================================
+
+CREATE INDEX idx_produtos_status
+ON produtos(status);
+
+CREATE INDEX idx_produtos_categoria
+ON produtos(categoria_id);
+
+CREATE INDEX idx_produtos_fornecedor
+ON produtos(fornecedor_id);
+
+CREATE INDEX idx_orcamentos_status
+ON orcamentos(status);
+
+CREATE INDEX idx_orcamentos_comprador
+ON orcamentos(comprador_id);
+
+CREATE INDEX idx_orcamentos_fornecedor
+ON orcamentos(fornecedor_id);
+
+-- ============================================================
+-- TESTES
+-- ============================================================
+
+SELECT * FROM usuarios;
 
 SELECT * FROM fornecedores;
 
-SET SQL_SAFE_UPDATES = 0;
-
-UPDATE usuarios
-SET senha_hash = '$2b$10$/jjZ66UW1h2Opa.ZyZSj5eolkiWnXWvuAPbJ3vmtyitflYF/4mW8a';
-DESCRIBE produtos;
-SELECT * FROM categorias;
-SELECT * FROM usuarios WHERE id = 1;
-ALTER TABLE produtos ADD preco DECIMAL(10,2);
-
-ALTER TABLE produtos 
-ADD preco DECIMAL(10,2);
-SELECT * FROM produtos
+SELECT * FROM produtos;

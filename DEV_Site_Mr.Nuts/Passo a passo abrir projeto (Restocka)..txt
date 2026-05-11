@@ -10,17 +10,21 @@ Extensão VScode:
  Live server
 
 Comandos:
-npm.cmd install cors
-npm.cmd instal dotenv
-npm.cmd install multer
-npm.cmd install express
-npm.cmd install mysql2
+
+npm install express
+npm install cors
+npm install dotenv
+npm install multer
+npm install mysql2
+npm install bcrypt
+npm install nodemon
+
 
 
 *Certificar que o caminho no terminal esteja DEV-site -> Backend_e_Frontend*
 
 4)Conectar com o banco de dados:
-Comando: node src/server.js
+Comando: node src/server.js ou npm run dev
 
 *Certificar que o caminho no terminal esteja DEV-site -> Backend_e_Frontend*
 

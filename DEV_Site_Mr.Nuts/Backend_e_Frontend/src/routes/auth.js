@@ -1,114 +1,247 @@
 const express = require('express');
+
 const router = express.Router();
+
 const db = require('../config/db');
+
 const bcrypt = require('bcrypt');
 
 
-// ✅ ROTA DE LOGIN
+// ============================================================
+// LOGIN
+// ============================================================
+
 router.post('/login', (req, res) => {
+
   const { email, senha } = req.body;
 
+  // VALIDAÇÃO
+
   if (!email || !senha) {
-    return res.status(400).json({ erro: 'Email e senha são obrigatórios' });
+
+    return res.status(400).json({
+      erro: 'Email e senha são obrigatórios'
+    });
+
   }
 
-  const sql = 'SELECT * FROM usuarios WHERE email = ?';
+  // BUSCAR USUÁRIO
+
+  const sql = `
+    SELECT *
+    FROM usuarios
+    WHERE email = ?
+  `;
 
   db.query(sql, [email], async (err, results) => {
+
     if (err) {
-      console.error('Erro no SELECT:', err);
-      return res.status(500).json({ erro: 'Erro no servidor' });
+
+      console.error('ERRO LOGIN:', err);
+
+      return res.status(500).json({
+        erro: 'Erro interno do servidor'
+      });
+
     }
 
+    // USUÁRIO NÃO ENCONTRADO
+
     if (results.length === 0) {
-      return res.status(401).json({ erro: 'Usuário não encontrado' });
+
+      return res.status(401).json({
+        erro: 'Usuário não encontrado'
+      });
+
     }
 
     const usuario = results[0];
 
     try {
-      const senhaValida = await bcrypt.compare(senha, usuario.senha_hash);
-      
+
+      // VERIFICAR SENHA
+
+      const senhaValida = await bcrypt.compare(
+        senha,
+        usuario.senha_hash
+      );
 
       if (!senhaValida) {
-        return res.status(401).json({ erro: 'Senha inválida' });
+
+        return res.status(401).json({
+          erro: 'Senha inválida'
+        });
+
       }
 
-      return res.json({
+      // LOGIN OK
+
+      return res.status(200).json({
+
         mensagem: 'Login realizado com sucesso',
+
         usuario: {
+
           id: usuario.id,
+
           nome: usuario.nome,
+
           email: usuario.email,
-          role: usuario.role
+
+          role: usuario.role,
+
+          status: usuario.status
+
         }
+
       });
 
     } catch (error) {
-      console.error('Erro bcrypt:', error);
-      return res.status(500).json({ erro: 'Erro ao verificar senha' });
+
+      console.error('ERRO BCRYPT:', error);
+
+      return res.status(500).json({
+        erro: 'Erro ao validar senha'
+      });
+
     }
+
   });
+
 });
 
 
-// ✅ ✅ ROTA: ATUALIZAR USUÁRIO
+// ============================================================
+// ATUALIZAR USUÁRIO
+// ============================================================
+
 router.put('/usuario/:id', async (req, res) => {
+
   const { id } = req.params;
-  const { nome, email, senha } = req.body;
-  const bcrypt = require('bcrypt');
-  const senha_hash = await bcrypt.hash(senha, 10);
 
-await db.query(
-  'INSERT INTO usuarios (nome, email, senha_hash) VALUES (?, ?, ?)',
-  [nome, email, senha_hash]
-);
+  const {
+    nome,
+    email,
+    senha
+  } = req.body;
 
+  // VALIDAÇÃO
 
-  // validação básica
   if (!nome || !email) {
-    return res.status(400).json({ erro: 'Nome e email são obrigatórios' });
+
+    return res.status(400).json({
+      erro: 'Nome e email são obrigatórios'
+    });
+
   }
 
   try {
-    let senha_hash = null;
 
-    // criptografa se veio senha nova
+    let sql = '';
+
+    let params = [];
+
+    // ========================================================
+    // COM NOVA SENHA
+    // ========================================================
+
     if (senha && senha.trim() !== '') {
-      senha_hash = await bcrypt.hash(senha, 10);
+
+      const senha_hash =
+        await bcrypt.hash(senha, 10);
+
+      sql = `
+        UPDATE usuarios
+        SET
+          nome = ?,
+          email = ?,
+          senha_hash = ?
+        WHERE id = ?
+      `;
+
+      params = [
+        nome,
+        email,
+        senha_hash,
+        id
+      ];
+
     }
 
-    let sql;
-    let params;
+    // ========================================================
+    // SEM ALTERAR SENHA
+    // ========================================================
 
-    if (senha_hash) {
-      sql = 'UPDATE usuarios SET nome = ?, email = ?, senha_hash = ? WHERE id = ?';
-      params = [nome, email, senha_hash, id];
-    } else {
-      sql = 'UPDATE usuarios SET nome = ?, email = ? WHERE id = ?';
-      params = [nome, email, id];
+    else {
+
+      sql = `
+        UPDATE usuarios
+        SET
+          nome = ?,
+          email = ?
+        WHERE id = ?
+      `;
+
+      params = [
+        nome,
+        email,
+        id
+      ];
+
     }
+
+    // EXECUTAR UPDATE
 
     db.query(sql, params, (err, result) => {
 
       if (err) {
-        console.error('Erro no UPDATE:', err); // 🔥 AGORA MOSTRA ERRO REAL
-        return res.status(500).json({ erro: 'Erro ao atualizar usuário' });
+
+        console.error(
+          'ERRO UPDATE USUÁRIO:',
+          err
+        );
+
+        return res.status(500).json({
+          erro: 'Erro ao atualizar usuário'
+        });
+
       }
 
-      // verifica se alterou algum registro
+      // USUÁRIO NÃO ENCONTRADO
+
       if (result.affectedRows === 0) {
-        return res.status(404).json({ erro: 'Usuário não encontrado para atualizar' });
+
+        return res.status(404).json({
+          erro: 'Usuário não encontrado'
+        });
+
       }
 
-      return res.json({ mensagem: 'Usuário atualizado com sucesso' });
+      // SUCESSO
+
+      return res.status(200).json({
+
+        mensagem:
+          'Usuário atualizado com sucesso'
+
+      });
 
     });
 
   } catch (error) {
-    console.error('Erro geral:', error);
-    return res.status(500).json({ erro: 'Erro no servidor' });
+
+    console.error(
+      'ERRO GERAL:',
+      error
+    );
+
+    return res.status(500).json({
+      erro: 'Erro interno do servidor'
+    });
+
   }
+
 });
+
 
 module.exports = router;
