@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+
 import { useNavigate } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
@@ -20,9 +21,15 @@ function Admin() {
     useState(false)
 
   const [produtos, setProdutos] = useState([])
+
   const [usuarios, setUsuarios] = useState([])
 
+  const [pendentes, setPendentes] =
+    useState([])
+
+  // ============================================================
   // PROTEÇÃO
+  // ============================================================
 
   useEffect(() => {
 
@@ -37,60 +44,23 @@ function Admin() {
     }
 
     carregarProdutos()
+
     carregarUsuarios()
+
+    carregarPendentes()
 
   }, [])
 
-  // CARREGAR USUÁRIOS
-
-  async function carregarUsuarios() {
-
-    try {
-
-      const response = await api.get('/usuarios')
-
-      setUsuarios(response.data)
-
-    } catch (error) {
-
-      console.error(error)
-
-    }
-  }
-
-  // DROPDOWN
-
-  function toggleMenu() {
-
-    setDropdownAberto(!dropdownAberto)
-
-  }
-
-  // CONFIG
-
-  function abrirConta() {
-
-    navigate('/admin-config')
-
-  }
-
-  // LOGOUT
-
-  function logout() {
-
-    localStorage.removeItem('usuario')
-
-    navigate('/login')
-
-  }
-
+  // ============================================================
   // CARREGAR PRODUTOS
+  // ============================================================
 
   async function carregarProdutos() {
 
     try {
 
-      const response = await api.get('/anuncios')
+      const response =
+        await api.get('/anuncios')
 
       setProdutos(response.data)
 
@@ -99,9 +69,82 @@ function Admin() {
       console.error(error)
 
     }
+
   }
 
-  // DELETAR
+  // ============================================================
+  // CARREGAR USUÁRIOS
+  // ============================================================
+
+  async function carregarUsuarios() {
+
+    try {
+
+      const response =
+        await api.get('/usuarios')
+
+      setUsuarios(response.data)
+
+    } catch (error) {
+
+      console.error(error)
+
+    }
+
+  }
+
+  // ============================================================
+  // CARREGAR PENDENTES
+  // ============================================================
+
+  async function carregarPendentes() {
+
+    try {
+
+      const response =
+        await api.get('/auth/pendentes')
+
+      setPendentes(response.data)
+
+    } catch (error) {
+
+      console.error(error)
+
+    }
+
+  }
+
+  // ============================================================
+  // APROVAR FORNECEDOR
+  // ============================================================
+
+  async function aprovarFornecedor(id) {
+
+    try {
+
+      await api.put(
+        `/auth/aprovar/${id}`
+      )
+
+      alert('Fornecedor aprovado')
+
+      carregarPendentes()
+
+      carregarUsuarios()
+
+    } catch (error) {
+
+      console.error(error)
+
+      alert('Erro ao aprovar fornecedor')
+
+    }
+
+  }
+
+  // ============================================================
+  // DELETAR PRODUTO
+  // ============================================================
 
   async function deletarProduto(id) {
 
@@ -110,12 +153,16 @@ function Admin() {
     )
 
     if (!confirmar) {
+
       return
+
     }
 
     try {
 
-      await api.delete(`/anuncios/${id}`)
+      await api.delete(
+        `/anuncios/${id}`
+      )
 
       carregarProdutos()
 
@@ -125,9 +172,44 @@ function Admin() {
 
       console.error(error)
 
-      alert('Erro ao excluir')
+      alert('Erro ao excluir produto')
 
     }
+
+  }
+
+  // ============================================================
+  // DROPDOWN
+  // ============================================================
+
+  function toggleMenu() {
+
+    setDropdownAberto(
+      !dropdownAberto
+    )
+
+  }
+
+  // ============================================================
+  // CONFIG
+  // ============================================================
+
+  function abrirConta() {
+
+    navigate('/admin-config')
+
+  }
+
+  // ============================================================
+  // LOGOUT
+  // ============================================================
+
+  function logout() {
+
+    localStorage.removeItem('usuario')
+
+    navigate('/login')
+
   }
 
   return (
@@ -173,7 +255,9 @@ function Admin() {
         <div className="user-menu">
 
           <button onClick={toggleMenu}>
+
             Configurações
+
           </button>
 
           <div
@@ -221,7 +305,8 @@ function Admin() {
         <section
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
+            gridTemplateColumns:
+              'repeat(3, 1fr)',
             gap: '20px',
             marginBottom: '30px'
           }}
@@ -260,9 +345,12 @@ function Admin() {
             <h1>
 
               {
+
                 usuarios.filter(
-                  (u) => u.role === 'supplier'
+                  (u) =>
+                    u.role === 'supplier'
                 ).length
+
               }
 
             </h1>
@@ -271,51 +359,63 @@ function Admin() {
 
         </section>
 
-        <div className="card">
-
-          <h3>
-            Gerenciar Produtos
-          </h3>
-
-          <p>
-            Aprovar, editar ou remover produtos.
-          </p>
-
-        </div>
+        {/* FORNECEDORES PENDENTES */}
 
         <div className="card">
 
-          <h3>
-            Usuários
-          </h3>
+          <h2>
+            Fornecedores Pendentes
+          </h2>
 
-          <p>
-            Visualizar clientes e fornecedores.
-          </p>
+          {
 
-        </div>
+            pendentes.length === 0 ? (
 
-        <div className="card">
+              <p>
+                Nenhum fornecedor pendente.
+              </p>
 
-          <h3>
-            Fornecedores
-          </h3>
+            ) : (
 
-          <p>
-            Gerenciar fornecedores cadastrados.
-          </p>
+              pendentes.map((fornecedor) => (
 
-        </div>
+                <div
+                  key={fornecedor.id}
+                  style={{
+                    border: '1px solid #ddd',
+                    padding: '15px',
+                    borderRadius: '10px',
+                    marginBottom: '15px'
+                  }}
+                >
 
-        <div className="card">
+                  <h4>
+                    {fornecedor.nome}
+                  </h4>
 
-          <h3>
-            Relatórios
-          </h3>
+                  <p>
+                    {fornecedor.email}
+                  </p>
 
-          <p>
-            Analisar desempenho do marketplace.
-          </p>
+                  <button
+                    onClick={() =>
+                      aprovarFornecedor(
+                        fornecedor.id
+                      )
+                    }
+                  >
+
+                    Aprovar fornecedor
+
+                  </button>
+
+                </div>
+
+              ))
+
+            )
+
+          }
 
         </div>
 
@@ -327,47 +427,55 @@ function Admin() {
             Produtos cadastrados
           </h3>
 
-          {produtos.length === 0 ? (
+          {
 
-            <p>
-              Nenhum produto encontrado.
-            </p>
+            produtos.length === 0 ? (
 
-          ) : (
+              <p>
+                Nenhum produto encontrado.
+              </p>
 
-            produtos.map((produto) => (
+            ) : (
 
-              <div
-                key={produto.id}
-                style={{
-                  border: '1px solid #ddd',
-                  padding: '15px',
-                  marginBottom: '15px',
-                  borderRadius: '10px'
-                }}
-              >
+              produtos.map((produto) => (
 
-                <h4>
-                  {produto.nome}
-                </h4>
-
-                <p>
-                  {produto.descricao}
-                </p>
-
-                <button
-                  onClick={() =>
-                    deletarProduto(produto.id)
-                  }
+                <div
+                  key={produto.id}
+                  style={{
+                    border: '1px solid #ddd',
+                    padding: '15px',
+                    marginBottom: '15px',
+                    borderRadius: '10px'
+                  }}
                 >
-                  Excluir
-                </button>
 
-              </div>
+                  <h4>
+                    {produto.nome}
+                  </h4>
 
-            ))
+                  <p>
+                    {produto.descricao}
+                  </p>
 
-          )}
+                  <button
+                    onClick={() =>
+                      deletarProduto(
+                        produto.id
+                      )
+                    }
+                  >
+
+                    Excluir
+
+                  </button>
+
+                </div>
+
+              ))
+
+            )
+
+          }
 
         </div>
 
@@ -376,6 +484,7 @@ function Admin() {
     </>
 
   )
+
 }
 
 export default Admin

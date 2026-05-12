@@ -17,7 +17,7 @@ import Cliente from './pages/Cliente'
 import ClienteConfig from './pages/ClienteConfig'
 import FornecedorConfig from './pages/FornecedorConfig'
 import ProtectedRoute from './components/ProtectedRoute'
-
+import Register from './pages/Register'
 function App() {
 
   return (
@@ -131,6 +131,10 @@ function App() {
       <FornecedorConfig />
     </ProtectedRoute>
   }
+/>
+<Route
+  path="/register"
+  element={<Register />}
 />
       </Routes>
 

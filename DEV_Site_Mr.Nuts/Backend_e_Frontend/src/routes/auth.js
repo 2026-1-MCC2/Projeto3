@@ -37,7 +37,10 @@ router.post('/login', (req, res) => {
 
     if (err) {
 
-      console.error('ERRO LOGIN:', err);
+      console.error(
+        'ERRO LOGIN:',
+        err
+      );
 
       return res.status(500).json({
         erro: 'Erro interno do servidor'
@@ -59,12 +62,13 @@ router.post('/login', (req, res) => {
 
     try {
 
-      // VERIFICAR SENHA
+      // VALIDAR SENHA
 
-      const senhaValida = await bcrypt.compare(
-        senha,
-        usuario.senha_hash
-      );
+      const senhaValida =
+        await bcrypt.compare(
+          senha,
+          usuario.senha_hash
+        );
 
       if (!senhaValida) {
 
@@ -74,11 +78,34 @@ router.post('/login', (req, res) => {
 
       }
 
+      // USUÁRIO PENDENTE
+
+      if (usuario.status === 'pendente') {
+
+        return res.status(403).json({
+          erro:
+            'Cadastro aguardando aprovação do administrador'
+        });
+
+      }
+
+      // USUÁRIO BLOQUEADO
+
+      if (usuario.status === 'bloqueado') {
+
+        return res.status(403).json({
+          erro:
+            'Usuário bloqueado'
+        });
+
+      }
+
       // LOGIN OK
 
       return res.status(200).json({
 
-        mensagem: 'Login realizado com sucesso',
+        mensagem:
+          'Login realizado com sucesso',
 
         usuario: {
 
@@ -98,13 +125,236 @@ router.post('/login', (req, res) => {
 
     } catch (error) {
 
-      console.error('ERRO BCRYPT:', error);
+      console.error(
+        'ERRO BCRYPT:',
+        error
+      );
 
       return res.status(500).json({
         erro: 'Erro ao validar senha'
       });
 
     }
+
+  });
+
+});
+
+
+// ============================================================
+// CADASTRO
+// ============================================================
+
+router.post('/register', async (req, res) => {
+
+  const {
+    nome,
+    email,
+    senha,
+    role
+  } = req.body;
+
+  // VALIDAÇÃO
+
+  if (!nome || !email || !senha || !role) {
+
+    return res.status(400).json({
+      erro: 'Preencha todos os campos'
+    });
+
+  }
+
+  try {
+
+    // VERIFICAR EMAIL
+
+    const verificarSql = `
+      SELECT id
+      FROM usuarios
+      WHERE email = ?
+    `;
+
+    db.query(
+      verificarSql,
+      [email],
+      async (err, results) => {
+
+        if (err) {
+
+          console.error(err);
+
+          return res.status(500).json({
+            erro: 'Erro no servidor'
+          });
+
+        }
+
+        // EMAIL JÁ EXISTE
+
+        if (results.length > 0) {
+
+          return res.status(400).json({
+            erro: 'Email já cadastrado'
+          });
+
+        }
+
+        // HASH SENHA
+
+        const senha_hash =
+          await bcrypt.hash(senha, 10);
+
+        // STATUS
+
+        let status = 'ativo';
+
+        // FORNECEDOR PRECISA APROVAÇÃO
+
+        if (role === 'supplier') {
+
+          status = 'pendente';
+
+        }
+
+        // INSERT
+
+        const sql = `
+          INSERT INTO usuarios
+          (
+            nome,
+            email,
+            senha_hash,
+            role,
+            status
+          )
+          VALUES (?, ?, ?, ?, ?)
+        `;
+
+        const values = [
+          nome,
+          email,
+          senha_hash,
+          role,
+          status
+        ];
+
+        db.query(
+          sql,
+          values,
+          (err, result) => {
+
+            if (err) {
+
+              console.error(err);
+
+              return res.status(500).json({
+                erro:
+                  'Erro ao cadastrar usuário'
+              });
+
+            }
+
+            return res.status(201).json({
+
+              mensagem:
+
+                role === 'supplier'
+
+                  ? 'Cadastro enviado para aprovação do administrador'
+
+                  : 'Cadastro realizado com sucesso'
+
+            });
+
+          }
+        );
+
+      }
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    return res.status(500).json({
+      erro: 'Erro interno'
+    });
+
+  }
+
+});
+
+
+// ============================================================
+// LISTAR FORNECEDORES PENDENTES
+// ============================================================
+
+router.get('/pendentes', (req, res) => {
+
+  const sql = `
+    SELECT
+      id,
+      nome,
+      email,
+      role,
+      status
+    FROM usuarios
+    WHERE
+      role = 'supplier'
+      AND status = 'pendente'
+  `;
+
+  db.query(sql, (err, results) => {
+
+    if (err) {
+
+      console.error(err);
+
+      return res.status(500).json({
+        erro:
+          'Erro ao buscar pendentes'
+      });
+
+    }
+
+    return res.json(results);
+
+  });
+
+});
+
+
+// ============================================================
+// APROVAR FORNECEDOR
+// ============================================================
+
+router.put('/aprovar/:id', (req, res) => {
+
+  const { id } = req.params;
+
+  const sql = `
+    UPDATE usuarios
+    SET status = 'ativo'
+    WHERE id = ?
+  `;
+
+  db.query(sql, [id], (err, result) => {
+
+    if (err) {
+
+      console.error(err);
+
+      return res.status(500).json({
+        erro:
+          'Erro ao aprovar fornecedor'
+      });
+
+    }
+
+    return res.json({
+      mensagem:
+        'Fornecedor aprovado com sucesso'
+    });
 
   });
 
@@ -130,7 +380,8 @@ router.put('/usuario/:id', async (req, res) => {
   if (!nome || !email) {
 
     return res.status(400).json({
-      erro: 'Nome e email são obrigatórios'
+      erro:
+        'Nome e email são obrigatórios'
     });
 
   }
@@ -141,9 +392,7 @@ router.put('/usuario/:id', async (req, res) => {
 
     let params = [];
 
-    // ========================================================
     // COM NOVA SENHA
-    // ========================================================
 
     if (senha && senha.trim() !== '') {
 
@@ -168,9 +417,7 @@ router.put('/usuario/:id', async (req, res) => {
 
     }
 
-    // ========================================================
     // SEM ALTERAR SENHA
-    // ========================================================
 
     else {
 
@@ -190,34 +437,32 @@ router.put('/usuario/:id', async (req, res) => {
 
     }
 
-    // EXECUTAR UPDATE
+    // UPDATE
 
     db.query(sql, params, (err, result) => {
 
       if (err) {
 
         console.error(
-          'ERRO UPDATE USUÁRIO:',
+          'ERRO UPDATE:',
           err
         );
 
         return res.status(500).json({
-          erro: 'Erro ao atualizar usuário'
+          erro:
+            'Erro ao atualizar usuário'
         });
 
       }
-
-      // USUÁRIO NÃO ENCONTRADO
 
       if (result.affectedRows === 0) {
 
         return res.status(404).json({
-          erro: 'Usuário não encontrado'
+          erro:
+            'Usuário não encontrado'
         });
 
       }
-
-      // SUCESSO
 
       return res.status(200).json({
 
@@ -236,7 +481,8 @@ router.put('/usuario/:id', async (req, res) => {
     );
 
     return res.status(500).json({
-      erro: 'Erro interno do servidor'
+      erro:
+        'Erro interno do servidor'
     });
 
   }
