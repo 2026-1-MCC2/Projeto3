@@ -1,0 +1,32 @@
+ProtectedRoute.jsx
+import { Navigate } from 'react-router-dom'
+
+function ProtectedRoute(props) {
+
+  const usuario = JSON.parse(
+    localStorage.getItem('usuario')
+  )
+
+  // NÃO LOGADO
+
+  if (!usuario) {
+
+    return <Navigate to="/login" />
+
+  }
+
+  // ROLE NÃO PERMITIDA
+
+  if (
+    props.allowedRoles &&
+    !props.allowedRoles.includes(usuario.role)
+  ) {
+
+    return <Navigate to="/" />
+
+  }
+
+  return props.children
+}
+
+export default ProtectedRoute
