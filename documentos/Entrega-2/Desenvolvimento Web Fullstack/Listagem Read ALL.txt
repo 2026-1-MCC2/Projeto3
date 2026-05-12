@@ -1,0 +1,36 @@
+ useEffect(() => {
+
+    if (!usuario || usuario.role !== 'buyer') {
+
+      alert('Acesso negado')
+
+      navigate('/login')
+
+      return
+
+    }
+
+    carregarProdutos()
+
+  }, [])
+
+  // CARREGAR PRODUTOS
+
+  async function carregarProdutos() {
+
+    try {
+
+      const response =
+        await api.get('/anuncios')
+
+      setProdutos(response.data)
+
+    } catch (error) {
+
+      console.error(
+        'Erro ao carregar produtos:',
+        error
+      )
+
+    }
+  }
