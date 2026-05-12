@@ -11,13 +11,13 @@ Extensão VScode:
 
 Comandos:
 
-npm install express
-npm install cors
-npm install dotenv
-npm install multer
-npm install mysql2
-npm install bcrypt
-npm install nodemon
+npm.cmd install express
+npm.cmd install cors
+npm.cmd install dotenv
+npm.cmd install multer
+npm.cmd install mysql2
+npm.cmd install bcrypt
+npm.cmd install nodemon
 
 
 
@@ -31,3 +31,10 @@ Comando: node src/server.js ou npm run dev
 5) Abrir HTML
 Botão direito cima do arquivo INDEX -> Abrir com o live server.
 
+
+Com o servidor rodando cd ..\frontend
+cd ..\Backend_e_Frontend\frontend
+dir  (tem q aparecer vite.config.js)
+npm install
+npm run dev
+agora abra no navegador  http://localhost:5173/
