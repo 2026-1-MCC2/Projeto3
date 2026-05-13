@@ -132,9 +132,6 @@ cd DEV_Site_Mr.Nuts/Backend_e_Frontend
 # Instale as dependências
 npm install
 
-# Crie o arquivo de variáveis de ambiente
-cp .env.example .env   # ou crie manualmente (ver seção abaixo)
-
 # Inicie o servidor
 npm run dev
 # ou: node src/server.js
