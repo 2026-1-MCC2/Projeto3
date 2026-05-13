@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./imagens/logo.jpeg" width="300"/>
+  <img src="./imagens/Logo.DeuBug.jpeg" width="300"/>
 </p>
 
 <h1 align="center">DeuBug? - Marketplace B2B Mr.Nut</h1>
