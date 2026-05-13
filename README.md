@@ -176,6 +176,31 @@ PORT=3000
 
 Fluxo de telas [Acessar](https://app.diagrams.net/?src=about#G1fHdL1Mx78KfpsEZl9pQQlVDFUW3atqil#%7B%22pageId%22%3A%22wKDXtJ8HPepuOkDO76dD%22%7D)
 
+## 📁 Estrutura do Repositório
+
+```
+Projeto3/
+├── DEV_Site_Mr.Nuts/
+│   ├── Backend_e_Frontend/
+│   │   ├── src/
+│   │   │   ├── config/db.js        # Conexão com MySQL
+│   │   │   ├── controllers/        # Lógica de negócio
+│   │   │   └── routes/             # Rotas da API (anuncios, auth)
+│   │   ├── frontend/
+│   │   │   └── src/
+│   │   │       ├── pages/          # Telas React
+│   │   │       ├── components/     # Navbar, ProtectedRoute
+│   │   │       ├── services/api.js # Configuração da URL da API
+│   │   │       └── styles/         # CSS por tela
+│   │   ├── uploads/                # Imagens enviadas
+│   │   ├── schema.sql              # Script de criação do banco
+│   │   └── package.json
+│   ├── Banco_de_Dados/
+│   │   └── SQL - BD.txt
+│   └── Frontend/                   # Versão HTML estática (legada)
+├── documentos/                     # Entregas do PI
+└── README.md
+```
 
 ---
 
