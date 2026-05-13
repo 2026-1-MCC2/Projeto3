@@ -113,9 +113,72 @@ README.md
 
 ## 🚀 Execução do Projeto
 
-O projeto encontra-se em desenvolvimento.
+Pré-requisitos
 
-As instruções completas de execução serão disponibilizadas após a finalização das etapas de implementação.
+Node.js (v18+)
+XAMPP (para MySQL)
+VS Code com extensão Live Server (caso use o frontend estático)
+
+1. Banco de Dados
+
+Abra o XAMPP e inicie o serviço MySQL.
+Acesse o phpMyAdmin (http://localhost/phpmyadmin) ou o terminal MySQL.
+Crie o banco e rode o schema:
+
+2. Backend (API)
+bash# Entre na pasta do backend
+cd DEV_Site_Mr.Nuts/Backend_e_Frontend
+
+# Instale as dependências
+npm install
+
+# Crie o arquivo de variáveis de ambiente
+cp .env.example .env   # ou crie manualmente (ver seção abaixo)
+
+# Inicie o servidor
+npm run dev
+# ou: node src/server.js
+O servidor estará disponível em http://localhost:3000.
+
+3. Frontend (React + Vite)
+Em outro terminal:
+bash# Entre na pasta do frontend
+cd DEV_Site_Mr.Nuts/Backend_e_Frontend/frontend
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento
+npm run dev
+Acesse a aplicação em http://localhost:5173.
+
+A URL base da API é definida em um único arquivo:
+frontend/src/services/api.js
+jsimport axios from 'axios'
+
+const api = axios.create({
+  baseURL: 'http://localhost:3000'  // ← altere aqui se necessário
+})
+
+export default api
+Para apontar para outro servidor (ex.: produção ou IP diferente), basta trocar o valor de baseURL:
+jsbaseURL: 'http://SEU_IP_OU_DOMINIO:3000'
+
+Via variável de ambiente (recomendado): crie .env na raiz do frontend com:
+VITE_API_URL=http://localhost:3000
+E atualize api.js para:
+jsbaseURL: import.meta.env.VITE_API_URL
+
+🗄️ Configuração do .env (Backend)
+Crie o arquivo .env dentro de DEV_Site_Mr.Nuts/Backend_e_Frontend/ com o seguinte conteúdo:
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=SUA_SENHA_MYSQL
+DB_NAME=Nome_do_banco
+PORT=3000
+
+Fluxo de telas [Acessar](https://app.diagrams.net/?src=about#G1fHdL1Mx78KfpsEZl9pQQlVDFUW3atqil#%7B%22pageId%22%3A%22wKDXtJ8HPepuOkDO76dD%22%7D)
+
 
 ---
 
