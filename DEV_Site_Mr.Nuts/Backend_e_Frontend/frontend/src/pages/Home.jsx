@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
+import ProdutoList from '../components/ProdutoList'
 
 import api from '../services/api'
 
@@ -115,85 +115,11 @@ function Home() {
 
         </section>
 
-        <section className="products-grid">
-
-          {produtos.map((produto) => (
-
-            <article
-              key={produto.id}
-              className="product-card"
-            >
-
-              {/* IMAGEM */}
-
-              {produto.imagem ? (
-
-                <img
-                  src={`http://localhost:3000/uploads/${produto.imagem}`}
-                  alt={produto.nome}
-                  className="product-image"
-                />
-
-              ) : (
-
-                <div className="product-image"></div>
-
-              )}
-
-              <h3>
-                {produto.nome}
-              </h3>
-
-              <p>
-                {produto.descricao}
-              </p>
-
-              <strong>
-
-                {produto.preco
-                  ? `R$ ${produto.preco}`
-                  : 'Preço sob consulta'}
-
-              </strong>
-
-              <Link
-                to={`/editar/${produto.id}`}
-                className="btn-primary"
-              >
-                Editar Produto
-              </Link>
-
-              <button
-                className="btn-primary"
-                style={{
-                  marginTop: '10px',
-                  width: '100%'
-                }}
-                onClick={() =>
-                  adicionarFavorito(produto)
-                }
-              >
-                Favoritar
-              </button>
-
-              <button
-                className="btn-outline"
-                style={{
-                  marginTop: '10px',
-                  width: '100%'
-                }}
-                onClick={() =>
-                  deletarProduto(produto.id)
-                }
-              >
-                Excluir
-              </button>
-
-            </article>
-
-          ))}
-
-        </section>
+        <ProdutoList
+          produtos={produtos}
+          adicionarFavorito={adicionarFavorito}
+          deletarProduto={deletarProduto}
+        />
 
       </main>
 
