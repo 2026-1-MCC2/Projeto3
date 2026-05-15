@@ -237,6 +237,14 @@ function Login() {
 
           </p>
 
+          <p className="login-footer">
+
+          <Link to="/forgot-password">
+            Esqueci minha senha
+            </Link>
+
+          </p>
+
         </section>
 
       </main>
