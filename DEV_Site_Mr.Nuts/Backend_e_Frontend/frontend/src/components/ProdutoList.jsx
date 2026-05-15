@@ -3,9 +3,10 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 function ProdutoList({
-  produtos,
-  adicionarFavorito,
-  deletarProduto
+    produtos,
+    adicionarFavorito,
+    adicionarFornecedorFavorito,
+    deletarProduto
 }) {
 
   const [busca, setBusca] = useState('')
@@ -284,13 +285,25 @@ function ProdutoList({
               <button
                 className="btn-primary"
                 style={{
-                  marginTop: '10px'
-                }}
+                marginTop: '10px'
+              }}
                 onClick={() =>
-                  adicionarFavorito(produto)
-                }
+              adicionarFavorito(produto)
+              }
               >
-                Favoritar
+              Favoritar anúncio
+              </button>
+
+              <button
+                className="btn-primary"
+                style={{
+                marginTop: '10px'
+              }}
+                onClick={() =>
+              adicionarFornecedorFavorito(produto)
+              }
+              >
+                Favoritar fornecedor
               </button>
 
               <button

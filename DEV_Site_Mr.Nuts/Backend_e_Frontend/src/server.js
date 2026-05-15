@@ -59,4 +59,16 @@ app.listen(PORT, () => {
     `SERVIDOR RODANDO 🔥 na porta ${PORT}`
   );
 
+
+app.use('/anuncios', anunciosRoutes);
+
+const favoritosRoutes = require('./routes/favoritos');
+
+app.use('/favoritos', favoritosRoutes);
+
+const authRoutes = require('./routes/auth');
+
+app.use('/auth', authRoutes);
+
+
 });

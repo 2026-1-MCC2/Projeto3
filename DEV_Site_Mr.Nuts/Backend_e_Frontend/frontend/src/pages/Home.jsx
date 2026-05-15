@@ -44,29 +44,84 @@ function Home() {
 
   }
 
-  function adicionarFavorito(produto) {
+  async function adicionarFavorito(produto) {
 
-    let favoritos = JSON.parse(
-      localStorage.getItem('favoritos')
-    ) || []
-
-    const existe = favoritos.find(
-      (p) => p.id === produto.id
+    const usuario = JSON.parse(
+      localStorage.getItem('usuario')
     )
 
-    if (existe) {
-      alert('Produto já está nos favoritos')
+    if (!usuario) {
+
+      alert('Faça login para favoritar produtos')
+
       return
+
     }
 
-    favoritos.push(produto)
+    try {
 
-    localStorage.setItem(
-      'favoritos',
-      JSON.stringify(favoritos)
+      const response = await api.post('/favoritos/produto', {
+        usuario_id: usuario.id,
+        produto_id: produto.id
+      })
+
+      alert(response.data.mensagem)
+
+    } catch (error) {
+
+      console.error(error)
+
+      alert(
+        error.response?.data?.erro ||
+        'Erro ao favoritar produto'
+      )
+
+    }
+
+  }
+
+  async function adicionarFornecedorFavorito(produto) {
+
+    const usuario = JSON.parse(
+      localStorage.getItem('usuario')
     )
 
-    alert('Produto adicionado aos favoritos')
+    if (!usuario) {
+
+      alert('Faça login para favoritar fornecedores')
+
+      return
+
+    }
+
+    if (!produto.fornecedor_id) {
+
+      alert('Fornecedor não encontrado para este produto')
+
+      return
+
+    }
+
+    try {
+
+      const response = await api.post('/favoritos/fornecedor', {
+        usuario_id: usuario.id,
+        fornecedor_id: produto.fornecedor_id
+      })
+
+      alert(response.data.mensagem)
+
+    } catch (error) {
+
+      console.error(error)
+
+      alert(
+        error.response?.data?.erro ||
+        'Erro ao favoritar fornecedor'
+      )
+
+    }
+
   }
 
   async function deletarProduto(id) {
@@ -138,6 +193,7 @@ function Home() {
           <ProdutoList
             produtos={produtos}
             adicionarFavorito={adicionarFavorito}
+            adicionarFornecedorFavorito={adicionarFornecedorFavorito}
             deletarProduto={deletarProduto}
           />
 
@@ -156,6 +212,7 @@ function Home() {
     </>
 
   )
+
 }
 
 export default Home
