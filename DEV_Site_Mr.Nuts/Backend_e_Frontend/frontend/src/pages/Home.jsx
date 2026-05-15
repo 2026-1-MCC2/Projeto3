@@ -11,6 +11,8 @@ import '../styles/marketplace.css'
 function Home() {
 
   const [produtos, setProdutos] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [erro, setErro] = useState('')
 
   useEffect(() => {
     carregarProdutos()
@@ -20,21 +22,27 @@ function Home() {
 
     try {
 
+      setLoading(true)
+
       const response = await api.get('/anuncios')
 
       setProdutos(response.data)
 
+      setErro('')
+
     } catch (error) {
 
-      console.error(
-        'Erro ao carregar produtos:',
-        error
-      )
+      console.error('Erro ao carregar produtos:', error)
+
+      setErro('Erro ao carregar produtos do banco de dados.')
+
+    } finally {
+
+      setLoading(false)
 
     }
-  }
 
-  // FAVORITOS
+  }
 
   function adicionarFavorito(produto) {
 
@@ -47,11 +55,8 @@ function Home() {
     )
 
     if (existe) {
-
       alert('Produto já está nos favoritos')
-
       return
-
     }
 
     favoritos.push(produto)
@@ -63,8 +68,6 @@ function Home() {
 
     alert('Produto adicionado aos favoritos')
   }
-
-  // DELETAR
 
   async function deletarProduto(id) {
 
@@ -80,17 +83,18 @@ function Home() {
 
       await api.delete(`/anuncios/${id}`)
 
-      carregarProdutos()
-
       alert('Produto deletado com sucesso!')
+
+      carregarProdutos()
 
     } catch (error) {
 
-      console.log(error)
+      console.error(error)
 
       alert('Erro ao deletar produto')
 
     }
+
   }
 
   return (
@@ -98,8 +102,6 @@ function Home() {
     <>
 
       <Navbar />
-
-      {/* MARKETPLACE */}
 
       <main className="marketplace-container">
 
@@ -110,20 +112,38 @@ function Home() {
           </h1>
 
           <p>
-            Encontre produtos e fornecedores disponíveis.
+            Produtos cadastrados no banco de dados.
           </p>
 
         </section>
 
-        <ProdutoList
-          produtos={produtos}
-          adicionarFavorito={adicionarFavorito}
-          deletarProduto={deletarProduto}
-        />
+        {loading && (
+
+          <p className="empty-message">
+            Carregando produtos...
+          </p>
+
+        )}
+
+        {erro && (
+
+          <p className="empty-message">
+            {erro}
+          </p>
+
+        )}
+
+        {!loading && !erro && (
+
+          <ProdutoList
+            produtos={produtos}
+            adicionarFavorito={adicionarFavorito}
+            deletarProduto={deletarProduto}
+          />
+
+        )}
 
       </main>
-
-      {/* FOOTER */}
 
       <footer>
 

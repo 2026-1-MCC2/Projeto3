@@ -138,6 +138,23 @@
     color: #777;
     margin-top: 20px;
   }
+  
+  
+product-card .btn-outline {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 2px solid #ff6a00;
+  background: transparent;
+  color: #ff6a00;
+  font-weight: 600;
+}
+
+.product-card .btn-outline:hover {
+  background: #ff6a00;
+  color: #fff;
+}
 
 }
 
