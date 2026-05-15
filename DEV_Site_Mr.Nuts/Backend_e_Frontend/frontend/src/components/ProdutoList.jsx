@@ -9,30 +9,96 @@ function ProdutoList({
 }) {
 
   const [busca, setBusca] = useState('')
+  const [categoria, setCategoria] = useState('')
+  const [regiao, setRegiao] = useState('')
+  const [moq, setMoq] = useState('')
+  const [fornecedor, setFornecedor] = useState('')
+
+  const categorias = [
+    ...new Set(
+      produtos
+        .map((produto) => produto.categoria_nome)
+        .filter(Boolean)
+    )
+  ]
+
+  const regioes = [
+    ...new Set(
+      produtos
+        .map((produto) => produto.regiao)
+        .filter(Boolean)
+    )
+  ]
+
+  const fornecedores = [
+    ...new Set(
+      produtos
+        .map((produto) => produto.fornecedor_nome)
+        .filter(Boolean)
+    )
+  ]
 
   const produtosFiltrados = produtos.filter((produto) => {
 
     const textoBusca = busca.toLowerCase()
 
-    const nome = produto.nome || ''
-    const descricao = produto.descricao || ''
-    const marca = produto.marca || ''
-    const fornecedor = produto.fornecedor_nome || produto.fornecedor || ''
+    const nomeProduto = produto.nome || ''
+    const descricaoProduto = produto.descricao || ''
+    const marcaProduto = produto.marca || ''
+    const fornecedorProduto = produto.fornecedor_nome || ''
+    const categoriaProduto = produto.categoria_nome || ''
+    const regiaoProduto = produto.regiao || ''
+    const moqProduto = Number(produto.moq || 0)
+
+    const passouBusca =
+      nomeProduto.toLowerCase().includes(textoBusca) ||
+      descricaoProduto.toLowerCase().includes(textoBusca) ||
+      marcaProduto.toLowerCase().includes(textoBusca) ||
+      fornecedorProduto.toLowerCase().includes(textoBusca)
+
+    const passouCategoria =
+      categoria === '' ||
+      categoriaProduto === categoria
+
+    const passouRegiao =
+      regiao === '' ||
+      regiaoProduto === regiao
+
+    const passouFornecedor =
+      fornecedor === '' ||
+      fornecedorProduto === fornecedor
+
+    const passouMoq =
+      moq === '' ||
+      moqProduto <= Number(moq)
 
     return (
-      nome.toLowerCase().includes(textoBusca) ||
-      descricao.toLowerCase().includes(textoBusca) ||
-      marca.toLowerCase().includes(textoBusca) ||
-      fornecedor.toLowerCase().includes(textoBusca)
+      passouBusca &&
+      passouCategoria &&
+      passouRegiao &&
+      passouFornecedor &&
+      passouMoq
     )
 
   })
+
+  function limparFiltros() {
+
+    setBusca('')
+    setCategoria('')
+    setRegiao('')
+    setMoq('')
+    setFornecedor('')
+
+  }
 
   return (
 
     <>
 
-      <div className="search-container">
+      {/* FILTROS */}
+
+      <div className="filters-container">
 
         <input
           type="text"
@@ -42,12 +108,99 @@ function ProdutoList({
           className="search-input"
         />
 
+        <select
+          value={categoria}
+          onChange={(e) => setCategoria(e.target.value)}
+          className="filter-select"
+        >
+
+          <option value="">
+            Todas as categorias
+          </option>
+
+          {categorias.map((item) => (
+
+            <option
+              key={item}
+              value={item}
+            >
+              {item}
+            </option>
+
+          ))}
+
+        </select>
+
+        <select
+          value={regiao}
+          onChange={(e) => setRegiao(e.target.value)}
+          className="filter-select"
+        >
+
+          <option value="">
+            Todas as regiões
+          </option>
+
+          {regioes.map((item) => (
+
+            <option
+              key={item}
+              value={item}
+            >
+              {item}
+            </option>
+
+          ))}
+
+        </select>
+
+        <select
+          value={fornecedor}
+          onChange={(e) => setFornecedor(e.target.value)}
+          className="filter-select"
+        >
+
+          <option value="">
+            Todos os fornecedores
+          </option>
+
+          {fornecedores.map((item) => (
+
+            <option
+              key={item}
+              value={item}
+            >
+              {item}
+            </option>
+
+          ))}
+
+        </select>
+
+        <input
+          type="number"
+          placeholder="MOQ máximo"
+          value={moq}
+          onChange={(e) => setMoq(e.target.value)}
+          className="filter-input"
+        />
+
+        <button
+          type="button"
+          onClick={limparFiltros}
+          className="filter-clear"
+        >
+          Limpar filtros
+        </button>
+
       </div>
+
+      {/* RESULTADO */}
 
       {produtosFiltrados.length === 0 ? (
 
         <p className="empty-message">
-          Nenhum produto encontrado.
+          Nenhum produto encontrado com esses filtros.
         </p>
 
       ) : (
@@ -85,10 +238,26 @@ function ProdutoList({
 
               <p>
                 <strong>
-                  Marca:
+                  Categoria:
                 </strong>
                 {' '}
-                {produto.marca || 'Não informada'}
+                {produto.categoria_nome || 'Não informada'}
+              </p>
+
+              <p>
+                <strong>
+                  Região:
+                </strong>
+                {' '}
+                {produto.regiao || 'Não informada'}
+              </p>
+
+              <p>
+                <strong>
+                  MOQ:
+                </strong>
+                {' '}
+                {produto.moq || 'Não informado'}
               </p>
 
               <p>
@@ -96,7 +265,7 @@ function ProdutoList({
                   Fornecedor:
                 </strong>
                 {' '}
-                {produto.fornecedor_nome || produto.fornecedor || 'Não informado'}
+                {produto.fornecedor_nome || 'Não informado'}
               </p>
 
               <strong>
@@ -147,6 +316,7 @@ function ProdutoList({
     </>
 
   )
+
 }
 
 export default ProdutoList

@@ -156,5 +156,68 @@ product-card .btn-outline {
   color: #fff;
 }
 
+.filters-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
+  gap: 12px;
+  margin: 20px 0 35px;
+  align-items: center;
+}
+
+.search-input,
+.filter-select,
+.filter-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  background: #fff;
+}
+
+.search-input:focus,
+.filter-select:focus,
+.filter-input:focus {
+  outline: none;
+  border-color: #ff6a00;
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.15);
+}
+
+.filter-clear {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #1f2d3d;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.filter-clear:hover {
+  background: #111827;
+}
+
+.empty-message {
+  text-align: center;
+  color: #777;
+  margin-top: 20px;
+}
+
+@media (max-width: 1100px) {
+
+  .filters-container {
+    grid-template-columns: 1fr 1fr;
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .filters-container {
+    grid-template-columns: 1fr;
+  }
+
+}
+
 }
 
