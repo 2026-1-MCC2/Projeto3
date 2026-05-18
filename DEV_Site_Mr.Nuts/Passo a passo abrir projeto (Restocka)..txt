@@ -34,12 +34,9 @@ Comando: node src/server.js ou npm run dev
 *Certificar que o caminho no terminal esteja DEV-site -> Backend_e_Frontend*
 
 5) Abrir HTML
-Botão direito cima do arquivo INDEX -> Abrir com o live server.
-
-
 Com o servidor rodando cd ..\frontend
 cd ..\Backend_e_Frontend\frontend
 dir  (tem q aparecer vite.config.js)
-npm install
-npm run dev
+npm.cmd instal
+npm.cmd run dev
 agora abra no navegador  http://localhost:5173/
