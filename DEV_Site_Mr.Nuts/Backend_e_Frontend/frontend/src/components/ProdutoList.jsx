@@ -1,335 +1,227 @@
-import { useState } from 'react'
-
-import { Link } from 'react-router-dom'
-
 function ProdutoList({
-    produtos,
-    adicionarFavorito,
-    adicionarFornecedorFavorito,
-    deletarProduto
+  produtos,
+  adicionarFavorito,
+  adicionarFornecedorFavorito
 }) {
+  function formatarPreco(preco) {
+    if (!preco) {
+      return 'Preço sob consulta'
+    }
 
-  const [busca, setBusca] = useState('')
-  const [categoria, setCategoria] = useState('')
-  const [regiao, setRegiao] = useState('')
-  const [moq, setMoq] = useState('')
-  const [fornecedor, setFornecedor] = useState('')
+    const precoNumerico = Number(preco)
 
-  const categorias = [
-    ...new Set(
-      produtos
-        .map((produto) => produto.categoria_nome)
-        .filter(Boolean)
-    )
-  ]
+    if (Number.isNaN(precoNumerico)) {
+      return 'Preço sob consulta'
+    }
 
-  const regioes = [
-    ...new Set(
-      produtos
-        .map((produto) => produto.regiao)
-        .filter(Boolean)
-    )
-  ]
+    return precoNumerico.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    })
+  }
 
-  const fornecedores = [
-    ...new Set(
-      produtos
-        .map((produto) => produto.fornecedor_nome)
-        .filter(Boolean)
-    )
-  ]
-
-  const produtosFiltrados = produtos.filter((produto) => {
-
-    const textoBusca = busca.toLowerCase()
-
-    const nomeProduto = produto.nome || ''
-    const descricaoProduto = produto.descricao || ''
-    const marcaProduto = produto.marca || ''
-    const fornecedorProduto = produto.fornecedor_nome || ''
-    const categoriaProduto = produto.categoria_nome || ''
-    const regiaoProduto = produto.regiao || ''
-    const moqProduto = Number(produto.moq || 0)
-
-    const passouBusca =
-      nomeProduto.toLowerCase().includes(textoBusca) ||
-      descricaoProduto.toLowerCase().includes(textoBusca) ||
-      marcaProduto.toLowerCase().includes(textoBusca) ||
-      fornecedorProduto.toLowerCase().includes(textoBusca)
-
-    const passouCategoria =
-      categoria === '' ||
-      categoriaProduto === categoria
-
-    const passouRegiao =
-      regiao === '' ||
-      regiaoProduto === regiao
-
-    const passouFornecedor =
-      fornecedor === '' ||
-      fornecedorProduto === fornecedor
-
-    const passouMoq =
-      moq === '' ||
-      moqProduto <= Number(moq)
-
+  function obterCategoria(produto) {
     return (
-      passouBusca &&
-      passouCategoria &&
-      passouRegiao &&
-      passouFornecedor &&
-      passouMoq
+      produto.categoria_nome ||
+      produto.categoria ||
+      produto.nome_categoria ||
+      'Não informada'
     )
+  }
 
-  })
+  function obterFornecedor(produto) {
+    return (
+      produto.fornecedor_nome ||
+      produto.nome_empresa ||
+      produto.fornecedor ||
+      'Fornecedor não informado'
+    )
+  }
 
-  function limparFiltros() {
+  function obterRegiao(produto) {
+    return (
+      produto.regiao ||
+      produto.estado ||
+      produto.localizacao ||
+      produto.cidade ||
+      'Nacional'
+    )
+  }
 
-    setBusca('')
-    setCategoria('')
-    setRegiao('')
-    setMoq('')
-    setFornecedor('')
+  function obterMoq(produto) {
+    return (
+      produto.moq ||
+      produto.quantidade_minima ||
+      produto.moq_minimo ||
+      'Não informado'
+    )
+  }
 
+  function obterEmojiProduto(produto) {
+    const categoria = String(obterCategoria(produto)).toLowerCase()
+    const nome = String(produto.nome || '').toLowerCase()
+
+    if (
+      categoria.includes('chip') ||
+      categoria.includes('snack') ||
+      nome.includes('chip')
+    ) {
+      return '🍟'
+    }
+
+    if (
+      categoria.includes('castanha') ||
+      nome.includes('castanha') ||
+      nome.includes('amendoim')
+    ) {
+      return '🥜'
+    }
+
+    if (
+      categoria.includes('bebida') ||
+      nome.includes('suco') ||
+      nome.includes('água') ||
+      nome.includes('agua')
+    ) {
+      return '🥤'
+    }
+
+    if (
+      categoria.includes('ingrediente') ||
+      nome.includes('tempero')
+    ) {
+      return '🧂'
+    }
+
+    if (categoria.includes('congelado')) {
+      return '🧊'
+    }
+
+    return '📦'
+  }
+
+  function obterClasseImagem(produto) {
+    const categoria = String(obterCategoria(produto)).toLowerCase()
+
+    if (categoria.includes('bebida')) {
+      return 'blue'
+    }
+
+    if (categoria.includes('ingrediente')) {
+      return 'green'
+    }
+
+    if (categoria.includes('castanha')) {
+      return 'yellow'
+    }
+
+    return 'cream'
+  }
+
+  if (produtos.length === 0) {
+    return (
+      <p className="empty-message">
+        Nenhum produto encontrado com esses filtros.
+      </p>
+    )
   }
 
   return (
+    <section className="products-grid">
 
-    <>
-
-      {/* FILTROS */}
-
-      <div className="filters-container">
-
-        <input
-          type="text"
-          placeholder="Buscar por produto, marca ou fornecedor..."
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-          className="search-input"
-        />
-
-        <select
-          value={categoria}
-          onChange={(e) => setCategoria(e.target.value)}
-          className="filter-select"
+      {produtos.map((produto) => (
+        <article
+          key={produto.id}
+          className="product-card"
         >
 
-          <option value="">
-            Todas as categorias
-          </option>
+          <button
+            type="button"
+            className="favorite-circle"
+            onClick={() => adicionarFavorito(produto)}
+            title="Favoritar anúncio"
+          >
+            ♡
+          </button>
 
-          {categorias.map((item) => (
+          <div className={`product-image-box ${obterClasseImagem(produto)}`}>
 
-            <option
-              key={item}
-              value={item}
-            >
-              {item}
-            </option>
+            {produto.imagem ? (
+              <img
+                src={`http://localhost:3000/uploads/${produto.imagem}`}
+                alt={produto.nome || 'Produto'}
+                className="product-real-image"
+              />
+            ) : (
+              <span className="product-emoji">
+                {obterEmojiProduto(produto)}
+              </span>
+            )}
 
-          ))}
+          </div>
 
-        </select>
+          <div className="product-info">
 
-        <select
-          value={regiao}
-          onChange={(e) => setRegiao(e.target.value)}
-          className="filter-select"
-        >
+            <h3>
+              {produto.nome || 'Produto sem nome'}
+            </h3>
 
-          <option value="">
-            Todas as regiões
-          </option>
+            <p className="supplier-name">
+              🏭 {obterFornecedor(produto)}
+            </p>
 
-          {regioes.map((item) => (
-
-            <option
-              key={item}
-              value={item}
-            >
-              {item}
-            </option>
-
-          ))}
-
-        </select>
-
-        <select
-          value={fornecedor}
-          onChange={(e) => setFornecedor(e.target.value)}
-          className="filter-select"
-        >
-
-          <option value="">
-            Todos os fornecedores
-          </option>
-
-          {fornecedores.map((item) => (
-
-            <option
-              key={item}
-              value={item}
-            >
-              {item}
-            </option>
-
-          ))}
-
-        </select>
-
-        <input
-          type="number"
-          placeholder="MOQ máximo"
-          value={moq}
-          onChange={(e) => setMoq(e.target.value)}
-          className="filter-input"
-        />
-
-        <button
-          type="button"
-          onClick={limparFiltros}
-          className="filter-clear"
-        >
-          Limpar filtros
-        </button>
-
-      </div>
-
-      {/* RESULTADO */}
-
-      {produtosFiltrados.length === 0 ? (
-
-        <p className="empty-message">
-          Nenhum produto encontrado com esses filtros.
-        </p>
-
-      ) : (
-
-        <section className="products-grid">
-
-          {produtosFiltrados.map((produto) => (
-
-            <article
-              key={produto.id}
-              className="product-card"
-            >
-
-              {produto.imagem ? (
-
-                <img
-                  src={`http://localhost:3000/uploads/${produto.imagem}`}
-                  alt={produto.nome}
-                  className="product-image"
-                />
-
-              ) : (
-
-                <div className="product-image"></div>
-
-              )}
-
-              <h3>
-                {produto.nome}
-              </h3>
-
-              <p>
+            {produto.descricao && (
+              <p className="product-description">
                 {produto.descricao}
               </p>
+            )}
 
-              <p>
-                <strong>
-                  Categoria:
-                </strong>
-                {' '}
-                {produto.categoria_nome || 'Não informada'}
-              </p>
+            <p className="moq-text-card">
+              MOQ: <strong>{obterMoq(produto)} un</strong>
+            </p>
 
-              <p>
-                <strong>
-                  Região:
-                </strong>
-                {' '}
-                {produto.regiao || 'Não informada'}
-              </p>
+            <div className="product-tags-row">
 
-              <p>
-                <strong>
-                  MOQ:
-                </strong>
-                {' '}
-                {produto.moq || 'Não informado'}
-              </p>
+              <span className="product-tag">
+                {obterCategoria(produto)}
+              </span>
 
-              <p>
-                <strong>
-                  Fornecedor:
-                </strong>
-                {' '}
-                {produto.fornecedor_nome || 'Não informado'}
-              </p>
+              <span className="product-tag">
+                📍 {obterRegiao(produto)}
+              </span>
 
-              <strong>
-                {produto.preco
-                  ? `R$ ${Number(produto.preco).toFixed(2)}`
-                  : 'Preço sob consulta'}
-              </strong>
+            </div>
 
-              <Link
-                to={`/editar/${produto.id}`}
-                className="btn-primary"
-              >
-                Editar Produto
-              </Link>
+            <strong className="product-price">
+              {formatarPreco(produto.preco)}
+            </strong>
+
+            <div className="product-actions">
 
               <button
-                className="btn-primary"
-                style={{
-                marginTop: '10px'
-              }}
-                onClick={() =>
-              adicionarFavorito(produto)
-              }
+                type="button"
+                className="btn-budget"
               >
-              Favoritar anúncio
+                📋 Orçamento
               </button>
 
               <button
-                className="btn-primary"
-                style={{
-                marginTop: '10px'
-              }}
-                onClick={() =>
-              adicionarFornecedorFavorito(produto)
-              }
+                type="button"
+                className="btn-contact"
+                onClick={() => adicionarFornecedorFavorito(produto)}
               >
-                Favoritar fornecedor
+                📞 Contato
               </button>
 
-              <button
-                className="btn-outline"
-                style={{
-                  marginTop: '10px'
-                }}
-                onClick={() =>
-                  deletarProduto(produto.id)
-                }
-              >
-                Excluir
-              </button>
+            </div>
 
-            </article>
+          </div>
 
-          ))}
+        </article>
+      ))}
 
-        </section>
-
-      )}
-
-    </>
-
+    </section>
   )
-
 }
 
 export default ProdutoList

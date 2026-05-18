@@ -1,223 +1,751 @@
-.marketplace-container {
-  padding: 60px 70px;
+.marketplace-page {
+  width: 100vw !important;
+  max-width: none !important;
+  min-height: 100vh;
+  margin-left: calc(50% - 50vw) !important;
+  margin-right: calc(50% - 50vw) !important;
+  background: #fff4e8 !important;
+  overflow-x: hidden;
 }
 
-.marketplace-header {
-  background: linear-gradient(135deg, #ff6a00, #ff8a1d);
-  color: #fff;
-  padding: 46px;
-  border-radius: 22px;
-  margin-bottom: 36px;
-  box-shadow: 0 12px 32px rgba(255, 106, 0, .25);
+/* TOPO */
+.marketplace-top {
+  width: 100%;
+  background: #210800;
+  padding: 20px 76px 30px;
+  color: white;
+  box-sizing: border-box;
 }
 
-.marketplace-header h1 {
-  font-size: 38px;
-  margin: 0 0 10px;
+.marketplace-top h1 {
+  max-width: 1180px;
+  margin: 0 auto 16px;
+  font-size: 30px;
+  font-weight: 900;
+  color: white;
 }
 
-.marketplace-header p {
-  font-size: 18px;
+.marketplace-search-row {
+  max-width: 1180px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 1fr 110px 100px;
+  gap: 12px;
+  align-items: center;
+}
+
+.marketplace-search-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.22);
+
+  background: rgba(255,255,255,0.1);
+  color: white;
+
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.marketplace-search-input::placeholder {
+  color: rgba(255,255,255,0.5);
+}
+
+.marketplace-search-input:focus {
+  outline: none;
+  border-color: #ffb300;
+}
+
+.marketplace-search-button {
+  width: 110px !important;
+  height: 44px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #ffc533;
+  color: #1d0a00;
+
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.marketplace-clear-button {
+  width: 100px !important;
+  height: 44px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #fff0df;
+  color: #d91b2b;
+
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* CONTEÚDO */
+.marketplace-content {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 22px;
+
+  padding: 26px 20px 70px;
+  box-sizing: border-box;
+}
+
+/* FILTROS */
+.filters-sidebar {
+  width: 240px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px;
+
+  box-shadow: 0 18px 45px rgba(120, 50, 0, 0.08);
+
+  align-self: start;
+  position: sticky;
+  top: 90px;
+  box-sizing: border-box;
+}
+
+.filters-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ffe1c7;
+  margin-bottom: 14px;
+}
+
+.filters-title-row h2 {
   margin: 0;
-  opacity: .95;
+  color: #111;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.filters-title-row button {
+  border: 1px solid #ffb26d;
+  background: #fff7ef;
+  color: #8a5a3b;
+
+  padding: 8px 16px;
+  border-radius: 999px;
+
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.filter-block {
+  margin-bottom: 22px;
+}
+
+.filter-block h3 {
+  margin: 0 0 12px;
+
+  color: #111;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .4px;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 10px;
+
+  color: #6b4b3c;
+  font-size: 14px;
+}
+
+.filter-option input {
+  width: 15px;
+  height: 15px;
+  accent-color: #e62539;
+}
+
+.filter-option span {
+  flex: 1;
+}
+
+.filter-option small {
+  color: #7d665b;
+}
+
+.filter-empty {
+  color: #7d665b;
+  font-size: 13px;
+}
+
+.moq-range {
+  width: 100%;
+  accent-color: #e62539;
+}
+
+.moq-text {
+  color: #7d665b;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+/* RESULTADOS */
+.marketplace-results {
+  width: 100%;
+  min-width: 0;
 }
 
 .products-grid {
+  width: 100%;
+
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(3, minmax(230px, 1fr));
+  gap: 18px;
 }
 
+/* CARD */
 .product-card {
-  background: #fff;
-  padding: 24px;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+
+  background: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 10px 32px rgba(0, 0, 0, .08);
-  transition: .2s;
+  overflow: hidden;
+
+  box-shadow: 0 18px 45px rgba(120, 50, 0, 0.08);
+  transition: 0.2s ease;
 }
 
 .product-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, .12);
+}
+
+/* FAVORITO */
+.favorite-circle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+
+  width: 34px !important;
+  min-width: 34px !important;
+  max-width: 34px !important;
+  height: 34px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: white;
+  color: #9b6cff;
+
+  font-size: 19px;
+  cursor: pointer;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
 /* IMAGEM */
-
-.product-image {
-  height: 180px;
-  border-radius: 14px;
-  background: linear-gradient(
-    135deg,
-    #fff1e6,
-    #ffd4ad
-  );
-  margin-bottom: 18px;
-
-  object-fit: cover;
+.product-image-box {
   width: 100%;
+  height: 160px;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-image-box.cream {
+  background: #fff7dc;
+}
+
+.product-image-box.yellow {
+  background: #fff9d8;
+}
+
+.product-image-box.green {
+  background: #e8f7ec;
+}
+
+.product-image-box.blue {
+  background: #e4f4ff;
+}
+
+.product-emoji {
+  font-size: 60px;
+}
+
+.product-real-image {
+  width: 120px !important;
+  height: 120px !important;
+  max-width: 120px !important;
+  max-height: 120px !important;
+
+  object-fit: contain !important;
   display: block;
 }
 
-.product-card h3 {
-  color: #1f2d3d;
-  margin: 0 0 8px;
+/* INFO */
+.product-info {
+  padding: 16px;
 }
 
-.product-card p {
-  color: #5d6b7a;
+.product-info h3 {
+  color: #050505;
+  font-size: 17px;
+  font-weight: 900;
+
+  margin: 0 0 7px;
+}
+
+.supplier-name {
+  color: #6f4b3c;
+  font-size: 13px;
+  margin: 0 0 10px;
+}
+
+.product-description {
+  color: #7d665b;
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0 0 10px;
+
+  max-height: 36px;
+  overflow: hidden;
+}
+
+.moq-text-card {
+  color: #ff6a00;
+  font-size: 13px;
+  font-weight: 800;
+  margin: 0 0 10px;
+}
+
+.moq-text-card strong {
+  color: #ff6a00;
+}
+
+.product-tags-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
   margin-bottom: 12px;
 }
 
-.product-card strong {
+.product-tag {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 7px 10px;
+  border-radius: 999px;
+
+  background: #fff3e7;
+  border: 1px solid #ffbd7b;
+
+  color: #7b4a2f;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.product-price {
   display: block;
+
   color: #ff6a00;
-  font-size: 22px;
-  margin-bottom: 18px;
+  font-size: 18px;
+  font-weight: 900;
+
+  margin-bottom: 14px;
 }
 
-.product-card .btn-primary {
-  background: #ff6a00;
-  color: #fff;
+/* BOTÕES DO CARD */
+.product-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.btn-budget,
+.btn-contact {
   width: 100%;
-  text-align: center;
+  min-width: 0;
+  height: 38px;
+
+  border-radius: 9px;
+
+  font-size: 13px;
+  font-weight: 900;
+
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-budget {
+  background: #fff4e8;
+  border: 1px solid #ffbd7b;
+  color: #7b4a2f;
+}
+
+.btn-contact {
+  background: #df263a;
   border: none;
-  padding: 12px;
-  border-radius: 10px;
-  cursor: pointer;
+  color: white;
 }
 
-.product-card .btn-primary:hover {
-  background: #e85f00;
+.empty-message {
+  text-align: center;
+  color: #7d665b;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 40px;
 }
 
-.product-card .btn-outline {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  cursor: pointer;
+/* Remove qualquer sobra antiga */
+.product-badge,
+.rating,
+.btn-delete-product {
+  display: none !important;
 }
 
-@media (max-width: 900px) {
+/* RESPONSIVO */
+@media (max-width: 1100px) {
+  .marketplace-content {
+    grid-template-columns: 1fr;
+  }
 
-  .marketplace-container {
-    padding: 40px 24px;
+  .filters-sidebar {
+    width: 100%;
+    position: static;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+
+  .marketplace-search-row {
+    grid-template-columns: 1fr;
+  }
+
+  .marketplace-search-button,
+  .marketplace-clear-button {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .marketplace-top {
+    padding: 24px 22px;
+  }
+
+  .marketplace-content {
+    padding: 22px;
   }
 
   .products-grid {
     grid-template-columns: 1fr;
   }
+}
+/* =============================== */
+/* AJUSTE FINAL DE POSICIONAMENTO */
+/* =============================== */
 
-  .marketplace-header {
-    padding: 34px 26px;
-  }
-
-  .search-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin: 20px 0 30px;
-  }
-  
-  .search-input {
-    width: 100%;
-    max-width: 450px;
-    padding: 12px 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 15px;
-  }
-  
-  .search-input:focus {
-    outline: none;
-    border-color: #c2410c;
-    box-shadow: 0 0 0 2px rgba(194, 65, 12, 0.15);
-  }
-  
-  .empty-message {
-    text-align: center;
-    color: #777;
-    margin-top: 20px;
-  }
-  
-  
-product-card .btn-outline {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  border: 2px solid #ff6a00;
-  background: transparent;
-  color: #ff6a00;
-  font-weight: 600;
+/* Página sem margem lateral escondida */
+.marketplace-page {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #fff4e8 !important;
+  overflow-x: hidden !important;
 }
 
-.product-card .btn-outline:hover {
-  background: #ff6a00;
-  color: #fff;
+/* Retângulo marrom mais alto e rente às laterais */
+.marketplace-top {
+  width: calc(100% - 40px) !important;
+  max-width: none !important;
+
+  margin: 1px 20px 0 0px !important;
+
+  background: #210800 !important;
+  padding: 24px 116px 26px !important;
+
+  box-sizing: border-box !important;
 }
 
-.filters-container {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
-  gap: 12px;
-  margin: 20px 0 35px;
-  align-items: center;
+/* Título e busca não ficam presos no centro */
+.marketplace-top h1 {
+  max-width: none !important;
+  margin: 0 0 14px 0 !important;
+
+  font-size: 30px !important;
+  font-weight: 900 !important;
 }
 
-.search-input,
-.filter-select,
-.filter-input {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  font-size: 15px;
-  background: #fff;
+/* Busca ocupa melhor o espaço do retângulo */
+.marketplace-search-row {
+  max-width: none !important;
+  margin: 0 !important;
+
+  display: grid !important;
+  grid-template-columns: 1fr 110px 100px !important;
+  gap: 12px !important;
 }
 
-.search-input:focus,
-.filter-select:focus,
-.filter-input:focus {
-  outline: none;
-  border-color: #ff6a00;
-  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.15);
+/* Conteúdo mais para os cantos */
+.marketplace-content {
+  width: calc(100% - 40px) !important;
+  max-width: none !important;
+
+  margin: 24px 20px 70px 20px !important;
+  padding: 0 0 0 0 !important;
+
+  display: grid !important;
+  grid-template-columns: 220px 1fr !important;
+  gap: 20px !important;
+
+  box-sizing: border-box !important;
 }
 
-.filter-clear {
-  padding: 12px 16px;
-  border: none;
-  border-radius: 10px;
-  background: #1f2d3d;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
+/* Filtro mais encostado à esquerda */
+.filters-sidebar {
+  width: 220px !important;
+  min-width: 220px !important;
+
+  margin: 0 !important;
+  padding: 18px !important;
 }
 
-.filter-clear:hover {
-  background: #111827;
+/* Área dos anúncios ocupa todo o restante */
+.marketplace-results {
+  width: 100% !important;
+  min-width: 0 !important;
 }
 
-.empty-message {
-  text-align: center;
-  color: #777;
-  margin-top: 20px;
+/* Cards mais bem distribuídos para a direita */
+.products-grid {
+  width: 100% !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
+  gap: 20px !important;
 }
 
+/* Cards mais bonitos e encaixados */
+.product-card {
+  width: 100% !important;
+  min-width: 0 !important;
+  border-radius: 16px !important;
+}
+
+/* Imagem um pouco mais equilibrada */
+.product-image-box {
+  height: 160px !important;
+}
+
+/* Botões do card não cortam texto */
+.product-actions {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 8px !important;
+}
+
+.btn-budget,
+.btn-contact {
+  height: 38px !important;
+  font-size: 13px !important;
+  white-space: nowrap !important;
+}
+
+/* Remove barra horizontal se ainda aparecer */
+body {
+  overflow-x: hidden !important;
+}
+
+#root {
+  overflow-x: hidden !important;
+}
+
+/* Responsivo */
 @media (max-width: 1100px) {
-
-  .filters-container {
-    grid-template-columns: 1fr 1fr;
+  .marketplace-top {
+    width: calc(100% - 32px) !important;
+    margin: 12px 16px 0 16px !important;
+    padding: 24px 22px !important;
   }
 
+  .marketplace-content {
+    width: calc(100% - 32px) !important;
+    margin: 22px 16px 60px 16px !important;
+
+    grid-template-columns: 1fr !important;
+  }
+
+  .filters-sidebar {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .marketplace-search-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .marketplace-search-button,
+  .marketplace-clear-button {
+    width: 100% !important;
+  }
 }
 
 @media (max-width: 700px) {
+  .products-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+/* ===================================== *//* ================================= BURACO NA DIREITA */
+/* ===================================== */
 
-  .filters-container {
-    grid-template-columns: 1fr;
+/* página ocupando a largura total */
+.marketplace-page {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #fff4e8 !important;
+  overflow-x: hidden !important;
+}
+
+/* retângulo marrom mais rente à tela */
+.marketplace-top {
+  width: calc(100% - 0px) !important;
+  max-width: none !important;
+
+  margin: 12px 16px 0 0px !important;
+  padding: 26px 30px 28px !important;
+
+  background: #210800 !important;
+  box-sizing: border-box !important;
+}
+
+/* título e busca ocupando o retângulo inteiro */
+.marketplace-top h1 {
+  max-width: none !important;
+  margin: 0 0 16px 0 !important;
+}
+
+.marketplace-search-row {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+
+  display: grid !important;
+  grid-template-columns: 1fr 110px 100px !important;
+  gap: 12px !important;
+}
+
+/* área principal ocupando toda a largura útil */
+.marketplace-content {
+  width: calc(100% - 32px) !important;
+  max-width: none !important;
+
+  margin: 22px 16px 70px 16px !important;
+  padding: 0 !important;
+
+  display: grid !important;
+  grid-template-columns: 240px minmax(0, 1fr) !important;
+  gap: 22px !important;
+
+  box-sizing: border-box !important;
+}
+
+/* filtro fixo na esquerda */
+.filters-sidebar {
+  width: 240px !important;
+  min-width: 240px !important;
+  max-width: 240px !important;
+
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* área dos anúncios preenchendo o restante */
+.marketplace-results {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+}
+
+/* grid dos anúncios preenchendo a direita */
+.products-grid {
+  width: 100% !important;
+  max-width: none !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+  gap: 22px !important;
+
+  box-sizing: border-box !important;
+}
+
+/* card encaixado */
+.product-card {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+}
+
+/* evita estouro lateral */
+body,
+#root {
+  width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* responsivo */
+@media (max-width: 1100px) {
+  .marketplace-top {
+    width: calc(100% - 24px) !important;
+    margin: 12px 12px 0 12px !important;
+    padding: 24px 18px !important;
   }
 
+  .marketplace-content {
+    width: calc(100% - 24px) !important;
+    margin: 20px 12px 60px 12px !important;
+
+    grid-template-columns: 1fr !important;
+  }
+
+  .filters-sidebar {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  .marketplace-search-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .marketplace-search-button,
+  .marketplace-clear-button {
+    width: 100% !important;
+    max-width: none !important;
+  }
 }
 
+@media (max-width: 700px) {
+  .products-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
-
