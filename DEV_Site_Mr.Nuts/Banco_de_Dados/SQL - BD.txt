@@ -464,6 +464,19 @@ ON orcamentos(fornecedor_id);
 -- ============================================================
 -- TESTES
 -- ============================================================
+USE marketplace_b2b;
+UPDATE usuarios
+SET senha_hash = '$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi'
+WHERE email = 'admin@demo.com';
+
+UPDATE usuarios
+SET senha_hash = '$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi'
+WHERE email = 'cliente@demo.com';
+
+UPDATE usuarios
+SET senha_hash = '$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi'
+WHERE email = 'fornecedor@demo.com';
+
 
 SELECT * FROM usuarios;
 

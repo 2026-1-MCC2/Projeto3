@@ -1,23 +1,28 @@
+import { useNavigate } from 'react-router-dom';
+
 function ProdutoList({
   produtos,
   adicionarFavorito,
   adicionarFornecedorFavorito
 }) {
+
+  const navigate = useNavigate();
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+  function abrirProduto(id) {
+    navigate(`/produto/${id}`);
+  }
+
   function formatarPreco(preco) {
-    if (!preco) {
-      return 'Preço sob consulta'
-    }
+    if (!preco) return 'Preço sob consulta';
 
-    const precoNumerico = Number(preco)
-
-    if (Number.isNaN(precoNumerico)) {
-      return 'Preço sob consulta'
-    }
+    const precoNumerico = Number(preco);
+    if (Number.isNaN(precoNumerico)) return 'Preço sob consulta';
 
     return precoNumerico.toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL'
-    })
+    });
   }
 
   function obterCategoria(produto) {
@@ -26,7 +31,7 @@ function ProdutoList({
       produto.categoria ||
       produto.nome_categoria ||
       'Não informada'
-    )
+    );
   }
 
   function obterFornecedor(produto) {
@@ -35,7 +40,7 @@ function ProdutoList({
       produto.nome_empresa ||
       produto.fornecedor ||
       'Fornecedor não informado'
-    )
+    );
   }
 
   function obterRegiao(produto) {
@@ -45,7 +50,7 @@ function ProdutoList({
       produto.localizacao ||
       produto.cidade ||
       'Nacional'
-    )
+    );
   }
 
   function obterMoq(produto) {
@@ -54,68 +59,30 @@ function ProdutoList({
       produto.quantidade_minima ||
       produto.moq_minimo ||
       'Não informado'
-    )
+    );
   }
 
   function obterEmojiProduto(produto) {
-    const categoria = String(obterCategoria(produto)).toLowerCase()
-    const nome = String(produto.nome || '').toLowerCase()
+    const categoria = String(obterCategoria(produto)).toLowerCase();
+    const nome = String(produto.nome || '').toLowerCase();
 
-    if (
-      categoria.includes('chip') ||
-      categoria.includes('snack') ||
-      nome.includes('chip')
-    ) {
-      return '🍟'
-    }
+    if (categoria.includes('chip') || nome.includes('chip')) return '🍟';
+    if (categoria.includes('castanha') || nome.includes('amendoim')) return '🥜';
+    if (categoria.includes('bebida') || nome.includes('suco')) return '🥤';
+    if (categoria.includes('ingrediente')) return '🧂';
+    if (categoria.includes('congelado')) return '🧊';
 
-    if (
-      categoria.includes('castanha') ||
-      nome.includes('castanha') ||
-      nome.includes('amendoim')
-    ) {
-      return '🥜'
-    }
-
-    if (
-      categoria.includes('bebida') ||
-      nome.includes('suco') ||
-      nome.includes('água') ||
-      nome.includes('agua')
-    ) {
-      return '🥤'
-    }
-
-    if (
-      categoria.includes('ingrediente') ||
-      nome.includes('tempero')
-    ) {
-      return '🧂'
-    }
-
-    if (categoria.includes('congelado')) {
-      return '🧊'
-    }
-
-    return '📦'
+    return '📦';
   }
 
   function obterClasseImagem(produto) {
-    const categoria = String(obterCategoria(produto)).toLowerCase()
+    const categoria = String(obterCategoria(produto)).toLowerCase();
 
-    if (categoria.includes('bebida')) {
-      return 'blue'
-    }
+    if (categoria.includes('bebida')) return 'blue';
+    if (categoria.includes('ingrediente')) return 'green';
+    if (categoria.includes('castanha')) return 'yellow';
 
-    if (categoria.includes('ingrediente')) {
-      return 'green'
-    }
-
-    if (categoria.includes('castanha')) {
-      return 'yellow'
-    }
-
-    return 'cream'
+    return 'cream';
   }
 
   if (produtos.length === 0) {
@@ -123,17 +90,14 @@ function ProdutoList({
       <p className="empty-message">
         Nenhum produto encontrado com esses filtros.
       </p>
-    )
+    );
   }
 
   return (
     <section className="products-grid">
 
       {produtos.map((produto) => (
-        <article
-          key={produto.id}
-          className="product-card"
-        >
+        <article key={produto.id} className="product-card">
 
           <button
             type="button"
@@ -145,7 +109,6 @@ function ProdutoList({
           </button>
 
           <div className={`product-image-box ${obterClasseImagem(produto)}`}>
-
             {produto.imagem ? (
               <img
                 src={`http://localhost:3000/uploads/${produto.imagem}`}
@@ -157,14 +120,11 @@ function ProdutoList({
                 {obterEmojiProduto(produto)}
               </span>
             )}
-
           </div>
 
           <div className="product-info">
 
-            <h3>
-              {produto.nome || 'Produto sem nome'}
-            </h3>
+            <h3>{produto.nome || 'Produto sem nome'}</h3>
 
             <p className="supplier-name">
               🏭 {obterFornecedor(produto)}
@@ -213,6 +173,24 @@ function ProdutoList({
                 📞 Contato
               </button>
 
+              {/* ✅ NOVOS BOTÕES */}
+
+              <button
+                type="button"
+                onClick={() => abrirProduto(produto.id)}
+              >
+                Ver Produto
+              </button>
+
+              {usuario && usuario.role === 'buyer' && (
+                <button
+                  type="button"
+                  onClick={() => abrirProduto(produto.id)}
+                >
+                  Avaliar
+                </button>
+              )}
+
             </div>
 
           </div>
@@ -221,7 +199,7 @@ function ProdutoList({
       ))}
 
     </section>
-  )
+  );
 }
 
-export default ProdutoList
+export default ProdutoList;

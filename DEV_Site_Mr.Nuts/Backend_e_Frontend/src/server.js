@@ -5,6 +5,7 @@ const connection = require('./config/db');
 const anunciosRoutes = require('./routes/anuncios');
 const favoritosRoutes = require('./routes/favoritos');
 const authRoutes = require('./routes/auth');
+const avaliacoesRoutes = require('./routes/avaliacoes'); 
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/anuncios', anunciosRoutes);
 app.use('/favoritos', favoritosRoutes);
 app.use('/auth', authRoutes);
+app.use('/avaliacoes', avaliacoesRoutes); 
 
 const PORT = process.env.PORT || 3000;
 

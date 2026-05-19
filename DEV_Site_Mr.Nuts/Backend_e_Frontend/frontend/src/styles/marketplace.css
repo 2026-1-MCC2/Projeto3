@@ -370,9 +370,14 @@
 
 /* BOTÕES DO CARD */
 .product-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+}
+
+.product-actions button {
+  flex: 1 1 48%;
+  min-width: 120px;
 }
 
 .btn-budget,
