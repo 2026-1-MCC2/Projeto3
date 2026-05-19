@@ -54,39 +54,26 @@ function Login() {
       if (
         data.usuario.role === 'admin'
       ) {
-
         navigate('/admin')
-
       }
 
       else if (
         data.usuario.role === 'supplier'
       ) {
-
         navigate('/fornecedor')
-
       }
 
       else {
-
         navigate('/marketplace')
-
       }
 
     } catch (error) {
-
       console.error(error)
-
       alert(
-
         error.response?.data?.erro ||
-
         'Falha ao conectar com o servidor'
-
       )
-
     }
-
   }
 
   return (
@@ -96,26 +83,19 @@ function Login() {
       {/* TOPO */}
 
       <header className="topbar">
-
         <div className="logo">
-
           <Link to="/">
             Restocka
           </Link>
-
         </div>
 
         <nav>
-
           <Link
             to="/"
             className="nav-btn"
           >
-
             Início
-
           </Link>
-
           <Link
             to="/marketplace"
             className="nav-btn"

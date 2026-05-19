@@ -1,74 +1,23 @@
-// ✅ CONEXÃO COM BANCO
-
+const express = require('express');
+const cors = require('cors');
 const connection = require('./config/db');
 
-
-// ✅ DEPENDÊNCIAS
-
-const cors = require('cors');
-const express = require('express');
-
-
-// ✅ APP
+const anunciosRoutes = require('./routes/anuncios');
+const favoritosRoutes = require('./routes/favoritos');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
-
-// ✅ MIDDLEWARES
-
-app.use(cors());
-
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
-
-// ✅ SERVIR IMAGENS
-
-app.use(
-  '/uploads',
-  express.static('uploads')
-);
-
-
-// ✅ ROTAS DE PRODUTOS
-
-const anunciosRoutes = require('./routes/anuncios');
-
-app.use(
-  '/anuncios',
-  anunciosRoutes
-);
-
-
-// ✅ ROTAS DE AUTH
-
-const authRoutes = require('./routes/auth');
-
-app.use(
-  '/auth',
-  authRoutes
-);
-
-
-// ✅ SERVIDOR
+app.use('/anuncios', anunciosRoutes);
+app.use('/favoritos', favoritosRoutes);
+app.use('/auth', authRoutes);
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-
-  console.log(
-    `SERVIDOR RODANDO 🔥 na porta ${PORT}`
-  );
-
-
-app.use('/anuncios', anunciosRoutes);
-
-const favoritosRoutes = require('./routes/favoritos');
-
-app.use('/favoritos', favoritosRoutes);
-
-const authRoutes = require('./routes/auth');
-
-app.use('/auth', authRoutes);
-
-
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
