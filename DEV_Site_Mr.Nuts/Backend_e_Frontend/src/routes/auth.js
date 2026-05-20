@@ -66,7 +66,7 @@ router.post('/login', (req, res) => {
 
       // VALIDAR SENHA
 
-      const senhaValida = senha === '123456';
+     
 
       const senhaValida =
         await bcrypt.compare(

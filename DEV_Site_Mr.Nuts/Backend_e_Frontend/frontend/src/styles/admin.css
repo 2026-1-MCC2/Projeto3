@@ -62,3 +62,29 @@
     border-radius: 12px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
   }
+  .btn-aprovar,
+.btn-reprovar {
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+  color: white;
+}
+
+.btn-aprovar {
+  background: #16a34a;
+}
+
+.btn-aprovar:hover {
+  background: #15803d;
+}
+
+.btn-reprovar {
+  background: #dc2626;
+}
+
+.btn-reprovar:hover {
+  background: #b91c1c;
+}

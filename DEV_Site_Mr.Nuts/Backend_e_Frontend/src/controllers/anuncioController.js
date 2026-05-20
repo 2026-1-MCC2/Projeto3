@@ -1,25 +1,24 @@
 const db = require('../config/db');
 
 
-// ✅ LISTAR TODOS OS PRODUTOS
+// ============================================================
+// LISTAR TODOS OS PRODUTOS
+// ============================================================
 
 exports.listar = (req, res) => {
 
- 
-
   const sql = `
-  SELECT
-    p.*,
-    f.nome_empresa AS fornecedor_nome,
-    c.nome AS categoria_nome
-  FROM produtos p
-  LEFT JOIN fornecedores f
-    ON p.fornecedor_id = f.id
-  LEFT JOIN categorias c
-    ON p.categoria_id = c.id
-`;
-
-
+    SELECT
+      p.*,
+      f.nome_empresa AS fornecedor_nome,
+      c.nome AS categoria_nome
+    FROM produtos p
+    LEFT JOIN fornecedores f
+      ON p.fornecedor_id = f.id
+    LEFT JOIN categorias c
+      ON p.categoria_id = c.id
+    WHERE p.status = 'active'
+  `;
 
   db.query(sql, (err, results) => {
 
@@ -40,14 +39,17 @@ exports.listar = (req, res) => {
 };
 
 
-// ✅ LISTAR PRODUTOS DO FORNECEDOR
+// ============================================================
+// LISTAR PRODUTOS DO FORNECEDOR
+// ============================================================
 
 exports.listarPorFornecedor = (req, res) => {
 
   const { id } = req.params;
 
   const sql = `
-    SELECT * FROM produtos
+    SELECT *
+    FROM produtos
     WHERE fornecedor_id = ?
   `;
 
@@ -70,14 +72,17 @@ exports.listarPorFornecedor = (req, res) => {
 };
 
 
-// ✅ BUSCAR PRODUTO POR ID
+// ============================================================
+// BUSCAR PRODUTO POR ID
+// ============================================================
 
 exports.buscarPorId = (req, res) => {
 
   const { id } = req.params;
 
   const sql = `
-    SELECT * FROM produtos
+    SELECT *
+    FROM produtos
     WHERE id = ?
   `;
 
@@ -108,7 +113,9 @@ exports.buscarPorId = (req, res) => {
 };
 
 
-// ✅ CRIAR PRODUTO
+// ============================================================
+// CRIAR PRODUTO
+// ============================================================
 
 exports.criar = (req, res) => {
 
@@ -123,11 +130,17 @@ exports.criar = (req, res) => {
 
   const categoria_id = 1;
 
-  // ✅ IMAGEM
+  // ============================================================
+  // IMAGEM
+  // ============================================================
 
   const imagem = req.file
     ? req.file.filename
     : null;
+
+  // ============================================================
+  // VALIDAÇÃO
+  // ============================================================
 
   if (!nome || !descricao) {
 
@@ -136,6 +149,10 @@ exports.criar = (req, res) => {
     });
 
   }
+
+  // ============================================================
+  // INSERT
+  // ============================================================
 
   const sql = `
     INSERT INTO produtos
@@ -162,7 +179,7 @@ exports.criar = (req, res) => {
     fornecedorId || 1,
     categoria_id,
     imagem,
-    'active'
+    'pending'
   ];
 
   db.query(sql, values, (err, result) => {
@@ -178,7 +195,8 @@ exports.criar = (req, res) => {
     }
 
     res.status(201).json({
-      mensagem: 'Produto criado com sucesso',
+      mensagem:
+        'Produto enviado para aprovação',
       id: result.insertId
     });
 
@@ -187,7 +205,9 @@ exports.criar = (req, res) => {
 };
 
 
-// ✅ ATUALIZAR PRODUTO
+// ============================================================
+// ATUALIZAR PRODUTO
+// ============================================================
 
 exports.atualizar = (req, res) => {
 
@@ -206,7 +226,9 @@ exports.atualizar = (req, res) => {
   let sql;
   let values;
 
-  // ✅ COM IMAGEM
+  // ============================================================
+  // COM IMAGEM
+  // ============================================================
 
   if (imagem) {
 
@@ -218,7 +240,8 @@ exports.atualizar = (req, res) => {
         marca = ?,
         preco = ?,
         moq = ?,
-        imagem = ?
+        imagem = ?,
+        status = 'pending'
       WHERE id = ?
     `;
 
@@ -232,9 +255,13 @@ exports.atualizar = (req, res) => {
       id
     ];
 
-  } else {
+  }
 
-    // ✅ SEM IMAGEM
+  // ============================================================
+  // SEM IMAGEM
+  // ============================================================
+
+  else {
 
     sql = `
       UPDATE produtos
@@ -243,7 +270,8 @@ exports.atualizar = (req, res) => {
         descricao = ?,
         marca = ?,
         preco = ?,
-        moq = ?
+        moq = ?,
+        status = 'pending'
       WHERE id = ?
     `;
 
@@ -279,7 +307,8 @@ exports.atualizar = (req, res) => {
     }
 
     res.json({
-      mensagem: 'Produto atualizado com sucesso'
+      mensagem:
+        'Produto atualizado e enviado para nova aprovação'
     });
 
   });
@@ -287,7 +316,128 @@ exports.atualizar = (req, res) => {
 };
 
 
-// ✅ DELETAR PRODUTO
+// ============================================================
+// APROVAR ANÚNCIO
+// ============================================================
+
+exports.aprovar = (req, res) => {
+
+  const { id } = req.params;
+
+  const sql = `
+    UPDATE produtos
+    SET
+      status = 'active',
+      motivo_reprovacao = NULL
+    WHERE id = ?
+  `;
+
+  db.query(sql, [id], (err) => {
+
+    if (err) {
+
+      console.error(err);
+
+      return res.status(500).json({
+        erro: 'Erro ao aprovar anúncio'
+      });
+
+    }
+
+    res.json({
+      mensagem: 'Anúncio aprovado com sucesso'
+    });
+
+  });
+
+};
+
+
+// ============================================================
+// REPROVAR ANÚNCIO
+// ============================================================
+
+exports.reprovar = (req, res) => {
+
+  const { id } = req.params;
+
+  const { motivo } = req.body;
+
+  const sql = `
+    UPDATE produtos
+    SET
+      status = 'paused',
+      motivo_reprovacao = ?
+    WHERE id = ?
+  `;
+
+  db.query(
+    sql,
+    [
+      motivo || 'Não informado',
+      id
+    ],
+    (err) => {
+
+      if (err) {
+
+        console.error(err);
+
+        return res.status(500).json({
+          erro: 'Erro ao reprovar anúncio'
+        });
+
+      }
+
+      res.json({
+        mensagem: 'Anúncio reprovado'
+      });
+
+    }
+  );
+
+};
+
+
+// ============================================================
+// LISTAR ANÚNCIOS PENDENTES
+// ============================================================
+
+exports.listarPendentes = (req, res) => {
+
+  const sql = `
+    SELECT
+      p.*,
+      f.nome_empresa AS fornecedor_nome
+    FROM produtos p
+    LEFT JOIN fornecedores f
+      ON p.fornecedor_id = f.id
+    WHERE p.status = 'pending'
+  `;
+
+  db.query(sql, (err, results) => {
+
+    if (err) {
+
+      console.error(err);
+
+      return res.status(500).json({
+        erro:
+          'Erro ao buscar anúncios pendentes'
+      });
+
+    }
+
+    res.json(results);
+
+  });
+
+};
+
+
+// ============================================================
+// DELETAR PRODUTO
+// ============================================================
 
 exports.deletar = (req, res) => {
 

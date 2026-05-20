@@ -20,11 +20,19 @@ function Admin() {
   const [dropdownAberto, setDropdownAberto] =
     useState(false)
 
-  const [produtos, setProdutos] = useState([])
+  const [produtos, setProdutos] =
+    useState([])
 
-  const [usuarios, setUsuarios] = useState([])
+  const [usuarios, setUsuarios] =
+    useState([])
 
   const [pendentes, setPendentes] =
+    useState([])
+
+  const [anunciosPendentes, setAnunciosPendentes] =
+    useState([])
+
+  const [avaliacoes, setAvaliacoes] =
     useState([])
 
   // ============================================================
@@ -44,10 +52,10 @@ function Admin() {
     }
 
     carregarProdutos()
-
     carregarUsuarios()
-
     carregarPendentes()
+    carregarAnunciosPendentes()
+    carregarAvaliacoes()
 
   }, [])
 
@@ -94,7 +102,7 @@ function Admin() {
   }
 
   // ============================================================
-  // CARREGAR PENDENTES
+  // CARREGAR FORNECEDORES PENDENTES
   // ============================================================
 
   async function carregarPendentes() {
@@ -115,6 +123,52 @@ function Admin() {
   }
 
   // ============================================================
+  // CARREGAR ANÚNCIOS PENDENTES
+  // ============================================================
+
+  async function carregarAnunciosPendentes() {
+
+    try {
+
+      const response =
+        await api.get('/anuncios/pendentes')
+
+      setAnunciosPendentes(response.data)
+
+    } catch (error) {
+
+      console.error(error)
+
+      alert('Erro ao carregar anúncios pendentes')
+
+    }
+
+  }
+
+  // ============================================================
+  // CARREGAR AVALIAÇÕES
+  // ============================================================
+
+  async function carregarAvaliacoes() {
+
+    try {
+
+      const response =
+        await api.get('/avaliacoes')
+
+      setAvaliacoes(response.data)
+
+    } catch (error) {
+
+      console.error(error)
+
+      alert('Erro ao carregar avaliações')
+
+    }
+
+  }
+
+  // ============================================================
   // APROVAR FORNECEDOR
   // ============================================================
 
@@ -129,7 +183,6 @@ function Admin() {
       alert('Fornecedor aprovado')
 
       carregarPendentes()
-
       carregarUsuarios()
 
     } catch (error) {
@@ -143,14 +196,137 @@ function Admin() {
   }
 
   // ============================================================
+  // APROVAR ANÚNCIO
+  // ============================================================
+
+  async function aprovarAnuncio(id) {
+
+    try {
+
+      await api.put(
+        `/anuncios/aprovar/${id}`
+      )
+
+      alert('Anúncio aprovado ✅')
+
+      carregarAnunciosPendentes()
+      carregarProdutos()
+
+    } catch (error) {
+
+      console.error(error)
+
+      alert('Erro ao aprovar anúncio')
+
+    }
+
+  }
+
+  // ============================================================
+  // REPROVAR ANÚNCIO
+  // ============================================================
+
+  async function reprovarAnuncio(id) {
+
+    const motivo =
+      prompt('Motivo da reprovação:')
+
+    if (!motivo) {
+
+      return
+
+    }
+
+    try {
+
+      await api.put(
+        `/anuncios/reprovar/${id}`,
+        { motivo }
+      )
+
+      alert('Anúncio reprovado ❌')
+
+      carregarAnunciosPendentes()
+
+    } catch (error) {
+
+      console.error(error)
+
+      alert('Erro ao reprovar anúncio')
+
+    }
+
+  }
+
+  // ============================================================
+  // OCULTAR AVALIAÇÃO
+  // ============================================================
+
+  async function ocultarAvaliacao(id) {
+
+    try {
+
+      await api.put(
+        `/avaliacoes/ocultar/${id}`
+      )
+
+      alert('Avaliação ocultada')
+
+      carregarAvaliacoes()
+
+    } catch (error) {
+
+      console.error(error)
+
+      alert('Erro ao ocultar avaliação')
+
+    }
+
+  }
+
+  // ============================================================
+  // REMOVER AVALIAÇÃO
+  // ============================================================
+
+  async function removerAvaliacao(id) {
+
+    const confirmar =
+      confirm('Deseja remover esta avaliação?')
+
+    if (!confirmar) {
+
+      return
+
+    }
+
+    try {
+
+      await api.delete(
+        `/avaliacoes/${id}`
+      )
+
+      alert('Avaliação removida')
+
+      carregarAvaliacoes()
+
+    } catch (error) {
+
+      console.error(error)
+
+      alert('Erro ao remover avaliação')
+
+    }
+
+  }
+
+  // ============================================================
   // DELETAR PRODUTO
   // ============================================================
 
   async function deletarProduto(id) {
 
-    const confirmar = confirm(
-      'Deseja excluir este produto?'
-    )
+    const confirmar =
+      confirm('Deseja excluir este produto?')
 
     if (!confirmar) {
 
@@ -306,7 +482,7 @@ function Admin() {
           style={{
             display: 'grid',
             gridTemplateColumns:
-              'repeat(3, 1fr)',
+              'repeat(4, 1fr)',
             gap: '20px',
             marginBottom: '30px'
           }}
@@ -345,14 +521,24 @@ function Admin() {
             <h1>
 
               {
-
                 usuarios.filter(
                   (u) =>
                     u.role === 'supplier'
                 ).length
-
               }
 
+            </h1>
+
+          </div>
+
+          <div className="card">
+
+            <h3>
+              Anúncios Pendentes
+            </h3>
+
+            <h1>
+              {anunciosPendentes.length}
             </h1>
 
           </div>
@@ -368,7 +554,6 @@ function Admin() {
           </h2>
 
           {
-
             pendentes.length === 0 ? (
 
               <p>
@@ -381,12 +566,7 @@ function Admin() {
 
                 <div
                   key={fornecedor.id}
-                  style={{
-                    border: '1px solid #ddd',
-                    padding: '15px',
-                    borderRadius: '10px',
-                    marginBottom: '15px'
-                  }}
+                  className="admin-item"
                 >
 
                   <h4>
@@ -398,6 +578,7 @@ function Admin() {
                   </p>
 
                   <button
+                    className="btn-aprovar"
                     onClick={() =>
                       aprovarFornecedor(
                         fornecedor.id
@@ -414,7 +595,93 @@ function Admin() {
               ))
 
             )
+          }
 
+        </div>
+
+        {/* ANÚNCIOS PENDENTES */}
+
+        <div className="card">
+
+          <h2>
+            Anúncios Pendentes
+          </h2>
+
+          {
+            anunciosPendentes.length === 0 ? (
+
+              <p>
+                Nenhum anúncio pendente.
+              </p>
+
+            ) : (
+
+              anunciosPendentes.map((produto) => (
+
+                <div
+                  key={produto.id}
+                  className="admin-item"
+                >
+
+                  <h3>
+                    {produto.nome}
+                  </h3>
+
+                  <p>
+                    {produto.descricao}
+                  </p>
+
+                  <p>
+                    <strong>
+                      Fornecedor:
+                    </strong>
+                    {' '}
+                    {produto.fornecedor_nome}
+                  </p>
+
+                  <p>
+                    <strong>
+                      Status:
+                    </strong>
+                    {' '}
+                    {produto.status}
+                  </p>
+
+                  <div className="admin-actions">
+
+                    <button
+                      className="btn-aprovar"
+                      onClick={() =>
+                        aprovarAnuncio(
+                          produto.id
+                        )
+                      }
+                    >
+
+                      ✅ Aprovar
+
+                    </button>
+
+                    <button
+                      className="btn-reprovar"
+                      onClick={() =>
+                        reprovarAnuncio(
+                          produto.id
+                        )
+                      }
+                    >
+
+                      ❌ Reprovar
+
+                    </button>
+
+                  </div>
+
+                </div>
+
+              ))
+
+            )
           }
 
         </div>
@@ -423,12 +690,11 @@ function Admin() {
 
         <div className="card">
 
-          <h3>
+          <h2>
             Produtos cadastrados
-          </h3>
+          </h2>
 
           {
-
             produtos.length === 0 ? (
 
               <p>
@@ -441,12 +707,7 @@ function Admin() {
 
                 <div
                   key={produto.id}
-                  style={{
-                    border: '1px solid #ddd',
-                    padding: '15px',
-                    marginBottom: '15px',
-                    borderRadius: '10px'
-                  }}
+                  className="admin-item"
                 >
 
                   <h4>
@@ -457,7 +718,16 @@ function Admin() {
                     {produto.descricao}
                   </p>
 
+                  <p>
+                    <strong>
+                      Status:
+                    </strong>
+                    {' '}
+                    {produto.status}
+                  </p>
+
                   <button
+                    className="btn-reprovar"
                     onClick={() =>
                       deletarProduto(
                         produto.id
@@ -474,7 +744,105 @@ function Admin() {
               ))
 
             )
+          }
 
+        </div>
+
+        {/* MODERAÇÃO DE AVALIAÇÕES */}
+
+        <div className="card">
+
+          <h2>
+            Moderação de Avaliações
+          </h2>
+
+          {
+            avaliacoes.length === 0 ? (
+
+              <p>
+                Nenhuma avaliação encontrada.
+              </p>
+
+            ) : (
+
+              avaliacoes.map((avaliacao) => (
+
+                <div
+                  key={avaliacao.id}
+                  className="admin-item"
+                >
+
+                  <h4>
+                    {avaliacao.produto_nome}
+                  </h4>
+
+                  <p>
+                    <strong>
+                      Usuário:
+                    </strong>
+                    {' '}
+                    {avaliacao.usuario_nome}
+                  </p>
+
+                  <p>
+                    <strong>
+                      Nota:
+                    </strong>
+                    {' '}
+                    {avaliacao.estrelas}
+                  </p>
+
+                  <p>
+                    {avaliacao.comentario}
+                  </p>
+
+                  <p>
+                    <strong>
+                      Status:
+                    </strong>
+                    {' '}
+                    {
+                      avaliacao.visivel
+                        ? 'Visível'
+                        : 'Oculta'
+                    }
+                  </p>
+
+                  <div className="admin-actions">
+
+                    <button
+                      className="btn-aprovar"
+                      onClick={() =>
+                        ocultarAvaliacao(
+                          avaliacao.id
+                        )
+                      }
+                    >
+
+                      Ocultar
+
+                    </button>
+
+                    <button
+                      className="btn-reprovar"
+                      onClick={() =>
+                        removerAvaliacao(
+                          avaliacao.id
+                        )
+                      }
+                    >
+
+                      Remover
+
+                    </button>
+
+                  </div>
+
+                </div>
+
+              ))
+
+            )
           }
 
         </div>
