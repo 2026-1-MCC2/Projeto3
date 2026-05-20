@@ -17,6 +17,7 @@ import Cliente from './pages/Cliente'
 import ClienteConfig from './pages/ClienteConfig'
 import FornecedorConfig from './pages/FornecedorConfig'
 import ProtectedRoute from './components/ProtectedRoute'
+import Dashboard from './pages/Dashboard'
 
 function App() {
 
@@ -26,112 +27,84 @@ function App() {
 
       <Routes>
 
-        <Route
-          path="/"
-          element={<LandingPage />}
-        />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/marketplace" element={<Home />} />
+        <Route path="/novo" element={<NovoProduto />} />
+        <Route path="/editar/:id" element={<EditarProduto />} />
+        <Route path="/login" element={<Login />} />
 
-        <Route
-          path="/marketplace"
-          element={<Home />}
-        />
-
-        <Route
-          path="/novo"
-          element={<NovoProduto />}
-        />
-
-        <Route
-          path="/editar/:id"
-          element={<EditarProduto />}
-        />
-
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+        {/* DASHBOARD */}
+        <Route path="/dashboard" element={<Dashboard />} />
 
         {/* FORNECEDOR */}
-
         <Route
           path="/fornecedor"
           element={
-            <ProtectedRoute
-              allowedRoles={['supplier']}
-            >
+            <ProtectedRoute allowedRoles={['supplier']}>
               <Fornecedor />
             </ProtectedRoute>
           }
         />
 
         {/* FAVORITOS */}
-
         <Route
           path="/favoritos"
           element={
-            <ProtectedRoute
-              allowedRoles={['buyer']}
-            >
+            <ProtectedRoute allowedRoles={['buyer']}>
               <Favoritos />
             </ProtectedRoute>
           }
         />
 
         {/* ADMIN */}
-
         <Route
           path="/admin"
           element={
-            <ProtectedRoute
-              allowedRoles={['admin']}
-            >
+            <ProtectedRoute allowedRoles={['admin']}>
               <Admin />
             </ProtectedRoute>
           }
         />
 
         {/* ADMIN CONFIG */}
-
         <Route
           path="/admin-config"
           element={
-            <ProtectedRoute
-              allowedRoles={['admin']}
-            >
+            <ProtectedRoute allowedRoles={['admin']}>
               <AdminConfig />
             </ProtectedRoute>
           }
         />
-<Route
-  path="/cliente"
-  element={
-    <ProtectedRoute
-      allowedRoles={['buyer']}
-    >
-      <Cliente />
-    </ProtectedRoute>
-  }
-/>
-<Route
-  path="/cliente-config"
-  element={
-    <ProtectedRoute
-      allowedRoles={['buyer']}
-    >
-      <ClienteConfig />
-    </ProtectedRoute>
-  }
-/>
-<Route
-  path="/fornecedor-config"
-  element={
-    <ProtectedRoute
-      allowedRoles={['supplier']}
-    >
-      <FornecedorConfig />
-    </ProtectedRoute>
-  }
-/>
+
+        {/* CLIENTE */}
+        <Route
+          path="/cliente"
+          element={
+            <ProtectedRoute allowedRoles={['buyer']}>
+              <Cliente />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/cliente-config"
+          element={
+            <ProtectedRoute allowedRoles={['buyer']}>
+              <ClienteConfig />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* FORNECEDOR CONFIG */}
+        <Route
+          path="/fornecedor-config"
+          element={
+            <ProtectedRoute allowedRoles={['supplier']}>
+              <FornecedorConfig />
+            </ProtectedRoute>
+          }
+        />
+
       </Routes>
 
     </BrowserRouter>
