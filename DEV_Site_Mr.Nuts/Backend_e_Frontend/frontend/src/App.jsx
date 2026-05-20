@@ -2,52 +2,76 @@ import {
   BrowserRouter,
   Routes,
   Route
-} from 'react-router-dom';
+} from 'react-router-dom'
 
-import LandingPage from './pages/LandingPage';
-import Home from './pages/Home';
-import NovoProduto from './pages/NovoProduto';
-import EditarProduto from './pages/EditarProduto';
-import Login from './pages/Login';
-import Fornecedor from './pages/Fornecedor';
-import Favoritos from './pages/Favoritos';
-import Admin from './pages/Admin';
-import AdminConfig from './pages/AdminConfig';
-import Cliente from './pages/Cliente';
-import ClienteConfig from './pages/ClienteConfig';
-import FornecedorConfig from './pages/FornecedorConfig';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import Produto from './pages/Produto'; // ✅ NOVA IMPORTAÇÃO
+import LandingPage from './pages/LandingPage'
+import Home from './pages/Home'
+import NovoProduto from './pages/NovoProduto'
+import EditarProduto from './pages/EditarProduto'
+import Login from './pages/Login'
+import Fornecedor from './pages/Fornecedor'
+import Favoritos from './pages/Favoritos'
+import Admin from './pages/Admin'
+import AdminConfig from './pages/AdminConfig'
+import Cliente from './pages/Cliente'
+import ClienteConfig from './pages/ClienteConfig'
+import FornecedorConfig from './pages/FornecedorConfig'
+import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
+import Produto from './pages/Produto'
 
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
-
   return (
     <BrowserRouter>
-
       <Routes>
 
-        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/"
+          element={<LandingPage />}
+        />
 
-        <Route path="/marketplace" element={<Home />} />
+        <Route
+          path="/marketplace"
+          element={<Home />}
+        />
 
-        {/* ✅ NOVA ROTA DO PRODUTO */}
-        <Route path="/produto/:id" element={<Produto />} />
+        <Route
+          path="/produto/:id"
+          element={<Produto />}
+        />
 
-        <Route path="/novo" element={<NovoProduto />} />
+        <Route
+          path="/novo"
+          element={<NovoProduto />}
+        />
 
-        <Route path="/editar/:id" element={<EditarProduto />} />
+        <Route
+          path="/editar/:id"
+          element={<EditarProduto />}
+        />
 
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/register"
+          element={<Register />}
+        />
 
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
+        />
 
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route
+          path="/reset-password/:token"
+          element={<ResetPassword />}
+        />
 
         {/* FORNECEDOR */}
         <Route
@@ -117,9 +141,8 @@ function App() {
         />
 
       </Routes>
-
     </BrowserRouter>
-  );
+  )
 }
 
-export default App;
+export default App
