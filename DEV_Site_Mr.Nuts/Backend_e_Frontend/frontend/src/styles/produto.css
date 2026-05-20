@@ -1,0 +1,106 @@
+.produto-page {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+  }
+  
+  .produto-page h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+  
+  .produto-page p {
+    margin-bottom: 10px;
+  }
+  
+  /* CARD BLOCO */
+  .produto-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+  }
+  
+  /* SEPARADOR */
+  .produto-divider {
+    height: 1px;
+    background: #ddd;
+    margin: 20px 0;
+  }
+  
+  /* FORM DE AVALIAÇÃO */
+  .avaliacao-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+  }
+  
+  .avaliacao-box h3 {
+    margin-bottom: 15px;
+  }
+  
+  .avaliacao-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .avaliacao-form select {
+    width: 150px;
+    height: 35px;
+  }
+  
+  .avaliacao-form textarea {
+    width: 100%;
+    height: 80px;
+    resize: none;
+    padding: 10px;
+  }
+  
+  .avaliacao-form button {
+    background: #ff6a00;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .avaliacao-form button:hover {
+    background: #e65c00;
+  }
+  
+  /* LISTA DE AVALIAÇÕES */
+  .avaliacoes-lista {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  }
+  
+  .avaliacao-item {
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+  }
+  
+  .avaliacao-item:last-child {
+    border-bottom: none;
+  }
+  
+  .avaliacao-nome {
+    font-weight: bold;
+  }
+  
+  .avaliacao-estrelas {
+    color: #ffb400;
+  }
+  
+  .avaliacao-comentario {
+    margin-top: 5px;
+    color: #555;
+  }
+  

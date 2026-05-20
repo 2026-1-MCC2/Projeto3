@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import {
   useNavigate,
-  Link
+  useLocation
 } from 'react-router-dom'
 
 import Navbar from '../components/Navbar'
+import ProdutoList from '../components/ProdutoList'
 
 import api from '../services/api'
 
@@ -13,241 +14,487 @@ import '../styles/global.css'
 import '../styles/marketplace.css'
 
 function Cliente() {
-
   const navigate = useNavigate()
+  const location = useLocation()
 
   const usuario = JSON.parse(
     localStorage.getItem('usuario')
   )
 
-  const [produtos, setProdutos] = useState([])
+  const parametros = new URLSearchParams(location.search)
+  const buscaInicial = parametros.get('busca') || ''
 
-  // PROTEÇÃO
+  const [produtos, setProdutos] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [erro, setErro] = useState('')
+
+  const [busca, setBusca] = useState(buscaInicial)
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState('')
+  const [regiaoSelecionada, setRegiaoSelecionada] = useState('')
+  const [moqMaximo, setMoqMaximo] = useState(5000)
 
   useEffect(() => {
-
     if (!usuario || usuario.role !== 'buyer') {
-
       alert('Acesso negado')
-
       navigate('/login')
-
       return
-
     }
 
     carregarProdutos()
-
   }, [])
 
-  // CARREGAR PRODUTOS
+  useEffect(() => {
+    const parametrosAtualizados = new URLSearchParams(location.search)
+    const novaBusca = parametrosAtualizados.get('busca') || ''
+
+    setBusca(novaBusca)
+  }, [location.search])
 
   async function carregarProdutos() {
-
     try {
+      setLoading(true)
 
-      const response =
-        await api.get('/anuncios')
+      const response = await api.get('/anuncios')
 
       setProdutos(response.data)
-
+      setErro('')
     } catch (error) {
-
-      console.error(
-        'Erro ao carregar produtos:',
-        error
-      )
-
+      console.error('Erro ao carregar produtos:', error)
+      setErro('Erro ao carregar produtos do banco de dados.')
+    } finally {
+      setLoading(false)
     }
   }
 
-  // FAVORITO
-
-  function adicionarFavorito(id) {
-
-    const produto = produtos.find(
-      (p) => p.id === id
+  function obterNomeProduto(produto) {
+    return (
+      produto.nome ||
+      produto.titulo ||
+      produto.produto_nome ||
+      ''
     )
+  }
 
-    if (!produto) return
-
-    let favoritos = JSON.parse(
-      localStorage.getItem('favoritos')
-    ) || []
-
-    const existe = favoritos.find(
-      (p) => p.id === id
+  function obterCategoria(produto) {
+    return (
+      produto.categoria_nome ||
+      produto.categoria ||
+      produto.nome_categoria ||
+      'Sem categoria'
     )
+  }
 
-    if (existe) {
+  function obterFornecedor(produto) {
+    return (
+      produto.fornecedor_nome ||
+      produto.nome_empresa ||
+      produto.fornecedor ||
+      ''
+    )
+  }
+
+  function obterRegiao(produto) {
+    return (
+      produto.regiao ||
+      produto.estado ||
+      produto.localizacao ||
+      produto.cidade ||
+      'Nacional'
+    )
+  }
+
+  function obterMoq(produto) {
+    return Number(
+      produto.moq ||
+      produto.quantidade_minima ||
+      produto.moq_minimo ||
+      0
+    )
+  }
+
+  const categorias = useMemo(() => {
+    const mapa = {}
+
+    produtos.forEach((produto) => {
+      const categoria = obterCategoria(produto)
+
+      if (!mapa[categoria]) {
+        mapa[categoria] = {
+          nome: categoria,
+          total: 0
+        }
+      }
+
+      mapa[categoria].total += 1
+    })
+
+    return Object.values(mapa)
+  }, [produtos])
+
+  const regioes = useMemo(() => {
+    const mapa = {}
+
+    produtos.forEach((produto) => {
+      const regiao = obterRegiao(produto)
+
+      if (!mapa[regiao]) {
+        mapa[regiao] = regiao
+      }
+    })
+
+    return Object.values(mapa)
+  }, [produtos])
+
+  const produtosFiltrados = useMemo(() => {
+    const termo = busca.toLowerCase().trim()
+
+    return produtos.filter((produto) => {
+      const nome = obterNomeProduto(produto).toLowerCase()
+      const descricao = String(produto.descricao || '').toLowerCase()
+      const fornecedor = obterFornecedor(produto).toLowerCase()
+      const categoria = obterCategoria(produto).toLowerCase()
+      const regiao = obterRegiao(produto).toLowerCase()
+      const moq = obterMoq(produto)
+
+      const passouBusca =
+        !termo ||
+        nome.includes(termo) ||
+        descricao.includes(termo) ||
+        fornecedor.includes(termo) ||
+        categoria.includes(termo) ||
+        regiao.includes(termo)
+
+      const passouCategoria =
+        !categoriaSelecionada ||
+        categoria === categoriaSelecionada.toLowerCase()
+
+      const passouRegiao =
+        !regiaoSelecionada ||
+        regiao === regiaoSelecionada.toLowerCase()
+
+      const passouMoq =
+        !moqMaximo ||
+        moq === 0 ||
+        moq <= Number(moqMaximo)
+
+      return (
+        passouBusca &&
+        passouCategoria &&
+        passouRegiao &&
+        passouMoq
+      )
+    })
+  }, [
+    produtos,
+    busca,
+    categoriaSelecionada,
+    regiaoSelecionada,
+    moqMaximo
+  ])
+
+  function buscarProdutos() {
+    const termo = busca.trim()
+
+    if (!termo) {
+      navigate('/cliente')
+      return
+    }
+
+    navigate(`/cliente?busca=${encodeURIComponent(termo)}`)
+  }
+
+  function buscarComEnter(event) {
+    if (event.key === 'Enter') {
+      buscarProdutos()
+    }
+  }
+
+  function limparFiltros() {
+    setBusca('')
+    setCategoriaSelecionada('')
+    setRegiaoSelecionada('')
+    setMoqMaximo(5000)
+
+    navigate('/cliente')
+  }
+
+  async function adicionarFavorito(produto) {
+    if (!usuario) {
+      alert('Faça login para favoritar produtos')
+      return
+    }
+
+    try {
+      const response = await api.post('/favoritos/produto', {
+        usuario_id: usuario.id,
+        produto_id: produto.id
+      })
+
+      alert(response.data.mensagem)
+    } catch (error) {
+      console.error(error)
 
       alert(
-        'Produto já está nos favoritos'
+        error.response?.data?.erro ||
+        'Erro ao favoritar produto'
       )
+    }
+  }
 
+  async function adicionarFornecedorFavorito(produto) {
+    if (!usuario) {
+      alert('Faça login para favoritar fornecedores')
       return
-
     }
 
-    favoritos.push(produto)
+    if (!produto.fornecedor_id) {
+      alert('Fornecedor não encontrado para este produto')
+      return
+    }
 
-    localStorage.setItem(
-      'favoritos',
-      JSON.stringify(favoritos)
-    )
+    try {
+      const response = await api.post('/favoritos/fornecedor', {
+        usuario_id: usuario.id,
+        fornecedor_id: produto.fornecedor_id
+      })
 
-    alert(
-      'Produto adicionado aos favoritos'
-    )
+      alert(response.data.mensagem)
+    } catch (error) {
+      console.error(error)
+
+      alert(
+        error.response?.data?.erro ||
+        'Erro ao favoritar fornecedor'
+      )
+    }
   }
 
-  // CONFIG
-
-  function irConfig() {
-
-    navigate('/cliente-config')
-
-  }
-
-  // ORÇAMENTO
-
-  function solicitar(id) {
-
-    alert(
-      `Solicitar orçamento do produto ID: ${id}`
-    )
-
+  function deletarProduto() {
+    alert('Apenas fornecedores ou administradores podem excluir anúncios.')
   }
 
   return (
-
     <>
-
       <Navbar />
 
-      {/* MARKETPLACE */}
+      <main className="marketplace-page">
 
-      <main className="marketplace-container">
-
-        <section className="marketplace-header">
+        <section className="marketplace-top">
 
           <h1>
-            Marketplace
+            📦 Anúncios de Produtos
           </h1>
 
-          <p>
+          <div className="marketplace-search-row">
 
-            Bem-vindo,
-            {' '}
-            <strong>
-              {usuario?.nome}
-            </strong>
+            <input
+              className="marketplace-search-input"
+              placeholder="Buscar produto, marca, fornecedor..."
+              value={busca}
+              onChange={(event) => setBusca(event.target.value)}
+              onKeyDown={buscarComEnter}
+            />
 
-          </p>
+            <button
+              type="button"
+              className="marketplace-search-button"
+              onClick={buscarProdutos}
+            >
+              🔍 Buscar
+            </button>
+
+            <button
+              type="button"
+              className="marketplace-clear-button"
+              onClick={limparFiltros}
+            >
+              ✕ Limpar
+            </button>
+
+          </div>
 
         </section>
 
-        <section
-          id="produtos"
-          className="products-grid"
-        >
+        <section className="marketplace-content">
 
-          {produtos.length === 0 ? (
+          <aside className="filters-sidebar">
 
-            <p>
-              Nenhum produto disponível.
-            </p>
+            <div className="filters-title-row">
 
-          ) : (
+              <h2>
+                Filtros
+              </h2>
 
-            produtos.map((produto) => (
-
-              <article
-                key={produto.id}
-                className="product-card"
+              <button
+                type="button"
+                onClick={limparFiltros}
               >
+                Limpar
+              </button>
 
-                {/* IMAGEM */}
+            </div>
 
-                {produto.imagem ? (
+            <div className="filter-block">
 
-                  <img
-                    src={`http://localhost:3000/uploads/${produto.imagem}`}
-                    alt={produto.nome}
-                    className="product-image"
+              <h3>
+                CATEGORIA
+              </h3>
+
+              {categorias.length === 0 && (
+                <p className="filter-empty">
+                  Nenhuma categoria
+                </p>
+              )}
+
+              {categorias.map((categoria) => (
+                <label
+                  key={categoria.nome}
+                  className="filter-option"
+                >
+                  <input
+                    type="checkbox"
+                    checked={categoriaSelecionada === categoria.nome}
+                    onChange={() =>
+                      setCategoriaSelecionada(
+                        categoriaSelecionada === categoria.nome
+                          ? ''
+                          : categoria.nome
+                      )
+                    }
                   />
 
-                ) : (
+                  <span>
+                    {categoria.nome}
+                  </span>
 
-                  <div className="product-image"></div>
+                  <small>
+                    {categoria.total}
+                  </small>
+                </label>
+              ))}
 
-                )}
+            </div>
 
-                <h3>
-                  {produto.nome}
-                </h3>
+            <div className="filter-block">
 
-                <p>
+              <h3>
+                REGIÃO
+              </h3>
 
-                  Fornecedor:
-                  {' '}
-
-                  {
-                    produto.fornecedor_nome ||
-                    'Não informado'
-                  }
-
+              {regioes.length === 0 && (
+                <p className="filter-empty">
+                  Nenhuma região
                 </p>
+              )}
 
-                <strong>
-
-                  {
-                    produto.preco
-                      ? `R$ ${produto.preco}`
-                      : ''
-                  }
-
-                </strong>
-
-                <button
-                  onClick={() =>
-                    adicionarFavorito(
-                      produto.id
-                    )
-                  }
+              {regioes.map((regiao) => (
+                <label
+                  key={regiao}
+                  className="filter-option"
                 >
-                  Favoritar
-                </button>
+                  <input
+                    type="checkbox"
+                    checked={regiaoSelecionada === regiao}
+                    onChange={() =>
+                      setRegiaoSelecionada(
+                        regiaoSelecionada === regiao
+                          ? ''
+                          : regiao
+                      )
+                    }
+                  />
 
-                <button
-                  className="btn-primary"
-                  onClick={() =>
-                    solicitar(produto.id)
-                  }
-                >
-                  Solicitar orçamento
-                </button>
+                  <span>
+                    {regiao}
+                  </span>
+                </label>
+              ))}
 
-              </article>
+            </div>
 
-            ))
+            <div className="filter-block">
 
-          )}
+              <h3>
+                AVALIAÇÃO MÍNIMA
+              </h3>
+
+              <label className="filter-option">
+                <input type="radio" name="avaliacao" />
+                <span>★★★★☆ 4+</span>
+              </label>
+
+              <label className="filter-option">
+                <input type="radio" name="avaliacao" defaultChecked />
+                <span>Qualquer</span>
+              </label>
+
+            </div>
+
+            <div className="filter-block">
+
+              <h3>
+                MOQ MÁXIMO
+              </h3>
+
+              <input
+                className="moq-range"
+                type="range"
+                min="0"
+                max="5000"
+                value={moqMaximo}
+                onChange={(event) => setMoqMaximo(event.target.value)}
+              />
+
+              <p className="moq-text">
+                Até {moqMaximo} unidades
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              className="apply-filters-button"
+            >
+              Aplicar Filtros
+            </button>
+
+          </aside>
+
+          <section className="marketplace-results">
+
+            {loading && (
+              <p className="empty-message">
+                Carregando produtos...
+              </p>
+            )}
+
+            {erro && (
+              <p className="empty-message">
+                {erro}
+              </p>
+            )}
+
+            {!loading && !erro && produtosFiltrados.length === 0 && (
+              <p className="empty-message">
+                Nenhum produto encontrado.
+              </p>
+            )}
+
+            {!loading && !erro && produtosFiltrados.length > 0 && (
+              <ProdutoList
+                produtos={produtosFiltrados}
+                adicionarFavorito={adicionarFavorito}
+                adicionarFornecedorFavorito={adicionarFornecedorFavorito}
+                deletarProduto={deletarProduto}
+              />
+            )}
+
+          </section>
 
         </section>
 
       </main>
-
-      <footer>
-
-        <p>
-          © 2026 Restocka • Todos os direitos reservados
-        </p>
-
-      </footer>
-
     </>
-
   )
 }
 

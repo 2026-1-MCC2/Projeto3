@@ -7,19 +7,22 @@ import api from '../services/api'
 import '../styles/global.css'
 import '../styles/login.css'
 
-function Login() {
+function Register() {
 
   const navigate = useNavigate()
+
+  const [nome, setNome] = useState('')
 
   const [email, setEmail] = useState('')
 
   const [senha, setSenha] = useState('')
 
-  // ============================================================
-  // LOGIN
-  // ============================================================
+  const [role, setRole] =
+    useState('buyer')
 
-  async function handleLogin(e) {
+  // CADASTRO
+
+  async function cadastrar(e) {
 
     e.preventDefault()
 
@@ -27,75 +30,57 @@ function Login() {
 
       const response =
         await api.post(
-          '/auth/login',
+          '/auth/register',
           {
+            nome,
             email,
-            senha
+            senha,
+            role
           }
         )
 
-      const data = response.data
+      alert(response.data.mensagem)
 
-      // LOGIN OK
-
-      alert(
-        'Login realizado com sucesso!'
-      )
-
-      // SALVAR USUÁRIO
-
-      localStorage.setItem(
-        'usuario',
-        JSON.stringify(data.usuario)
-      )
-
-      // REDIRECIONAR
-
-      if (
-        data.usuario.role === 'admin'
-      ) {
-        navigate('/admin')
-      }
-
-      else if (
-        data.usuario.role === 'supplier'
-      ) {
-        navigate('/fornecedor')
-      }
-
-      else {
-        navigate('/marketplace')
-      }
+      navigate('/login')
 
     } catch (error) {
+
       console.error(error)
+
       alert(
         error.response?.data?.erro ||
-        'Falha ao conectar com o servidor'
+        'Erro ao cadastrar'
       )
+
     }
+
   }
 
   return (
 
     <>
 
-      {/* TOPO */}
-
       <header className="topbar">
+
         <div className="logo">
+
           <Link to="/">
             Restocka
           </Link>
+
         </div>
 
         <nav>
+
           <Link
             to="/"
             className="nav-btn"
           >
+
             Início
+
           </Link>
+
           <Link
             to="/marketplace"
             className="nav-btn"
@@ -118,21 +103,39 @@ function Login() {
 
       </header>
 
-      {/* LOGIN */}
-
       <main className="login-container">
 
         <section className="login-box">
 
           <h1>
-            Entrar
+            Criar Conta
           </h1>
 
           <p>
-            Acesse sua conta para continuar.
+            Cadastre-se no marketplace.
           </p>
 
-          <form onSubmit={handleLogin}>
+          <form onSubmit={cadastrar}>
+
+            {/* NOME */}
+
+            <div className="form-group">
+
+              <label>
+                Nome
+              </label>
+
+              <input
+                type="text"
+                placeholder="Digite seu nome"
+                value={nome}
+                onChange={(e) =>
+                  setNome(e.target.value)
+                }
+                required
+              />
+
+            </div>
 
             {/* EMAIL */}
 
@@ -145,11 +148,11 @@ function Login() {
               <input
                 type="email"
                 placeholder="Digite seu e-mail"
-                required
                 value={email}
                 onChange={(e) =>
                   setEmail(e.target.value)
                 }
+                required
               />
 
             </div>
@@ -165,62 +168,61 @@ function Login() {
               <input
                 type="password"
                 placeholder="Digite sua senha"
-                required
                 value={senha}
                 onChange={(e) =>
                   setSenha(e.target.value)
                 }
+                required
               />
 
             </div>
 
-            {/* BOTÃO */}
+            {/* TIPO */}
+
+            <div className="form-group">
+
+              <label>
+                Tipo de conta
+              </label>
+
+              <select
+                value={role}
+                onChange={(e) =>
+                  setRole(e.target.value)
+                }
+              >
+
+                <option value="buyer">
+                  Cliente
+                </option>
+
+                <option value="supplier">
+                  Fornecedor
+                </option>
+
+              </select>
+
+            </div>
 
             <button
               type="submit"
               className="btn-primary"
             >
 
-              Entrar
+              Cadastrar
 
             </button>
 
           </form>
 
-          {/* CADASTRO */}
-
           <p className="login-footer">
 
-            Ainda não tem conta?
+            Já possui conta?
 
-            <Link to="/register">
+            <Link to="/login">
 
-              Cadastre-se
+              Entrar
 
-            </Link>
-
-          </p>
-
-          {/* LOGINS DEMO */}
-
-          <p className="login-footer">
-
-            admin@demo.com - 123456
-
-            <br />
-
-            cliente@demo.com - 123456
-
-            <br />
-
-            fornecedor@demo.com - 123456
-
-          </p>
-
-          <p className="login-footer">
-
-          <Link to="/forgot-password">
-            Esqueci minha senha
             </Link>
 
           </p>
@@ -235,4 +237,4 @@ function Login() {
 
 }
 
-export default Login
+export default Register

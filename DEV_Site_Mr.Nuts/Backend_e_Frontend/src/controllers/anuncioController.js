@@ -5,9 +5,21 @@ const db = require('../config/db');
 
 exports.listar = (req, res) => {
 
+ 
+
   const sql = `
-    SELECT * FROM produtos
-  `;
+  SELECT
+    p.*,
+    f.nome_empresa AS fornecedor_nome,
+    c.nome AS categoria_nome
+  FROM produtos p
+  LEFT JOIN fornecedores f
+    ON p.fornecedor_id = f.id
+  LEFT JOIN categorias c
+    ON p.categoria_id = c.id
+`;
+
+
 
   db.query(sql, (err, results) => {
 

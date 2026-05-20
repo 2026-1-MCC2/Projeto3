@@ -1,62 +1,43 @@
-// ✅ CONEXÃO COM BANCO
-
+const express = require('express');
+const cors = require('cors');
 const connection = require('./config/db');
 
-
-// ✅ DEPENDÊNCIAS
-
-const cors = require('cors');
-const express = require('express');
-
-
-// ✅ APP
+const anunciosRoutes = require('./routes/anuncios');
+const favoritosRoutes = require('./routes/favoritos');
+const authRoutes = require('./routes/auth');
+const avaliacoesRoutes = require('./routes/avaliacoes');
+const orcamentosRoutes = require('./routes/orcamentos');
 
 const app = express();
 
-
-// ✅ MIDDLEWARES
-
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || origin.startsWith('http://localhost:')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Origem não permitida pelo CORS'));
+    }
+  },
+  credentials: true
+}));
 
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
+app.use('/anuncios', anunciosRoutes);
+app.use('/favoritos', favoritosRoutes);
+app.use('/auth', authRoutes);
+app.use('/avaliacoes', avaliacoesRoutes);
+app.use('/orcamentos', orcamentosRoutes);
 
-// ✅ SERVIR IMAGENS
-
-app.use(
-  '/uploads',
-  express.static('uploads')
-);
-
-
-// ✅ ROTAS DE PRODUTOS
-
-const anunciosRoutes = require('./routes/anuncios');
-
-app.use(
-  '/anuncios',
-  anunciosRoutes
-);
-
-
-// ✅ ROTAS DE AUTH
-
-const authRoutes = require('./routes/auth');
-
-app.use(
-  '/auth',
-  authRoutes
-);
-
-
-// ✅ SERVIDOR
+app.get('/teste-orcamentos', (req, res) => {
+  res.json({
+    mensagem: 'Servidor certo está rodando'
+  });
+});
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-
-  console.log(
-    `SERVIDOR RODANDO 🔥 na porta ${PORT}`
-  );
-
+  console.log(`Servidor rodando na porta ${PORT}`);
 });

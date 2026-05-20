@@ -464,9 +464,42 @@ ON orcamentos(fornecedor_id);
 -- ============================================================
 -- TESTES
 -- ============================================================
+USE marketplace_b2b;
+UPDATE usuarios
+SET senha_hash = '$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi'
+WHERE email = 'admin@demo.com';
+
+UPDATE usuarios
+SET senha_hash = '$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi'
+WHERE email = 'cliente@demo.com';
+
+UPDATE usuarios
+SET senha_hash = '$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi'
+WHERE email = 'fornecedor@demo.com';
+
 
 SELECT * FROM usuarios;
 
 SELECT * FROM fornecedores;
 
 SELECT * FROM produtos;
+
+ALTER TABLE usuarios
+ADD COLUMN reset_token VARCHAR(255),
+ADD COLUMN reset_expira DATETIME;
+
+CREATE TABLE IF NOT EXISTS favoritos_fornecedores (
+    usuario_id INT UNSIGNED NOT NULL,
+    fornecedor_id INT UNSIGNED NOT NULL,
+    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (usuario_id, fornecedor_id),
+
+    FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (fornecedor_id)
+    REFERENCES fornecedores(id)
+    ON DELETE CASCADE
+);
