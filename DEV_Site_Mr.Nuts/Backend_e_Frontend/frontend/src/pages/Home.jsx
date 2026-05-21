@@ -17,6 +17,7 @@ function Home() {
   const buscaInicial = parametros.get('busca') || ''
 
   const [produtos, setProdutos] = useState([])
+  const [produtosFavoritos, setProdutosFavoritos] = useState([])
   const [loading, setLoading] = useState(true)
   const [erro, setErro] = useState('')
 
@@ -27,6 +28,7 @@ function Home() {
 
   useEffect(() => {
     carregarProdutos()
+    carregarFavoritosLocais()
   }, [])
 
   useEffect(() => {
@@ -35,6 +37,51 @@ function Home() {
 
     setBusca(novaBusca)
   }, [location.search])
+
+  function carregarFavoritosLocais() {
+    const usuario = JSON.parse(
+      localStorage.getItem('usuario')
+    )
+
+    if (!usuario) {
+      setProdutosFavoritos([])
+      return
+    }
+
+    const favoritosSalvos = JSON.parse(
+      localStorage.getItem(`favoritos_produtos_${usuario.id}`)
+    ) || []
+
+    setProdutosFavoritos(favoritosSalvos)
+  }
+
+  function salvarFavoritoLocal(produtoId) {
+    const usuario = JSON.parse(
+      localStorage.getItem('usuario')
+    )
+
+    if (!usuario) {
+      return
+    }
+
+    const favoritosSalvos = JSON.parse(
+      localStorage.getItem(`favoritos_produtos_${usuario.id}`)
+    ) || []
+
+    if (!favoritosSalvos.includes(produtoId)) {
+      const novosFavoritos = [
+        ...favoritosSalvos,
+        produtoId
+      ]
+
+      localStorage.setItem(
+        `favoritos_produtos_${usuario.id}`,
+        JSON.stringify(novosFavoritos)
+      )
+
+      setProdutosFavoritos(novosFavoritos)
+    }
+  }
 
   async function carregarProdutos() {
     try {
@@ -223,9 +270,20 @@ function Home() {
         produto_id: produto.id
       })
 
+      salvarFavoritoLocal(produto.id)
+
       alert(response.data.mensagem)
     } catch (error) {
       console.error(error)
+
+      if (
+        error.response?.data?.erro &&
+        error.response.data.erro.toLowerCase().includes('já')
+      ) {
+        salvarFavoritoLocal(produto.id)
+        alert(error.response.data.erro)
+        return
+      }
 
       alert(
         error.response?.data?.erro ||
@@ -473,6 +531,7 @@ function Home() {
             {!loading && !erro && produtosFiltrados.length > 0 && (
               <ProdutoList
                 produtos={produtosFiltrados}
+                produtosFavoritos={produtosFavoritos}
                 adicionarFavorito={adicionarFavorito}
                 adicionarFornecedorFavorito={adicionarFornecedorFavorito}
                 deletarProduto={deletarProduto}

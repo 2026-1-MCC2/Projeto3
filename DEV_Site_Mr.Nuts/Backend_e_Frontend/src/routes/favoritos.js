@@ -39,7 +39,7 @@ router.post('/produto', (req, res) => {
       usuario_id,
       produto_id
     ],
-    (err) => {
+    (err, result) => {
 
       if (err) {
 
@@ -51,12 +51,59 @@ router.post('/produto', (req, res) => {
 
       }
 
+      if (result.affectedRows === 0) {
+
+        return res.json({
+          mensagem: 'Produto já está nos favoritos',
+          favoritado: true
+        });
+
+      }
+
       return res.json({
-        mensagem: 'Produto favoritado com sucesso'
+        mensagem: 'Produto favoritado com sucesso',
+        favoritado: true
       });
 
     }
   );
+
+});
+
+
+// ============================================================
+// LISTAR IDS DOS PRODUTOS FAVORITOS
+// ============================================================
+
+router.get('/produtos-ids/:usuarioId', (req, res) => {
+
+  const { usuarioId } = req.params;
+
+  const sql = `
+    SELECT produto_id
+    FROM favoritos
+    WHERE usuario_id = ?
+  `;
+
+  db.query(sql, [usuarioId], (err, results) => {
+
+    if (err) {
+
+      console.error(err);
+
+      return res.status(500).json({
+        erro: 'Erro ao listar favoritos'
+      });
+
+    }
+
+    const ids = results.map(
+      (item) => item.produto_id
+    );
+
+    return res.json(ids);
+
+  });
 
 });
 
@@ -82,6 +129,7 @@ router.get('/produtos/:usuarioId', (req, res) => {
     LEFT JOIN categorias c
       ON p.categoria_id = c.id
     WHERE fav.usuario_id = ?
+    ORDER BY fav.criado_em DESC
   `;
 
   db.query(sql, [usuarioId], (err, results) => {
@@ -139,7 +187,8 @@ router.delete('/produto/:usuarioId/:produtoId', (req, res) => {
       }
 
       return res.json({
-        mensagem: 'Produto removido dos favoritos'
+        mensagem: 'Produto removido dos favoritos',
+        favoritado: false
       });
 
     }
@@ -182,7 +231,7 @@ router.post('/fornecedor', (req, res) => {
       usuario_id,
       fornecedor_id
     ],
-    (err) => {
+    (err, result) => {
 
       if (err) {
 
@@ -194,8 +243,18 @@ router.post('/fornecedor', (req, res) => {
 
       }
 
+      if (result.affectedRows === 0) {
+
+        return res.json({
+          mensagem: 'Fornecedor já está nos favoritos',
+          favoritado: true
+        });
+
+      }
+
       return res.json({
-        mensagem: 'Fornecedor favoritado com sucesso'
+        mensagem: 'Fornecedor favoritado com sucesso',
+        favoritado: true
       });
 
     }
@@ -219,6 +278,7 @@ router.get('/fornecedores/:usuarioId', (req, res) => {
     JOIN fornecedores f
       ON fav.fornecedor_id = f.id
     WHERE fav.usuario_id = ?
+    ORDER BY fav.criado_em DESC
   `;
 
   db.query(sql, [usuarioId], (err, results) => {
@@ -276,7 +336,8 @@ router.delete('/fornecedor/:usuarioId/:fornecedorId', (req, res) => {
       }
 
       return res.json({
-        mensagem: 'Fornecedor removido dos favoritos'
+        mensagem: 'Fornecedor removido dos favoritos',
+        favoritado: false
       });
 
     }

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 
 function ProdutoList({
   produtos,
+  produtosFavoritos = [],
   adicionarFavorito,
   adicionarFornecedorFavorito
 }) {
@@ -10,6 +11,10 @@ function ProdutoList({
 
   function abrirProduto(id) {
     navigate(`/produto/${id}`)
+  }
+
+  function produtoEstaFavoritado(produtoId) {
+    return produtosFavoritos.includes(produtoId)
   }
 
   function formatarPreco(preco) {
@@ -127,7 +132,7 @@ function ProdutoList({
     return 'cream'
   }
 
-  if (produtos.length === 0) {
+  if (!produtos || produtos.length === 0) {
     return (
       <p className="empty-message">
         Nenhum produto encontrado com esses filtros.
@@ -137,126 +142,126 @@ function ProdutoList({
 
   return (
     <section className="products-grid">
+      {produtos.map((produto) => {
+        const favoritado = produtoEstaFavoritado(produto.id)
 
-      {produtos.map((produto) => (
-        <article
-          key={produto.id}
-          className="product-card"
-        >
-
-          <button
-            type="button"
-            className="favorite-circle"
-            onClick={() => adicionarFavorito(produto)}
-            title="Favoritar anúncio"
+        return (
+          <article
+            key={produto.id}
+            className="product-card"
           >
-            ♡
-          </button>
+            <button
+              type="button"
+              className={
+                favoritado
+                  ? 'favorite-circle favorited'
+                  : 'favorite-circle'
+              }
+              onClick={() => adicionarFavorito(produto)}
+              title={
+                favoritado
+                  ? 'Produto favoritado'
+                  : 'Favoritar anúncio'
+              }
+            >
+              {favoritado ? '♥' : '♡'}
+            </button>
 
-          <div
-            className={`product-image-box ${obterClasseImagem(produto)}`}
-            onClick={() => abrirProduto(produto.id)}
-            style={{ cursor: 'pointer' }}
-            title="Ver produto"
-          >
-
-            {produto.imagem ? (
-              <img
-                src={`http://localhost:3000/uploads/${produto.imagem}`}
-                alt={produto.nome || 'Produto'}
-                className="product-real-image"
-              />
-            ) : (
-              <span className="product-emoji">
-                {obterEmojiProduto(produto)}
-              </span>
-            )}
-
-          </div>
-
-          <div className="product-info">
-
-            <h3
+            <div
+              className={`product-image-box ${obterClasseImagem(produto)}`}
               onClick={() => abrirProduto(produto.id)}
               style={{ cursor: 'pointer' }}
               title="Ver produto"
             >
-              {produto.nome || 'Produto sem nome'}
-            </h3>
-
-            <p className="supplier-name">
-              🏭 {obterFornecedor(produto)}
-            </p>
-
-            {produto.descricao && (
-              <p className="product-description">
-                {produto.descricao}
-              </p>
-            )}
-
-            <p className="moq-text-card">
-              MOQ: <strong>{obterMoq(produto)} un</strong>
-            </p>
-
-            <div className="product-tags-row">
-
-              <span className="product-tag">
-                {obterCategoria(produto)}
-              </span>
-
-              <span className="product-tag">
-                📍 {obterRegiao(produto)}
-              </span>
-
+              {produto.imagem ? (
+                <img
+                  src={`http://localhost:3000/uploads/${produto.imagem}`}
+                  alt={produto.nome || 'Produto'}
+                  className="product-real-image"
+                />
+              ) : (
+                <span className="product-emoji">
+                  {obterEmojiProduto(produto)}
+                </span>
+              )}
             </div>
 
-            <strong className="product-price">
-              {formatarPreco(produto.preco)}
-            </strong>
-
-            <div className="product-actions">
-
-              <button
-                type="button"
-                className="btn-budget"
+            <div className="product-info">
+              <h3
                 onClick={() => abrirProduto(produto.id)}
+                style={{ cursor: 'pointer' }}
+                title="Ver produto"
               >
-                📋 Orçamento
-              </button>
+                {produto.nome || 'Produto sem nome'}
+              </h3>
 
-              <button
-                type="button"
-                className="btn-contact"
-                onClick={() => adicionarFornecedorFavorito(produto)}
-              >
-                📞 Contato
-              </button>
+              <p className="supplier-name">
+                🏭 {obterFornecedor(produto)}
+              </p>
 
-              <button
-                type="button"
-                className="btn-view-product"
-                onClick={() => abrirProduto(produto.id)}
-              >
-                Ver Produto
-              </button>
-
-              {usuario && usuario.role === 'buyer' && (
-                <button
-                  type="button"
-                  className="btn-evaluate"
-                  onClick={() => abrirProduto(produto.id)}
-                >
-                  ⭐ Avaliar
-                </button>
+              {produto.descricao && (
+                <p className="product-description">
+                  {produto.descricao}
+                </p>
               )}
 
+              <p className="moq-text-card">
+                MOQ: <strong>{obterMoq(produto)} un</strong>
+              </p>
+
+              <div className="product-tags-row">
+                <span className="product-tag">
+                  {obterCategoria(produto)}
+                </span>
+
+                <span className="product-tag">
+                  📍 {obterRegiao(produto)}
+                </span>
+              </div>
+
+              <strong className="product-price">
+                {formatarPreco(produto.preco)}
+              </strong>
+
+              <div className="product-actions">
+                <button
+                  type="button"
+                  className="btn-budget"
+                  onClick={() => abrirProduto(produto.id)}
+                >
+                  📋 Orçamento
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-contact"
+                  onClick={() => adicionarFornecedorFavorito(produto)}
+                >
+                  📞 Contato
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-view-product"
+                  onClick={() => abrirProduto(produto.id)}
+                >
+                  Ver Produto
+                </button>
+
+                {usuario && usuario.role === 'buyer' && (
+                  <button
+                    type="button"
+                    className="btn-evaluate"
+                    onClick={() => abrirProduto(produto.id)}
+                  >
+                    ⭐ Avaliar
+                  </button>
+                )}
+              </div>
             </div>
-
-          </div>
-
-        </article>
-      ))}
-
+          </article>
+        )
+      })}
     </section>
   )
 }

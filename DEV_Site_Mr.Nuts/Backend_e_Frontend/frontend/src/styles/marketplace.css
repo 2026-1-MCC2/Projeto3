@@ -749,3 +749,9 @@ body,
     grid-template-columns: 1fr !important;
   }
 }
+
+.favorite-circle.favorited {
+  background: #ff4d6d !important;
+  color: #ffffff !important;
+  border: 1px solid #ff4d6d !important;
+}
