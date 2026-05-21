@@ -22,6 +22,9 @@ const orcamentosRoutes =
 
 const app = express();
 
+const dashboardRoutes = 
+  require('./routes/dashboard');
+
 
 // ============================================================
 // CORS
@@ -163,3 +166,8 @@ app.listen(PORT, () => {
   );
 
 });
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+app.use('/dashboard', dashboardRoutes);

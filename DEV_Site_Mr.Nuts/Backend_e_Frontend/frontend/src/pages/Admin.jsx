@@ -20,6 +20,15 @@ function Admin() {
   const [dropdownAberto, setDropdownAberto] =
     useState(false)
 
+  const [dashboard, setDashboard] =
+    useState({
+      usuarios: 0,
+      produtos: 0,
+      fornecedores: 0,
+      avaliacoes: 0,
+      orcamentos: 0
+    })
+
   const [produtos, setProdutos] =
     useState([])
 
@@ -35,10 +44,6 @@ function Admin() {
   const [avaliacoes, setAvaliacoes] =
     useState([])
 
-  // ============================================================
-  // PROTEÇÃO
-  // ============================================================
-
   useEffect(() => {
 
     if (!usuario || usuario.role !== 'admin') {
@@ -51,6 +56,7 @@ function Admin() {
 
     }
 
+    carregarDashboard()
     carregarProdutos()
     carregarUsuarios()
     carregarPendentes()
@@ -59,9 +65,22 @@ function Admin() {
 
   }, [])
 
-  // ============================================================
-  // CARREGAR PRODUTOS
-  // ============================================================
+  async function carregarDashboard() {
+
+    try {
+
+      const response =
+        await api.get('/dashboard')
+
+      setDashboard(response.data)
+
+    } catch (error) {
+
+      console.error(error)
+
+    }
+
+  }
 
   async function carregarProdutos() {
 
@@ -80,10 +99,6 @@ function Admin() {
 
   }
 
-  // ============================================================
-  // CARREGAR USUÁRIOS
-  // ============================================================
-
   async function carregarUsuarios() {
 
     try {
@@ -101,10 +116,6 @@ function Admin() {
 
   }
 
-  // ============================================================
-  // CARREGAR FORNECEDORES PENDENTES
-  // ============================================================
-
   async function carregarPendentes() {
 
     try {
@@ -121,10 +132,6 @@ function Admin() {
     }
 
   }
-
-  // ============================================================
-  // CARREGAR ANÚNCIOS PENDENTES
-  // ============================================================
 
   async function carregarAnunciosPendentes() {
 
@@ -145,10 +152,6 @@ function Admin() {
 
   }
 
-  // ============================================================
-  // CARREGAR AVALIAÇÕES
-  // ============================================================
-
   async function carregarAvaliacoes() {
 
     try {
@@ -168,10 +171,6 @@ function Admin() {
 
   }
 
-  // ============================================================
-  // APROVAR FORNECEDOR
-  // ============================================================
-
   async function aprovarFornecedor(id) {
 
     try {
@@ -184,6 +183,7 @@ function Admin() {
 
       carregarPendentes()
       carregarUsuarios()
+      carregarDashboard()
 
     } catch (error) {
 
@@ -195,10 +195,6 @@ function Admin() {
 
   }
 
-  // ============================================================
-  // APROVAR ANÚNCIO
-  // ============================================================
-
   async function aprovarAnuncio(id) {
 
     try {
@@ -207,10 +203,11 @@ function Admin() {
         `/anuncios/aprovar/${id}`
       )
 
-      alert('Anúncio aprovado ✅')
+      alert('Anúncio aprovado')
 
       carregarAnunciosPendentes()
       carregarProdutos()
+      carregarDashboard()
 
     } catch (error) {
 
@@ -221,10 +218,6 @@ function Admin() {
     }
 
   }
-
-  // ============================================================
-  // REPROVAR ANÚNCIO
-  // ============================================================
 
   async function reprovarAnuncio(id) {
 
@@ -244,9 +237,10 @@ function Admin() {
         { motivo }
       )
 
-      alert('Anúncio reprovado ❌')
+      alert('Anúncio reprovado')
 
       carregarAnunciosPendentes()
+      carregarDashboard()
 
     } catch (error) {
 
@@ -257,10 +251,6 @@ function Admin() {
     }
 
   }
-
-  // ============================================================
-  // OCULTAR AVALIAÇÃO
-  // ============================================================
 
   async function ocultarAvaliacao(id) {
 
@@ -273,6 +263,7 @@ function Admin() {
       alert('Avaliação ocultada')
 
       carregarAvaliacoes()
+      carregarDashboard()
 
     } catch (error) {
 
@@ -283,10 +274,6 @@ function Admin() {
     }
 
   }
-
-  // ============================================================
-  // REMOVER AVALIAÇÃO
-  // ============================================================
 
   async function removerAvaliacao(id) {
 
@@ -308,6 +295,7 @@ function Admin() {
       alert('Avaliação removida')
 
       carregarAvaliacoes()
+      carregarDashboard()
 
     } catch (error) {
 
@@ -318,10 +306,6 @@ function Admin() {
     }
 
   }
-
-  // ============================================================
-  // DELETAR PRODUTO
-  // ============================================================
 
   async function deletarProduto(id) {
 
@@ -341,6 +325,7 @@ function Admin() {
       )
 
       carregarProdutos()
+      carregarDashboard()
 
       alert('Produto removido')
 
@@ -354,10 +339,6 @@ function Admin() {
 
   }
 
-  // ============================================================
-  // DROPDOWN
-  // ============================================================
-
   function toggleMenu() {
 
     setDropdownAberto(
@@ -366,25 +347,33 @@ function Admin() {
 
   }
 
-  // ============================================================
-  // CONFIG
-  // ============================================================
-
   function abrirConta() {
 
     navigate('/admin-config')
 
   }
 
-  // ============================================================
-  // LOGOUT
-  // ============================================================
-
   function logout() {
 
     localStorage.removeItem('usuario')
 
     navigate('/login')
+
+  }
+
+  function irParaSecao(id) {
+
+    const secao =
+      document.getElementById(id)
+
+    if (secao) {
+
+      secao.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
+
+    }
 
   }
 
@@ -406,25 +395,45 @@ function Admin() {
 
         <nav className="menu">
 
-          <a href="#">
+          <button
+            type="button"
+            className="menu-link"
+            onClick={() => irParaSecao('dashboard')}
+          >
             Dashboard
-          </a>
+          </button>
 
-          <a href="#">
+          <button
+            type="button"
+            className="menu-link"
+            onClick={() => irParaSecao('usuarios')}
+          >
             Usuários
-          </a>
+          </button>
 
-          <a href="#">
+          <button
+            type="button"
+            className="menu-link"
+            onClick={() => irParaSecao('produtos')}
+          >
             Produtos
-          </a>
+          </button>
 
-          <a href="#">
+          <button
+            type="button"
+            className="menu-link"
+            onClick={() => irParaSecao('fornecedores')}
+          >
             Fornecedores
-          </a>
+          </button>
 
-          <a href="#">
+          <button
+            type="button"
+            className="menu-link"
+            onClick={() => irParaSecao('relatorios')}
+          >
             Relatórios
-          </a>
+          </button>
 
         </nav>
 
@@ -476,78 +485,97 @@ function Admin() {
           Bem-vindo ao Painel Administrativo
         </h1>
 
-        {/* DASHBOARD */}
-
         <section
-          style={{
-            display: 'grid',
-            gridTemplateColumns:
-              'repeat(4, 1fr)',
-            gap: '20px',
-            marginBottom: '30px'
-          }}
+          id="dashboard"
+          className="dashboard-grid"
         >
 
-          <div className="card">
+          <div className="dashboard-card">
 
             <h3>
               Produtos
             </h3>
 
             <h1>
-              {produtos.length}
+              {dashboard.produtos}
             </h1>
+
+            <p>
+              Total cadastrado
+            </p>
 
           </div>
 
-          <div className="card">
+          <div className="dashboard-card">
 
             <h3>
               Usuários
             </h3>
 
             <h1>
-              {usuarios.length}
+              {dashboard.usuarios}
             </h1>
+
+            <p>
+              Total de contas
+            </p>
 
           </div>
 
-          <div className="card">
+          <div className="dashboard-card">
 
             <h3>
               Fornecedores
             </h3>
 
             <h1>
-
-              {
-                usuarios.filter(
-                  (u) =>
-                    u.role === 'supplier'
-                ).length
-              }
-
+              {dashboard.fornecedores}
             </h1>
+
+            <p>
+              Fornecedores ativos
+            </p>
 
           </div>
 
-          <div className="card">
+          <div className="dashboard-card">
 
             <h3>
-              Anúncios Pendentes
+              Avaliações
             </h3>
 
             <h1>
-              {anunciosPendentes.length}
+              {dashboard.avaliacoes}
             </h1>
+
+            <p>
+              Total recebido
+            </p>
+
+          </div>
+
+          <div className="dashboard-card">
+
+            <h3>
+              Orçamentos
+            </h3>
+
+            <h1>
+              {dashboard.orcamentos}
+            </h1>
+
+            <p>
+              Solicitações feitas
+            </p>
 
           </div>
 
         </section>
 
-        {/* FORNECEDORES PENDENTES */}
-
-        <div className="card">
+        <div
+          id="fornecedores"
+          className="card"
+        >
 
           <h2>
             Fornecedores Pendentes
@@ -599,7 +627,55 @@ function Admin() {
 
         </div>
 
-        {/* ANÚNCIOS PENDENTES */}
+        <div
+          id="usuarios"
+          className="card"
+        >
+
+          <h2>
+            Usuários
+          </h2>
+
+          {
+            usuarios.length === 0 ? (
+
+              <p>
+                Nenhum usuário encontrado.
+              </p>
+
+            ) : (
+
+              usuarios.map((user) => (
+
+                <div
+                  key={user.id}
+                  className="admin-item"
+                >
+
+                  <h4>
+                    {user.nome}
+                  </h4>
+
+                  <p>
+                    {user.email}
+                  </p>
+
+                  <p>
+                    <strong>
+                      Perfil:
+                    </strong>
+                    {' '}
+                    {user.role}
+                  </p>
+
+                </div>
+
+              ))
+
+            )
+          }
+
+        </div>
 
         <div className="card">
 
@@ -658,7 +734,7 @@ function Admin() {
                       }
                     >
 
-                      ✅ Aprovar
+                      Aprovar
 
                     </button>
 
@@ -671,7 +747,7 @@ function Admin() {
                       }
                     >
 
-                      ❌ Reprovar
+                      Reprovar
 
                     </button>
 
@@ -686,9 +762,10 @@ function Admin() {
 
         </div>
 
-        {/* PRODUTOS */}
-
-        <div className="card">
+        <div
+          id="produtos"
+          className="card"
+        >
 
           <h2>
             Produtos cadastrados
@@ -748,9 +825,10 @@ function Admin() {
 
         </div>
 
-        {/* MODERAÇÃO DE AVALIAÇÕES */}
-
-        <div className="card">
+        <div
+          id="relatorios"
+          className="card"
+        >
 
           <h2>
             Moderação de Avaliações

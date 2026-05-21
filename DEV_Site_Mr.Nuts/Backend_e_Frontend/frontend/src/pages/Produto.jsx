@@ -12,83 +12,106 @@ function Produto() {
 
   const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-  // ✅ CARREGAR PRODUTO
   useEffect(() => {
     async function carregarProduto() {
-      try {
-        const res = await api.get(`/anuncios/${id}`);
-        setProduto(res.data);
-      } catch (err) {
-        console.error('Erro ao carregar produto:', err);
-      }
+      const res = await api.get(`/anuncios/${id}`);
+      setProduto(res.data);
     }
-
     carregarProduto();
   }, [id]);
 
-
-  // ✅ CARREGAR AVALIAÇÕES
   useEffect(() => {
     async function carregarAvaliacoes() {
-      try {
-        const res = await api.get(`/avaliacoes/produto/${id}`);
-        setAvaliacoes(res.data);
-      } catch (err) {
-        console.error('Erro ao carregar avaliações:', err);
-      }
+      const res = await api.get(`/avaliacoes/produto/${id}`);
+      setAvaliacoes(res.data);
     }
-
     carregarAvaliacoes();
   }, [id]);
 
-
   if (!produto) return <p>Carregando...</p>;
 
-
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="produto-page">
 
-      <h1>{produto.nome}</h1>
+      {/* ✅ CARD PRODUTO */}
+      <div className="produto-card">
 
-      <p>{produto.descricao}</p>
+        <div className="produto-header">
 
-      <p><strong>Preço:</strong> R$ {produto.preco}</p>
+          <div className="produto-info">
 
-      {produto.imagem && (
-        <img 
-          src={`http://localhost:3000/uploads/${produto.imagem}`} 
-          width="200"
-        />
-      )}
+            <h1>{produto.nome}</h1>
 
-      <hr />
+            <p className="produto-descricao">
+              {produto.descricao}
+            </p>
 
-      {/* ✅ FORMULÁRIO DE AVALIAÇÃO */}
-      {usuario && (
-        <AvaliarProduto 
-          produtoId={produto.id} 
-          usuario={usuario}
-        />
-      )}
+            <p className="produto-preco">
+              R$ {produto.preco}
+            </p>
 
-      <hr />
+          </div>
 
-      {/* ✅ LISTA DE AVALIAÇÕES */}
-      <h3>Avaliações</h3>
-
-      {avaliacoes.length === 0 && <p>Nenhuma avaliação ainda.</p>}
-
-      {avaliacoes.map(av => (
-        <div key={av.id} style={{ borderBottom: '1px solid #ccc', marginBottom: '10px' }}>
-          
-          <p><strong>{av.nome}</strong></p>
-
-          <p>⭐ {av.estrelas} / 5</p>
-
-          <p>{av.comentario}</p>
+          {produto.imagem && (
+            <img 
+              src={`http://localhost:3000/uploads/${produto.imagem}`}
+              className="produto-imagem"
+              alt="Produto"
+            />
+          )}
 
         </div>
-      ))}
+
+      </div>
+
+      {/* ✅ FORM AVALIAÇÃO */}
+      {usuario && (
+        <div className="avaliacao-box">
+          <h2>Avaliar produto</h2>
+
+          <AvaliarProduto 
+            produtoId={produto.id} 
+            usuario={usuario}
+          />
+        </div>
+      )}
+
+      {/* ✅ LISTA DE AVALIAÇÕES */}
+      <div className="avaliacoes-lista">
+
+        <h2>Avaliações</h2>
+
+        {avaliacoes.length === 0 && (
+          <p className="sem-avaliacao">
+            Nenhuma avaliação ainda.
+          </p>
+        )}
+
+        {avaliacoes.map(av => (
+          <div key={av.id} className="avaliacao-item">
+
+            <div className="avaliacao-topo">
+
+              <span className="avaliacao-nome">
+                {av.nome}
+              </span>
+
+              <span className="avaliacao-estrelas">
+                {'⭐'.repeat(av.estrelas)}
+              </span>
+
+            </div>
+
+            {av.comentario && (
+              <p className="avaliacao-comentario">
+                {av.comentario}
+              </p>
+            )}
+
+          </div>
+        ))}
+
+      </div>
 
     </div>
   );
