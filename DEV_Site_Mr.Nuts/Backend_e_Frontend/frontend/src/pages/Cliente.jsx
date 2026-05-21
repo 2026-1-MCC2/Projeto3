@@ -1,5 +1,24 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useState([])import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+
+import Navbar from '../components/Navbar'
+import ProdutoList from '../components/ProdutoList'
+
+import api from '../services/api'
+
+import '../styles/global.css'
+import '../styles/marketplace.css'
+
+function Cliente() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const usuario = JSON.parse(localStorage.getItem('usuario'))
+
+  const parametros = new URLSearchParams(location.search)
+  const buscaInicial = parametros.get('busca') || ''
+
+  const [produtos, setProdutos] = useState([])
   const [orcamentos, setOrcamentos] = useState([])
   const [loading, setLoading] = useState(true)
   const [erro, setErro] = useState('')
@@ -55,9 +74,7 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
   async function cancelarOrcamento(id) {
     const confirmar = window.confirm('Deseja cancelar este orçamento?')
 
-    if (!confirmar) {
-      return
-    }
+    if (!confirmar) return
 
     try {
       const response = await api.patch(`/orcamentos/${id}/cancelar`)
@@ -66,20 +83,14 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
       carregarMeusOrcamentos()
     } catch (error) {
       console.error(error)
-
-      alert(
-        error.response?.data?.erro ||
-        'Erro ao cancelar orçamento'
-      )
+      alert(error.response?.data?.erro || 'Erro ao cancelar orçamento')
     }
   }
 
   async function fecharOrcamento(id) {
     const confirmar = window.confirm('Deseja fechar este orçamento?')
 
-    if (!confirmar) {
-      return
-    }
+    if (!confirmar) return
 
     try {
       const response = await api.patch(`/orcamentos/${id}/fechar`)
@@ -88,11 +99,7 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
       carregarMeusOrcamentos()
     } catch (error) {
       console.error(error)
-
-      alert(
-        error.response?.data?.erro ||
-        'Erro ao fechar orçamento'
-      )
+      alert(error.response?.data?.erro || 'Erro ao fechar orçamento')
     }
   }
 
@@ -106,12 +113,7 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
   }
 
   function obterNomeProduto(produto) {
-    return (
-      produto.nome ||
-      produto.titulo ||
-      produto.produto_nome ||
-      ''
-    )
+    return produto.nome || produto.titulo || produto.produto_nome || ''
   }
 
   function obterCategoria(produto) {
@@ -216,12 +218,7 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
         moq === 0 ||
         moq <= Number(moqMaximo)
 
-      return (
-        passouBusca &&
-        passouCategoria &&
-        passouRegiao &&
-        passouMoq
-      )
+      return passouBusca && passouCategoria && passouRegiao && passouMoq
     })
   }, [
     produtos,
@@ -272,11 +269,7 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
       alert(response.data.mensagem)
     } catch (error) {
       console.error(error)
-
-      alert(
-        error.response?.data?.erro ||
-        'Erro ao favoritar produto'
-      )
+      alert(error.response?.data?.erro || 'Erro ao favoritar produto')
     }
   }
 
@@ -300,11 +293,7 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
       alert(response.data.mensagem)
     } catch (error) {
       console.error(error)
-
-      alert(
-        error.response?.data?.erro ||
-        'Erro ao favoritar fornecedor'
-      )
+      alert(error.response?.data?.erro || 'Erro ao favoritar fornecedor')
     }
   }
 
@@ -317,15 +306,10 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
       <Navbar />
 
       <main className="marketplace-page">
-
         <section className="marketplace-top">
-
-          <h1>
-            Anúncios de Produtos
-          </h1>
+          <h1>Anúncios de Produtos</h1>
 
           <div className="marketplace-search-row">
-
             <input
               className="marketplace-search-input"
               placeholder="Buscar produto, marca, fornecedor..."
@@ -349,40 +333,24 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
             >
               Limpar
             </button>
-
           </div>
-
         </section>
 
         <section className="marketplace-content">
-
           <aside className="filters-sidebar">
-
             <div className="filters-title-row">
+              <h2>Filtros</h2>
 
-              <h2>
-                Filtros
-              </h2>
-
-              <button
-                type="button"
-                onClick={limparFiltros}
-              >
+              <button type="button" onClick={limparFiltros}>
                 Limpar
               </button>
-
             </div>
 
             <div className="filter-block">
-
-              <h3>
-                CATEGORIA
-              </h3>
+              <h3>CATEGORIA</h3>
 
               {categorias.length === 0 && (
-                <p className="filter-empty">
-                  Nenhuma categoria
-                </p>
+                <p className="filter-empty">Nenhuma categoria</p>
               )}
 
               {categorias.map((categoria) => (
@@ -402,28 +370,17 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
                     }
                   />
 
-                  <span>
-                    {categoria.nome}
-                  </span>
-
-                  <small>
-                    {categoria.total}
-                  </small>
+                  <span>{categoria.nome}</span>
+                  <small>{categoria.total}</small>
                 </label>
               ))}
-
             </div>
 
             <div className="filter-block">
-
-              <h3>
-                REGIÃO
-              </h3>
+              <h3>REGIÃO</h3>
 
               {regioes.length === 0 && (
-                <p className="filter-empty">
-                  Nenhuma região
-                </p>
+                <p className="filter-empty">Nenhuma região</p>
               )}
 
               {regioes.map((regiao) => (
@@ -436,26 +393,18 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
                     checked={regiaoSelecionada === regiao}
                     onChange={() =>
                       setRegiaoSelecionada(
-                        regiaoSelecionada === regiao
-                          ? ''
-                          : regiao
+                        regiaoSelecionada === regiao ? '' : regiao
                       )
                     }
                   />
 
-                  <span>
-                    {regiao}
-                  </span>
+                  <span>{regiao}</span>
                 </label>
               ))}
-
             </div>
 
             <div className="filter-block">
-
-              <h3>
-                MOQ MÁXIMO
-              </h3>
+              <h3>MOQ MÁXIMO</h3>
 
               <input
                 className="moq-range"
@@ -469,29 +418,20 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
               <p className="moq-text">
                 Até {moqMaximo} unidades
               </p>
-
             </div>
-
           </aside>
 
           <section className="marketplace-results">
-
             {loading && (
-              <p className="empty-message">
-                Carregando produtos...
-              </p>
+              <p className="empty-message">Carregando produtos...</p>
             )}
 
             {erro && (
-              <p className="empty-message">
-                {erro}
-              </p>
+              <p className="empty-message">{erro}</p>
             )}
 
             {!loading && !erro && produtosFiltrados.length === 0 && (
-              <p className="empty-message">
-                Nenhum produto encontrado.
-              </p>
+              <p className="empty-message">Nenhum produto encontrado.</p>
             )}
 
             {!loading && !erro && produtosFiltrados.length > 0 && (
@@ -502,32 +442,20 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
                 deletarProduto={deletarProduto}
               />
             )}
-
           </section>
-
         </section>
 
         <section className="card">
-
-          <h2>
-            Meus Orçamentos
-          </h2>
+          <h2>Meus Orçamentos</h2>
 
           {orcamentos.length === 0 ? (
-
-            <p>
-              Nenhuma solicitação de orçamento enviada.
-            </p>
-
+            <p>Nenhuma solicitação de orçamento enviada.</p>
           ) : (
-
             orcamentos.map((orcamento) => (
-
               <div
                 key={orcamento.id}
                 className="admin-item"
               >
-
                 <h4>
                   {orcamento.produto_nome ||
                     orcamento.produto_nome_banco ||
@@ -535,53 +463,35 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
                 </h4>
 
                 <p>
-                  <strong>
-                    Fornecedor:
-                  </strong>
-                  {' '}
+                  <strong>Fornecedor:</strong>{' '}
                   {orcamento.fornecedor_empresa ||
                     orcamento.fornecedor_nome ||
                     'Não informado'}
                 </p>
 
                 <p>
-                  <strong>
-                    Quantidade:
-                  </strong>
-                  {' '}
+                  <strong>Quantidade:</strong>{' '}
                   {orcamento.quantidade || 'Não informada'}
                 </p>
 
                 <p>
-                  <strong>
-                    Necessidades:
-                  </strong>
-                  {' '}
+                  <strong>Necessidades:</strong>{' '}
                   {orcamento.necessidades || 'Não informado'}
                 </p>
 
                 <p>
-                  <strong>
-                    Status:
-                  </strong>
-                  {' '}
+                  <strong>Status:</strong>{' '}
                   {formatarStatus(orcamento.status)}
                 </p>
 
                 {orcamento.resposta && (
-
                   <p>
-                    <strong>
-                      Resposta do fornecedor:
-                    </strong>
-                    {' '}
+                    <strong>Resposta do fornecedor:</strong>{' '}
                     {orcamento.resposta}
                   </p>
-
                 )}
 
                 {orcamento.status === 'pending' && (
-
                   <button
                     type="button"
                     className="btn-reprovar"
@@ -589,11 +499,9 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
                   >
                     Cancelar orçamento
                   </button>
-
                 )}
 
                 {orcamento.status === 'responded' && (
-
                   <button
                     type="button"
                     className="btn-aprovar"
@@ -601,36 +509,14 @@ import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useS
                   >
                     Fechar orçamento
                   </button>
-
                 )}
-
               </div>
-
             ))
-
           )}
-
         </section>
-
       </main>
     </>
   )
 }
 
 export default Cliente
-
-import Navbar from '../components/Navbar'
-import ProdutoList from '../components/ProdutoList'
-import api from '../services/api'
-
-import '../styles/global.css'
-import '../styles/marketplace.css'
-
-function Cliente() {
-  const navigate = useNavigate()
-  const location = useLocation()
-
-  const usuario = JSON.parse(localStorage.getItem('usuario'))
-
-  const parametros = new URLSearchParams(location.search)
-  const buscaInicial = parametros.get('busca') 

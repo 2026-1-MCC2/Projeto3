@@ -61,9 +61,16 @@ function Produto() {
     }
 
     try {
+      console.log('DEBUG PRODUTO:', produto)
+      console.log('DEBUG USUARIO:', usuario)
+
       await api.post('/orcamentos', {
         produto_id: produto.id,
-        fornecedor_id: produto.fornecedor_id,
+        fornecedor_id:
+          produto.fornecedor_id ||
+          produto.usuario_id ||
+          produto.fornecedor ||
+          null,
         comprador_id: usuario.id,
         produto_nome: produto.nome,
         fornecedor_nome: produto.fornecedor_nome,
@@ -83,22 +90,19 @@ function Produto() {
       setFrequencia('')
       setPrazoDesejado('')
       setRegiaoEntrega('')
+
     } catch (error) {
-      console.error(error)
+      console.error('ERRO COMPLETO:', error)
 
       alert(
         error.response?.data?.erro ||
-        'Erro ao solicitar orçamento'
+        'Erro ao criar solicação de orçamento'
       )
     }
   }
 
   if (!produto) {
-    return (
-      <p>
-        Carregando...
-      </p>
-    )
+    return <p>Carregando...</p>
   }
 
   return (
@@ -108,9 +112,8 @@ function Produto() {
         <div className="produto-header">
 
           <div className="produto-info">
-            <h1>
-              {produto.nome}
-            </h1>
+
+            <h1>{produto.nome}</h1>
 
             <p className="produto-descricao">
               {produto.descricao}
@@ -121,12 +124,10 @@ function Produto() {
             </p>
 
             <p>
-              <strong>
-                Fornecedor:
-              </strong>
-              {' '}
+              <strong>Fornecedor:</strong>{' '}
               {produto.fornecedor_nome || 'Não informado'}
             </p>
+
           </div>
 
           {produto.imagem && (
@@ -142,83 +143,81 @@ function Produto() {
 
       {usuario?.role === 'buyer' && (
         <div className="orcamento-box">
-          <h2>
-            Solicitar orçamento
-          </h2>
+
+          <h2>Solicitar orçamento</h2>
 
           <p className="orcamento-descricao">
-            Informe os detalhes da sua necessidade para que o fornecedor possa retornar com uma proposta.
+            Informe os detalhes da sua necessidade
+            para que o fornecedor envie uma proposta.
           </p>
 
           <div className="orcamento-form">
+
             <input
               type="text"
               placeholder="Nome da empresa"
               value={empresaNome}
-              onChange={(event) => setEmpresaNome(event.target.value)}
+              onChange={(e) => setEmpresaNome(e.target.value)}
             />
 
             <input
               type="text"
               placeholder="Quantidade desejada"
               value={quantidade}
-              onChange={(event) => setQuantidade(event.target.value)}
+              onChange={(e) => setQuantidade(e.target.value)}
             />
 
             <textarea
               placeholder="Descreva suas necessidades"
               value={necessidades}
-              onChange={(event) => setNecessidades(event.target.value)}
+              onChange={(e) => setNecessidades(e.target.value)}
             />
 
             <input
               type="text"
-              placeholder="Frequência de compra (ex: mensal, semanal)"
+              placeholder="Frequência de compra (mensal, semanal...)"
               value={frequencia}
-              onChange={(event) => setFrequencia(event.target.value)}
+              onChange={(e) => setFrequencia(e.target.value)}
             />
 
             <input
               type="text"
               placeholder="Prazo desejado"
               value={prazoDesejado}
-              onChange={(event) => setPrazoDesejado(event.target.value)}
+              onChange={(e) => setPrazoDesejado(e.target.value)}
             />
 
             <input
               type="text"
               placeholder="Região de entrega"
               value={regiaoEntrega}
-              onChange={(event) => setRegiaoEntrega(event.target.value)}
+              onChange={(e) => setRegiaoEntrega(e.target.value)}
             />
 
-            <button
-              type="button"
-              onClick={solicitarOrcamento}
-            >
+            <button onClick={solicitarOrcamento}>
               Enviar solicitação de orçamento
             </button>
+
           </div>
         </div>
       )}
 
       {usuario && (
         <div className="avaliacao-box">
-          <h2>
-            Avaliar produto
-          </h2>
+
+          <h2>Avaliar produto</h2>
 
           <AvaliarProduto
             produtoId={produto.id}
             usuario={usuario}
           />
+
         </div>
       )}
 
       <div className="avaliacoes-lista">
-        <h2>
-          Avaliações
-        </h2>
+
+        <h2>Avaliações</h2>
 
         {avaliacoes.length === 0 && (
           <p className="sem-avaliacao">
@@ -226,28 +225,30 @@ function Produto() {
           </p>
         )}
 
-        {avaliacoes.map((avaliacao) => (
-          <div
-            key={avaliacao.id}
-            className="avaliacao-item"
-          >
+        {avaliacoes.map((av) => (
+          <div key={av.id} className="avaliacao-item">
+
             <div className="avaliacao-topo">
+
               <span className="avaliacao-nome">
-                {avaliacao.nome}
+                {av.nome}
               </span>
 
               <span className="avaliacao-estrelas">
-                {'⭐'.repeat(Number(avaliacao.estrelas))}
+                {'⭐'.repeat(Number(av.estrelas))}
               </span>
+
             </div>
 
-            {avaliacao.comentario && (
+            {av.comentario && (
               <p className="avaliacao-comentario">
-                {avaliacao.comentario}
+                {av.comentario}
               </p>
             )}
+
           </div>
         ))}
+
       </div>
 
     </div>
