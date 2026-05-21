@@ -20,17 +20,22 @@ a {
   justify-content: space-between;
   align-items: center;
   padding: 14px 40px;
-  background: #fff;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 100;
 }
 
 .logo {
   font-size: 24px;
   font-weight: 800;
   color: #ff6a00;
+}
+
+.logo a {
+  color: #ff6a00;
+  font-weight: 800;
 }
 
 .logo img {
@@ -41,42 +46,48 @@ a {
 nav {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
 }
 
 .nav-btn {
-  background: none;
+  background: transparent;
   border: none;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   color: #1f2d3d;
   font-size: 15px;
-  transition: .2s;
+  transition: 0.2s;
+  padding: 8px 10px;
+  border-radius: 8px;
+  line-height: 1;
 }
 
 .nav-btn:hover {
   color: #ff6a00;
+  background: #fff3e7;
 }
 
 /* BOTÕES */
 .btn-outline {
   border: 2px solid #ff7a00;
-  padding: 8px 20px;
+  padding: 9px 20px;
   border-radius: 10px;
   background: transparent;
   color: #ff7a00;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: .2s;
+  transition: 0.2s;
+  font-size: 15px;
+  line-height: 1;
 }
 
 .btn-outline:hover {
   background: #ff7a00;
-  color: #fff;
+  color: #ffffff;
 }
 
 .btn-primary {
-  background: #fff;
+  background: #ffffff;
   color: #ff6a00;
   padding: 14px 28px;
   border: none;
@@ -84,29 +95,29 @@ nav {
   font-weight: 700;
   cursor: pointer;
   display: inline-block;
-  transition: .2s;
+  transition: 0.2s;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, .15);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.15);
 }
 
 .btn-secondary {
   background: transparent;
-  border: 2px solid #fff;
-  color: #fff;
+  border: 2px solid #ffffff;
+  color: #ffffff;
   padding: 14px 28px;
   border-radius: 12px;
   margin-left: 14px;
   font-weight: 700;
   cursor: pointer;
   display: inline-block;
-  transition: .2s;
+  transition: 0.2s;
 }
 
 .btn-secondary:hover {
-  background: #fff;
+  background: #ffffff;
   color: #ff6a00;
 }
 
@@ -130,14 +141,14 @@ nav {
   border-radius: 10px;
   outline: none;
   font-size: 15px;
-  background: #fff;
+  background: #ffffff;
 }
 
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
   border-color: #ff7a00;
-  box-shadow: 0 0 0 3px rgba(255, 122, 0, .15);
+  box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.15);
 }
 
 /* RODAPÉ */
@@ -145,7 +156,7 @@ footer {
   text-align: center;
   padding: 30px;
   font-size: 14px;
-  opacity: .6;
+  opacity: 0.6;
 }
 
 /* RESPONSIVO */
@@ -159,6 +170,12 @@ footer {
   nav {
     flex-wrap: wrap;
     justify-content: center;
+    gap: 12px;
+  }
+
+  .nav-btn,
+  .btn-outline {
+    font-size: 14px;
   }
 
   .btn-secondary {

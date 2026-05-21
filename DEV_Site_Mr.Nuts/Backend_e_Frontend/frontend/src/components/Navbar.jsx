@@ -18,6 +18,24 @@ function Navbar() {
 
   }
 
+  function obterRotaConfiguracao() {
+
+    if (usuario?.role === 'buyer') {
+      return '/cliente-config'
+    }
+
+    if (usuario?.role === 'supplier') {
+      return '/fornecedor-config'
+    }
+
+    if (usuario?.role === 'admin') {
+      return '/admin-config'
+    }
+
+    return '/login'
+
+  }
+
   return (
 
     <header className="topbar">
@@ -46,8 +64,6 @@ function Navbar() {
           Marketplace
         </Link>
 
-        {/* BUYER */}
-
         {usuario?.role === 'buyer' && (
 
           <Link
@@ -58,8 +74,6 @@ function Navbar() {
           </Link>
 
         )}
-
-        {/* SUPPLIER */}
 
         {usuario?.role === 'supplier' && (
 
@@ -72,8 +86,6 @@ function Navbar() {
 
         )}
 
-        {/* ADMIN */}
-
         {usuario?.role === 'admin' && (
 
           <Link
@@ -85,7 +97,16 @@ function Navbar() {
 
         )}
 
-        {/* LOGIN / LOGOUT */}
+        {usuario && (
+
+          <Link
+            to={obterRotaConfiguracao()}
+            className="nav-btn"
+          >
+            Configurações
+          </Link>
+
+        )}
 
         {!usuario ? (
 
@@ -99,6 +120,7 @@ function Navbar() {
         ) : (
 
           <button
+            type="button"
             onClick={logout}
             className="btn-outline"
           >
@@ -112,6 +134,7 @@ function Navbar() {
     </header>
 
   )
+
 }
 
 export default Navbar
