@@ -646,35 +646,40 @@ function Admin() {
 
         <section className="dashboard-grid">
 
-          <div className="dashboard-card">
+          <div
+  className="dashboard-card"
+  onClick={() => navigate('/admin/produtos')}
+  style={{ cursor: 'pointer' }}
+>
 
-            <h3>
-              Produtos
-            </h3>
+  <h3>
+    Produtos
+  </h3>
 
-            <h1>
-              {dashboard.totais?.produtos || 0}
-            </h1>
+  <h1>
+    {dashboard.totais?.produtos || 0}
+  </h1>
 
-            <p>
-              Total cadastrado
-            </p>
+  <p>
+    Total cadastrado
+  </p>
 
-          </div>
+</div>
 
-          <div className="dashboard-card">
+          <div className="dashboard-card" onClick={() => navigate('/admin/usuarios')}
+          style={{ cursor: 'pointer' }}>
 
-            <h3>
-              Usuários
-            </h3>
+          <h3>
+            Usuários
+          </h3>
 
-            <h1>
-              {dashboard.totais?.usuarios || 0}
-            </h1>
+          <h1>
+            {dashboard.totais?.usuarios || 0}
+          </h1>
 
-            <p>
-              Total de contas
-            </p>
+          <p>
+             Total de contas
+          </p>
 
           </div>
 

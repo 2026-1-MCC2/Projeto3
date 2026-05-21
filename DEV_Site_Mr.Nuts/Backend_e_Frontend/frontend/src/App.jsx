@@ -21,6 +21,9 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Produto from './pages/Produto'
 
+import UsuariosAdmin from './pages/UsuariosAdmin'
+import ProdutosAdmin from './pages/ProdutosAdmin'
+
 import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
 
@@ -107,6 +110,25 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminConfig />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ✅ NOVAS ROTAS DO ADMIN */}
+        <Route
+          path="/admin/usuarios"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <UsuariosAdmin />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/produtos"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <ProdutosAdmin />
             </ProtectedRoute>
           }
         />

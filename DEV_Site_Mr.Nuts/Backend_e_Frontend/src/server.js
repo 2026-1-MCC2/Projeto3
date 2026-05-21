@@ -25,6 +25,9 @@ const dashboardRoutes =
 
 const app = express();
 
+const usuariosRoutes = require('./routes/usuarios');
+
+
 
 // ============================================================
 // CORS
@@ -174,3 +177,6 @@ app.listen(PORT, () => {
   );
 
 });
+
+
+app.use('/usuarios', usuariosRoutes)
