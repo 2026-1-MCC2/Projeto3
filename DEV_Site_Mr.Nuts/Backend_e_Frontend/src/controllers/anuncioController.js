@@ -1,11 +1,30 @@
 const db = require('../config/db');
 
-
-// ============================================================
-// LISTAR TODOS OS PRODUTOS
-// ============================================================
-
 exports.listar = (req, res) => {
+  const sql = `
+    SELECT
+      p.*,
+      f.nome_empresa AS fornecedor_nome,
+      c.nome AS categoria_nome
+    FROM produtos p
+    LEFT JOIN fornecedores f ON p.fornecedor_id = f.id
+    LEFT JOIN categorias c ON p.categoria_id = c.id
+    WHERE p.status = 'active'
+    ORDER BY p.criado_em DESC
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ erro: 'Erro ao listar produtos' });
+    }
+
+    res.json(results);
+  });
+};
+
+exports.listarPorFornecedor = (req, res) => {
+  const { id } = req.params;
 
   const sql = `
     SELECT
@@ -13,204 +32,140 @@ exports.listar = (req, res) => {
       f.nome_empresa AS fornecedor_nome,
       c.nome AS categoria_nome
     FROM produtos p
-    LEFT JOIN fornecedores f
-      ON p.fornecedor_id = f.id
-    LEFT JOIN categorias c
-      ON p.categoria_id = c.id
-    WHERE p.status = 'active'
+    LEFT JOIN fornecedores f ON p.fornecedor_id = f.id
+    LEFT JOIN categorias c ON p.categoria_id = c.id
+    WHERE p.fornecedor_id = ?
+       OR f.usuario_id = ?
+    ORDER BY p.criado_em DESC
   `;
 
-  db.query(sql, (err, results) => {
-
+  db.query(sql, [id, id], (err, results) => {
     if (err) {
-
       console.error(err);
-
-      return res.status(500).json({
-        erro: 'Erro ao listar produtos'
-      });
-
+      return res.status(500).json({ erro: 'Erro ao buscar produtos' });
     }
 
     res.json(results);
-
   });
-
 };
-
-
-// ============================================================
-// LISTAR PRODUTOS DO FORNECEDOR
-// ============================================================
-
-exports.listarPorFornecedor = (req, res) => {
-
-  const { id } = req.params;
-
-  const sql = `
-    SELECT *
-    FROM produtos
-    WHERE fornecedor_id = ?
-  `;
-
-  db.query(sql, [id], (err, results) => {
-
-    if (err) {
-
-      console.error(err);
-
-      return res.status(500).json({
-        erro: 'Erro ao buscar produtos'
-      });
-
-    }
-
-    res.json(results);
-
-  });
-
-};
-
-
-// ============================================================
-// BUSCAR PRODUTO POR ID
-// ============================================================
 
 exports.buscarPorId = (req, res) => {
-
   const { id } = req.params;
 
   const sql = `
-    SELECT *
-    FROM produtos
-    WHERE id = ?
+    SELECT
+      p.*,
+      f.nome_empresa AS fornecedor_nome,
+      c.nome AS categoria_nome
+    FROM produtos p
+    LEFT JOIN fornecedores f ON p.fornecedor_id = f.id
+    LEFT JOIN categorias c ON p.categoria_id = c.id
+    WHERE p.id = ?
   `;
 
   db.query(sql, [id], (err, results) => {
-
     if (err) {
-
       console.error(err);
-
-      return res.status(500).json({
-        erro: 'Erro ao buscar produto'
-      });
-
+      return res.status(500).json({ erro: 'Erro ao buscar produto' });
     }
 
     if (results.length === 0) {
-
-      return res.status(404).json({
-        erro: 'Produto não encontrado'
-      });
-
+      return res.status(404).json({ erro: 'Produto não encontrado' });
     }
 
     res.json(results[0]);
-
   });
-
 };
 
+exports.criar = async (req, res) => {
+  try {
+    const nome = req.body.nome;
+    const descricao = req.body.descricao;
+    const marca = req.body.marca;
+    const preco = req.body.preco;
+    const moq = req.body.moq;
+    const fornecedorRecebido = req.body.fornecedor_id || req.body.usuario_id;
 
-// ============================================================
-// CRIAR PRODUTO
-// ============================================================
+    const categoria_id = 1;
 
-exports.criar = (req, res) => {
+    const imagem = req.file ? req.file.filename : null;
 
-  console.log(req.body);
-
-  const nome = req.body.nome;
-  const descricao = req.body.descricao;
-  const marca = req.body.marca;
-  const preco = req.body.preco;
-  const moq = req.body.moq;
-  const fornecedorId = req.body.fornecedor_id;
-
-  const categoria_id = 1;
-
-  // ============================================================
-  // IMAGEM
-  // ============================================================
-
-  const imagem = req.file
-    ? req.file.filename
-    : null;
-
-  // ============================================================
-  // VALIDAÇÃO
-  // ============================================================
-
-  if (!nome || !descricao) {
-
-    return res.status(400).json({
-      erro: 'Nome e descrição são obrigatórios'
-    });
-
-  }
-
-  // ============================================================
-  // INSERT
-  // ============================================================
-
-  const sql = `
-    INSERT INTO produtos
-    (
-      nome,
-      descricao,
-      marca,
-      preco,
-      moq,
-      fornecedor_id,
-      categoria_id,
-      imagem,
-      status
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    nome,
-    descricao,
-    marca || 'Sem marca',
-    preco || null,
-    moq || 1,
-    fornecedorId || 1,
-    categoria_id,
-    imagem,
-    'pending'
-  ];
-
-  db.query(sql, values, (err, result) => {
-
-    if (err) {
-
-      console.error('ERRO MYSQL:', err);
-
-      return res.status(500).json({
-        erro: 'Erro ao criar produto'
+    if (!nome || !descricao) {
+      return res.status(400).json({
+        erro: 'Nome e descrição são obrigatórios'
       });
-
     }
 
+    if (!fornecedorRecebido) {
+      return res.status(400).json({
+        erro: 'Fornecedor não identificado'
+      });
+    }
+
+    const [fornecedores] = await db.promise().query(
+      `
+      SELECT id
+      FROM fornecedores
+      WHERE id = ?
+         OR usuario_id = ?
+      LIMIT 1
+      `,
+      [fornecedorRecebido, fornecedorRecebido]
+    );
+
+    if (fornecedores.length === 0) {
+      return res.status(400).json({
+        erro: 'Fornecedor não encontrado'
+      });
+    }
+
+    const fornecedorIdCorreto = fornecedores[0].id;
+
+    const sql = `
+      INSERT INTO produtos
+      (
+        nome,
+        descricao,
+        marca,
+        preco,
+        moq,
+        fornecedor_id,
+        categoria_id,
+        imagem,
+        status
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const values = [
+      nome,
+      descricao,
+      marca || 'Sem marca',
+      preco || null,
+      moq || 1,
+      fornecedorIdCorreto,
+      categoria_id,
+      imagem,
+      'pending'
+    ];
+
+    const [result] = await db.promise().query(sql, values);
+
     res.status(201).json({
-      mensagem:
-        'Produto enviado para aprovação',
+      mensagem: 'Produto enviado para aprovação',
       id: result.insertId
     });
 
-  });
+  } catch (err) {
+    console.error('ERRO AO CRIAR PRODUTO:', err);
 
+    return res.status(500).json({
+      erro: 'Erro ao criar produto'
+    });
+  }
 };
 
-
-// ============================================================
-// ATUALIZAR PRODUTO
-// ============================================================
-
 exports.atualizar = (req, res) => {
-
   const { id } = req.params;
 
   const nome = req.body.nome;
@@ -219,19 +174,12 @@ exports.atualizar = (req, res) => {
   const preco = req.body.preco;
   const moq = req.body.moq;
 
-  const imagem = req.file
-    ? req.file.filename
-    : null;
+  const imagem = req.file ? req.file.filename : null;
 
   let sql;
   let values;
 
-  // ============================================================
-  // COM IMAGEM
-  // ============================================================
-
   if (imagem) {
-
     sql = `
       UPDATE produtos
       SET
@@ -254,15 +202,7 @@ exports.atualizar = (req, res) => {
       imagem,
       id
     ];
-
-  }
-
-  // ============================================================
-  // SEM IMAGEM
-  // ============================================================
-
-  else {
-
+  } else {
     sql = `
       UPDATE produtos
       SET
@@ -283,45 +223,25 @@ exports.atualizar = (req, res) => {
       moq,
       id
     ];
-
   }
 
   db.query(sql, values, (err, result) => {
-
     if (err) {
-
       console.error(err);
-
-      return res.status(500).json({
-        erro: 'Erro ao atualizar produto'
-      });
-
+      return res.status(500).json({ erro: 'Erro ao atualizar produto' });
     }
 
     if (result.affectedRows === 0) {
-
-      return res.status(404).json({
-        erro: 'Produto não encontrado'
-      });
-
+      return res.status(404).json({ erro: 'Produto não encontrado' });
     }
 
     res.json({
-      mensagem:
-        'Produto atualizado e enviado para nova aprovação'
+      mensagem: 'Produto atualizado e enviado para nova aprovação'
     });
-
   });
-
 };
 
-
-// ============================================================
-// APROVAR ANÚNCIO
-// ============================================================
-
 exports.aprovar = (req, res) => {
-
   const { id } = req.params;
 
   const sql = `
@@ -333,34 +253,19 @@ exports.aprovar = (req, res) => {
   `;
 
   db.query(sql, [id], (err) => {
-
     if (err) {
-
       console.error(err);
-
-      return res.status(500).json({
-        erro: 'Erro ao aprovar anúncio'
-      });
-
+      return res.status(500).json({ erro: 'Erro ao aprovar anúncio' });
     }
 
     res.json({
       mensagem: 'Anúncio aprovado com sucesso'
     });
-
   });
-
 };
 
-
-// ============================================================
-// REPROVAR ANÚNCIO
-// ============================================================
-
 exports.reprovar = (req, res) => {
-
   const { id } = req.params;
-
   const { motivo } = req.body;
 
   const sql = `
@@ -371,76 +276,44 @@ exports.reprovar = (req, res) => {
     WHERE id = ?
   `;
 
-  db.query(
-    sql,
-    [
-      motivo || 'Não informado',
-      id
-    ],
-    (err) => {
-
-      if (err) {
-
-        console.error(err);
-
-        return res.status(500).json({
-          erro: 'Erro ao reprovar anúncio'
-        });
-
-      }
-
-      res.json({
-        mensagem: 'Anúncio reprovado'
-      });
-
+  db.query(sql, [motivo || 'Não informado', id], (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ erro: 'Erro ao reprovar anúncio' });
     }
-  );
 
+    res.json({
+      mensagem: 'Anúncio reprovado'
+    });
+  });
 };
 
-
-// ============================================================
-// LISTAR ANÚNCIOS PENDENTES
-// ============================================================
-
 exports.listarPendentes = (req, res) => {
-
   const sql = `
     SELECT
       p.*,
-      f.nome_empresa AS fornecedor_nome
+      f.nome_empresa AS fornecedor_nome,
+      c.nome AS categoria_nome
     FROM produtos p
-    LEFT JOIN fornecedores f
-      ON p.fornecedor_id = f.id
+    LEFT JOIN fornecedores f ON p.fornecedor_id = f.id
+    LEFT JOIN categorias c ON p.categoria_id = c.id
     WHERE p.status = 'pending'
+    ORDER BY p.criado_em DESC
   `;
 
   db.query(sql, (err, results) => {
-
     if (err) {
-
       console.error(err);
-
       return res.status(500).json({
-        erro:
-          'Erro ao buscar anúncios pendentes'
+        erro: 'Erro ao buscar anúncios pendentes'
       });
-
     }
 
     res.json(results);
-
   });
-
 };
 
-
-// ============================================================
-// DELETAR PRODUTO
-// ============================================================
-
 exports.deletar = (req, res) => {
-
   const { id } = req.params;
 
   const sql = `
@@ -449,29 +322,17 @@ exports.deletar = (req, res) => {
   `;
 
   db.query(sql, [id], (err, result) => {
-
     if (err) {
-
       console.error(err);
-
-      return res.status(500).json({
-        erro: 'Erro ao deletar produto'
-      });
-
+      return res.status(500).json({ erro: 'Erro ao deletar produto' });
     }
 
     if (result.affectedRows === 0) {
-
-      return res.status(404).json({
-        erro: 'Produto não encontrado'
-      });
-
+      return res.status(404).json({ erro: 'Produto não encontrado' });
     }
 
     res.json({
       mensagem: 'Produto deletado com sucesso'
     });
-
   });
-
 };

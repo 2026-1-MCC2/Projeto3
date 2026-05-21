@@ -1,415 +1,177 @@
--- ============================================================
--- MARKETPLACE B2B – BANCO CORRIGIDO
--- RESTOCKA
--- ============================================================
-
 DROP DATABASE IF EXISTS marketplace_b2b;
 
-CREATE DATABASE restocka
+CREATE DATABASE marketplace_b2b
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
-USE restocka;
-
--- ============================================================
--- USUÁRIOS
--- ============================================================
+USE marketplace_b2b;
 
 CREATE TABLE usuarios (
-
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-
     nome VARCHAR(120) NOT NULL,
-
     email VARCHAR(150) NOT NULL UNIQUE,
-
     senha_hash VARCHAR(255) NOT NULL,
-
-    role ENUM(
-        'admin',
-        'supplier',
-        'buyer'
-    ) NOT NULL DEFAULT 'buyer',
-
-    status ENUM(
-        'ativo',
-        'bloqueado',
-        'pendente'
-    ) NOT NULL DEFAULT 'ativo',
-
+    role ENUM('admin','supplier','buyer') NOT NULL DEFAULT 'buyer',
+    status ENUM('ativo','bloqueado','pendente') NOT NULL DEFAULT 'ativo',
     avatar_url VARCHAR(255),
-
-    criado_em DATETIME NOT NULL
-    DEFAULT CURRENT_TIMESTAMP,
-
-    atualizado_em DATETIME NOT NULL
-    DEFAULT CURRENT_TIMESTAMP
-    ON UPDATE CURRENT_TIMESTAMP
-
+    reset_token VARCHAR(255),
+    reset_expira DATETIME,
+    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
--- ============================================================
--- FORNECEDORES
--- ============================================================
 
 CREATE TABLE fornecedores (
-
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-
     usuario_id INT UNSIGNED NOT NULL UNIQUE,
-
     nome_empresa VARCHAR(160) NOT NULL,
-
     cnpj CHAR(18) NOT NULL UNIQUE,
-
     regiao VARCHAR(80),
-
     whatsapp VARCHAR(20),
-
     telefone VARCHAR(20),
-
     email_contato VARCHAR(150),
-
     site_url VARCHAR(255),
-
     descricao TEXT,
-
     logo_url VARCHAR(255),
-
-    criado_em DATETIME NOT NULL
-    DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (usuario_id)
-    REFERENCES usuarios(id)
-    ON DELETE CASCADE
-
+    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
-
--- ============================================================
--- CATEGORIAS
--- ============================================================
 
 CREATE TABLE categorias (
-
-    id SMALLINT UNSIGNED
-    AUTO_INCREMENT PRIMARY KEY,
-
+    id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(80) NOT NULL UNIQUE,
-
     icone VARCHAR(10),
-
     descricao VARCHAR(255),
-
     ativa BOOLEAN NOT NULL DEFAULT TRUE
-
 );
-
--- ============================================================
--- PRODUTOS
--- ============================================================
 
 CREATE TABLE produtos (
-
-    id INT UNSIGNED
-    AUTO_INCREMENT PRIMARY KEY,
-
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     fornecedor_id INT UNSIGNED NOT NULL,
-
     categoria_id SMALLINT UNSIGNED NOT NULL,
-
     nome VARCHAR(200) NOT NULL,
-
     marca VARCHAR(100),
-
     descricao TEXT,
-
     preco DECIMAL(10,2),
-
     imagem VARCHAR(255),
-
     moq INT UNSIGNED NOT NULL DEFAULT 1,
-
     unidade VARCHAR(80),
-
     regiao VARCHAR(80),
-
     prazo_entrega VARCHAR(80),
-
     icone VARCHAR(10),
-
     badge VARCHAR(40),
-
-    status ENUM(
-        'active',
-        'pending',
-        'paused',
-        'draft'
-    ) NOT NULL DEFAULT 'active',
-
+    status ENUM('active','pending','paused','draft') NOT NULL DEFAULT 'active',
     motivo_reprovacao VARCHAR(255),
-
-    criado_em DATETIME NOT NULL
-    DEFAULT CURRENT_TIMESTAMP,
-
-    atualizado_em DATETIME NOT NULL
-    DEFAULT CURRENT_TIMESTAMP
-    ON UPDATE CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (fornecedor_id)
-    REFERENCES fornecedores(id)
-    ON DELETE CASCADE,
-
-    FOREIGN KEY (categoria_id)
-    REFERENCES categorias(id)
-
+    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id) ON DELETE CASCADE,
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id)
 );
-
--- ============================================================
--- FAVORITOS
--- ============================================================
 
 CREATE TABLE favoritos (
-
     usuario_id INT UNSIGNED NOT NULL,
-
     produto_id INT UNSIGNED NOT NULL,
-
-    criado_em DATETIME NOT NULL
-    DEFAULT CURRENT_TIMESTAMP,
-
-    PRIMARY KEY (
-        usuario_id,
-        produto_id
-    ),
-
-    FOREIGN KEY (usuario_id)
-    REFERENCES usuarios(id)
-    ON DELETE CASCADE,
-
-    FOREIGN KEY (produto_id)
-    REFERENCES produtos(id)
-    ON DELETE CASCADE
-
+    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (usuario_id, produto_id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE
 );
 
--- ============================================================
--- AVALIAÇÕES
--- ============================================================
+CREATE TABLE favoritos_fornecedores (
+    usuario_id INT UNSIGNED NOT NULL,
+    fornecedor_id INT UNSIGNED NOT NULL,
+    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (usuario_id, fornecedor_id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id) ON DELETE CASCADE
+);
 
 CREATE TABLE avaliacoes (
-
-    id INT UNSIGNED
-    AUTO_INCREMENT PRIMARY KEY,
-
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     produto_id INT UNSIGNED NOT NULL,
-
     usuario_id INT UNSIGNED NOT NULL,
-
     estrelas TINYINT UNSIGNED NOT NULL,
-
     comentario TEXT,
-
     visivel BOOLEAN NOT NULL DEFAULT TRUE,
-
-    criado_em DATETIME NOT NULL
-    DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (produto_id)
-    REFERENCES produtos(id)
-    ON DELETE CASCADE,
-
-    FOREIGN KEY (usuario_id)
-    REFERENCES usuarios(id)
-    ON DELETE CASCADE
-
+    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
-
--- ============================================================
--- ORÇAMENTOS
--- ============================================================
 
 CREATE TABLE orcamentos (
-
-    id INT UNSIGNED
-    AUTO_INCREMENT PRIMARY KEY,
-
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     produto_id INT UNSIGNED,
-
     fornecedor_id INT UNSIGNED,
-
     comprador_id INT UNSIGNED,
-
     produto_nome VARCHAR(200),
-
     fornecedor_nome VARCHAR(160),
-
     empresa_nome VARCHAR(160),
-
     quantidade VARCHAR(80),
-
     necessidades TEXT,
-
     frequencia VARCHAR(80),
-
     prazo_desejado VARCHAR(80),
-
     regiao_entrega VARCHAR(80),
-
-    status ENUM(
-        'pending',
-        'responded',
-        'closed',
-        'cancelled'
-    ) NOT NULL DEFAULT 'pending',
-
+    status ENUM('pending','responded','closed','cancelled') NOT NULL DEFAULT 'pending',
     resposta TEXT,
-
     respondido_em DATETIME,
-
-    criado_em DATETIME NOT NULL
-    DEFAULT CURRENT_TIMESTAMP,
-
-    atualizado_em DATETIME NOT NULL
-    DEFAULT CURRENT_TIMESTAMP
-    ON UPDATE CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (produto_id)
-    REFERENCES produtos(id)
-    ON DELETE SET NULL,
-
-    FOREIGN KEY (fornecedor_id)
-    REFERENCES fornecedores(id)
-    ON DELETE SET NULL,
-
-    FOREIGN KEY (comprador_id)
-    REFERENCES usuarios(id)
-    ON DELETE SET NULL
-
+    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE SET NULL,
+    FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id) ON DELETE SET NULL,
+    FOREIGN KEY (comprador_id) REFERENCES usuarios(id) ON DELETE SET NULL
 );
-
--- ============================================================
--- CONTATOS
--- ============================================================
 
 CREATE TABLE contatos (
-
-    id INT UNSIGNED
-    AUTO_INCREMENT PRIMARY KEY,
-
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(120) NOT NULL,
-
     email VARCHAR(150) NOT NULL,
-
     assunto VARCHAR(120) NOT NULL,
-
     mensagem TEXT NOT NULL,
-
     lido BOOLEAN NOT NULL DEFAULT FALSE,
-
-    criado_em DATETIME NOT NULL
-    DEFAULT CURRENT_TIMESTAMP
-
+    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
--- ============================================================
--- AUDITORIA
--- ============================================================
 
 CREATE TABLE auditoria (
-
-    id BIGINT UNSIGNED
-    AUTO_INCREMENT PRIMARY KEY,
-
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT UNSIGNED NOT NULL,
-
     acao VARCHAR(255) NOT NULL,
-
     entidade VARCHAR(60),
-
     entidade_id INT UNSIGNED,
-
     ip VARCHAR(45),
-
-    criado_em DATETIME NOT NULL
-    DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (usuario_id)
-    REFERENCES usuarios(id)
-
+    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
--- ============================================================
--- DADOS INICIAIS
--- ============================================================
+INSERT INTO categorias (nome, icone, descricao) VALUES
+('Categoria Teste', 'box', 'Categoria inicial para testes');
 
-INSERT INTO categorias (nome)
-VALUES
-('Categoria Teste');
+INSERT INTO usuarios (nome, email, senha_hash, role, status) VALUES
+('Administrador Demo','admin@demo.com','$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi','admin','ativo'),
+('Fornecedor Demo','fornecedor@demo.com','$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi','supplier','ativo'),
+('Cliente Demo','cliente@demo.com','$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi','buyer','ativo');
 
--- ============================================================
--- USUÁRIOS DEMO
--- SENHA DE TODOS: 123456
--- ============================================================
-
-INSERT INTO usuarios
-(
-    nome,
-    email,
-    senha_hash,
-    role,
-    status
-)
-VALUES
-
-(
-    'Administrador Demo',
-    'admin@demo.com',
-    '$2b$10$Q0RgRMI/4fsO08i17VW0heJ22ISMq.iGswZBAAvEFGE3kN9n3g6QG',
-    'admin',
-    'ativo'
-),
-
-(
-    'Fornecedor Demo',
-    'fornecedor@demo.com',
-    '$2b$10$Q0RgRMI/4fsO08i17VW0heJ22ISMq.iGswZBAAvEFGE3kN9n3g6QG',
-    'supplier',
-    'ativo'
-),
-
-(
-    'Cliente Demo',
-    'cliente@demo.com',
-    '$2b$10$Q0RgRMI/4fsO08i17VW0heJ22ISMq.iGswZBAAvEFGE3kN9n3g6QG',
-    'buyer',
-    'ativo'
-);
-
--- ============================================================
--- FORNECEDOR DEMO
--- ============================================================
-
-INSERT INTO fornecedores
-(
+INSERT INTO fornecedores (
     usuario_id,
     nome_empresa,
     cnpj,
-    email_contato
-)
-VALUES
-(
+    regiao,
+    whatsapp,
+    telefone,
+    email_contato,
+    site_url,
+    descricao
+) VALUES (
     2,
     'Empresa Demo',
     '12.345.678/0001-99',
-    'fornecedor@demo.com'
+    'SP',
+    '11999999999',
+    '1133333333',
+    'fornecedor@demo.com',
+    'https://empresa-demo.com',
+    'Fornecedor de demonstração para testes do marketplace.'
 );
 
--- ============================================================
--- PRODUTO DEMO
--- ============================================================
-
-INSERT INTO produtos
-(
+INSERT INTO produtos (
     fornecedor_id,
     categoria_id,
     nome,
@@ -422,9 +184,7 @@ INSERT INTO produtos
     regiao,
     prazo_entrega,
     status
-)
-VALUES
-(
+) VALUES (
     1,
     1,
     'Produto Teste',
@@ -439,67 +199,74 @@ VALUES
     'active'
 );
 
--- ============================================================
--- ÍNDICES
--- ============================================================
-
-CREATE INDEX idx_produtos_status
-ON produtos(status);
-
-CREATE INDEX idx_produtos_categoria
-ON produtos(categoria_id);
-
-CREATE INDEX idx_produtos_fornecedor
-ON produtos(fornecedor_id);
-
-CREATE INDEX idx_orcamentos_status
-ON orcamentos(status);
-
-CREATE INDEX idx_orcamentos_comprador
-ON orcamentos(comprador_id);
-
-CREATE INDEX idx_orcamentos_fornecedor
-ON orcamentos(fornecedor_id);
-
-UPDATE usuarios
-SET senha_hash = '$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi'
-WHERE email = 'admin@demo.com';
-
-UPDATE usuarios
-SET senha_hash = '$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi'
-WHERE email = 'cliente@demo.com';
-
-UPDATE usuarios
-SET senha_hash = '$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi'
-WHERE email = 'fornecedor@demo.com';
-
--- ============================================================
--- TESTES
--- ============================================================
-
-
-SELECT * FROM usuarios;
-
-SELECT * FROM fornecedores;
-
-SELECT * FROM produtos;
-
-ALTER TABLE usuarios
-ADD COLUMN reset_token VARCHAR(255),
-ADD COLUMN reset_expira DATETIME;
-
-CREATE TABLE IF NOT EXISTS favoritos_fornecedores (
-    usuario_id INT UNSIGNED NOT NULL,
-    fornecedor_id INT UNSIGNED NOT NULL,
-    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    PRIMARY KEY (usuario_id, fornecedor_id),
-
-    FOREIGN KEY (usuario_id)
-    REFERENCES usuarios(id)
-    ON DELETE CASCADE,
-
-    FOREIGN KEY (fornecedor_id)
-    REFERENCES fornecedores(id)
-    ON DELETE CASCADE
+INSERT INTO avaliacoes (
+    produto_id,
+    usuario_id,
+    estrelas,
+    comentario,
+    visivel
+) VALUES (
+    1,
+    3,
+    5,
+    'Produto muito bom.',
+    TRUE
 );
+
+INSERT INTO orcamentos (
+    produto_id,
+    fornecedor_id,
+    comprador_id,
+    produto_nome,
+    fornecedor_nome,
+    empresa_nome,
+    quantidade,
+    necessidades,
+    frequencia,
+    prazo_desejado,
+    regiao_entrega,
+    status
+) VALUES (
+    1,
+    1,
+    3,
+    'Produto Teste',
+    'Empresa Demo',
+    'Cliente Empresa Demo',
+    '100 unidades',
+    'Teste de orçamento inicial',
+    'Mensal',
+    '7 dias',
+    'SP',
+    'pending'
+);
+
+CREATE INDEX idx_usuarios_role ON usuarios(role);
+CREATE INDEX idx_usuarios_status ON usuarios(status);
+CREATE INDEX idx_usuarios_criado_em ON usuarios(criado_em);
+
+CREATE INDEX idx_fornecedores_usuario ON fornecedores(usuario_id);
+CREATE INDEX idx_fornecedores_criado_em ON fornecedores(criado_em);
+
+CREATE INDEX idx_produtos_status ON produtos(status);
+CREATE INDEX idx_produtos_categoria ON produtos(categoria_id);
+CREATE INDEX idx_produtos_fornecedor ON produtos(fornecedor_id);
+CREATE INDEX idx_produtos_criado_em ON produtos(criado_em);
+CREATE INDEX idx_produtos_status_criado_em ON produtos(status, criado_em);
+
+CREATE INDEX idx_avaliacoes_produto ON avaliacoes(produto_id);
+CREATE INDEX idx_avaliacoes_usuario ON avaliacoes(usuario_id);
+CREATE INDEX idx_avaliacoes_criado_em ON avaliacoes(criado_em);
+CREATE INDEX idx_avaliacoes_visivel ON avaliacoes(visivel);
+
+CREATE INDEX idx_orcamentos_status ON orcamentos(status);
+CREATE INDEX idx_orcamentos_comprador ON orcamentos(comprador_id);
+CREATE INDEX idx_orcamentos_fornecedor ON orcamentos(fornecedor_id);
+CREATE INDEX idx_orcamentos_criado_em ON orcamentos(criado_em);
+CREATE INDEX idx_orcamentos_status_criado_em ON orcamentos(status, criado_em);
+
+CREATE INDEX idx_contatos_lido ON contatos(lido);
+CREATE INDEX idx_contatos_criado_em ON contatos(criado_em);
+
+CREATE INDEX idx_auditoria_usuario ON auditoria(usuario_id);
+CREATE INDEX idx_auditoria_criado_em ON auditoria(criado_em);

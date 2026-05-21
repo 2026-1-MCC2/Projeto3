@@ -25,8 +25,6 @@ function Fornecedor() {
 
   const [produtos, setProdutos] = useState([])
 
-  // PROTEÇÃO
-
   useEffect(() => {
 
     if (!usuario || usuario.role !== 'supplier') {
@@ -42,8 +40,6 @@ function Fornecedor() {
     carregarMeusProdutos()
 
   }, [])
-
-  // CADASTRAR PRODUTO
 
   async function cadastrarProduto() {
 
@@ -76,11 +72,10 @@ function Fornecedor() {
 
     formData.append('moq', moq)
 
-    
-formData.append(
-  'fornecedor_id',
-  1
-)
+    formData.append(
+      'fornecedor_id',
+      usuario.id
+    )
 
     if (imagem) {
 
@@ -97,7 +92,7 @@ formData.append(
 
       alert(
         response.data.mensagem ||
-        'Produto cadastrado com sucesso'
+        'Produto enviado para aprovação'
       )
 
       limparFormulario()
@@ -108,12 +103,14 @@ formData.append(
 
       console.error(error)
 
-      alert('Erro ao conectar com o servidor')
+      alert(
+        error.response?.data?.erro ||
+        'Erro ao cadastrar produto'
+      )
 
     }
-  }
 
-  // LIMPAR FORM
+  }
 
   function limparFormulario() {
 
@@ -124,9 +121,16 @@ formData.append(
     setMoq('')
     setImagem(null)
 
-  }
+    const inputImagem =
+      document.getElementById('imagem-produto')
 
-  // CARREGAR PRODUTOS
+    if (inputImagem) {
+
+      inputImagem.value = ''
+
+    }
+
+  }
 
   async function carregarMeusProdutos() {
 
@@ -146,6 +150,7 @@ formData.append(
       )
 
     }
+
   }
 
   return (
@@ -159,8 +164,6 @@ formData.append(
         <h1>
           Painel do Fornecedor
         </h1>
-
-        {/* FORMULÁRIO */}
 
         <section className="card">
 
@@ -214,6 +217,7 @@ formData.append(
           />
 
           <input
+            id="imagem-produto"
             type="file"
             onChange={(e) =>
               setImagem(e.target.files[0])
@@ -225,8 +229,6 @@ formData.append(
           </button>
 
         </section>
-
-        {/* LISTA */}
 
         <section className="card">
 
@@ -275,11 +277,38 @@ formData.append(
 
                   </p>
 
+                  <p>
+
+                    <strong>
+                      Status:
+                    </strong>
+
+                    {' '}
+                    {produto.status}
+
+                  </p>
+
+                  {produto.motivo_reprovacao && (
+
+                    <p>
+
+                      <strong>
+                        Motivo da reprovação:
+                      </strong>
+
+                      {' '}
+                      {produto.motivo_reprovacao}
+
+                    </p>
+
+                  )}
+
                   {produto.imagem && (
 
                     <img
                       src={`http://localhost:3000/uploads/${produto.imagem}`}
                       width="120"
+                      alt={produto.nome}
                     />
 
                   )}
@@ -299,6 +328,7 @@ formData.append(
     </>
 
   )
+
 }
 
 export default Fornecedor
