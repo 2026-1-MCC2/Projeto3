@@ -24,6 +24,7 @@ function Fornecedor() {
   const [imagem, setImagem] = useState(null)
 
   const [produtos, setProdutos] = useState([])
+  const [orcamentos, setOrcamentos] = useState([])
 
   useEffect(() => {
 
@@ -38,6 +39,7 @@ function Fornecedor() {
     }
 
     carregarMeusProdutos()
+    carregarOrcamentosRecebidos()
 
   }, [])
 
@@ -153,6 +155,89 @@ function Fornecedor() {
 
   }
 
+  async function carregarOrcamentosRecebidos() {
+
+    try {
+
+      const response = await api.get(
+        `/orcamentos/fornecedor/${usuario.id}`
+      )
+
+      setOrcamentos(response.data)
+
+    } catch (error) {
+
+      console.error(
+        'Erro ao carregar orçamentos:',
+        error
+      )
+
+    }
+
+  }
+
+  async function responderOrcamento(id) {
+
+    const resposta =
+      prompt('Digite sua resposta para o cliente:')
+
+    if (!resposta) {
+
+      return
+
+    }
+
+    try {
+
+      const response = await api.patch(
+        `/orcamentos/${id}/responder`,
+        {
+          resposta
+        }
+      )
+
+      alert(
+        response.data.mensagem ||
+        'Orçamento respondido com sucesso'
+      )
+
+      carregarOrcamentosRecebidos()
+
+    } catch (error) {
+
+      console.error(error)
+
+      alert(
+        error.response?.data?.erro ||
+        'Erro ao responder orçamento'
+      )
+
+    }
+
+  }
+
+  function formatarStatus(status) {
+
+    if (status === 'pending') {
+      return 'Pendente'
+    }
+
+    if (status === 'responded') {
+      return 'Respondido'
+    }
+
+    if (status === 'closed') {
+      return 'Fechado'
+    }
+
+    if (status === 'cancelled') {
+      return 'Cancelado'
+    }
+
+    return status || 'Não informado'
+
+  }
+
   return (
 
     <>
@@ -200,7 +285,7 @@ function Fornecedor() {
 
           <input
             type="text"
-            placeholder="Preço (ex: 59,90)"
+            placeholder="Preço base (ex: 59,90)"
             value={preco}
             onChange={(e) =>
               setPreco(e.target.value)
@@ -233,6 +318,135 @@ function Fornecedor() {
         <section className="card">
 
           <h3>
+            Solicitações de Orçamento Recebidas
+          </h3>
+
+          {orcamentos.length === 0 ? (
+
+            <p>
+              Nenhuma solicitação de orçamento recebida.
+            </p>
+
+          ) : (
+
+            orcamentos.map((orcamento) => (
+
+              <div
+                key={orcamento.id}
+                className="fornecedor-item"
+              >
+
+                <h4>
+                  {orcamento.produto_nome || orcamento.produto_nome_banco || 'Produto não informado'}
+                </h4>
+
+                <p>
+                  <strong>
+                    Cliente:
+                  </strong>
+                  {' '}
+                  {orcamento.comprador_nome || 'Não informado'}
+                </p>
+
+                <p>
+                  <strong>
+                    Email:
+                  </strong>
+                  {' '}
+                  {orcamento.comprador_email || 'Não informado'}
+                </p>
+
+                <p>
+                  <strong>
+                    Empresa:
+                  </strong>
+                  {' '}
+                  {orcamento.empresa_nome || 'Não informado'}
+                </p>
+
+                <p>
+                  <strong>
+                    Quantidade:
+                  </strong>
+                  {' '}
+                  {orcamento.quantidade || 'Não informada'}
+                </p>
+
+                <p>
+                  <strong>
+                    Necessidades:
+                  </strong>
+                  {' '}
+                  {orcamento.necessidades}
+                </p>
+
+                <p>
+                  <strong>
+                    Frequência:
+                  </strong>
+                  {' '}
+                  {orcamento.frequencia || 'Não informada'}
+                </p>
+
+                <p>
+                  <strong>
+                    Prazo desejado:
+                  </strong>
+                  {' '}
+                  {orcamento.prazo_desejado || 'Não informado'}
+                </p>
+
+                <p>
+                  <strong>
+                    Região de entrega:
+                  </strong>
+                  {' '}
+                  {orcamento.regiao_entrega || 'Não informada'}
+                </p>
+
+                <p>
+                  <strong>
+                    Status:
+                  </strong>
+                  {' '}
+                  {formatarStatus(orcamento.status)}
+                </p>
+
+                {orcamento.resposta && (
+
+                  <p>
+                    <strong>
+                      Resposta enviada:
+                    </strong>
+                    {' '}
+                    {orcamento.resposta}
+                  </p>
+
+                )}
+
+                {orcamento.status === 'pending' && (
+
+                  <button
+                    onClick={() =>
+                      responderOrcamento(orcamento.id)
+                    }
+                  >
+                    Responder orçamento
+                  </button>
+
+                )}
+
+              </div>
+
+            ))
+
+          )}
+
+        </section>
+
+        <section className="card">
+
+          <h3>
             Meus Produtos
           </h3>
 
@@ -250,12 +464,7 @@ function Fornecedor() {
 
                 <div
                   key={produto.id}
-                  style={{
-                    border: '1px solid #ddd',
-                    padding: '10px',
-                    margin: '10px 0',
-                    borderRadius: '8px'
-                  }}
+                  className="fornecedor-item"
                 >
 
                   <h4>
@@ -267,38 +476,29 @@ function Fornecedor() {
                   </p>
 
                   <p>
-
                     <strong>
-                      Preço:
+                      Preço base:
                     </strong>
-
                     {' '}
                     R$ {produto.preco || '-'}
-
                   </p>
 
                   <p>
-
                     <strong>
                       Status:
                     </strong>
-
                     {' '}
                     {produto.status}
-
                   </p>
 
                   {produto.motivo_reprovacao && (
 
                     <p>
-
                       <strong>
                         Motivo da reprovação:
                       </strong>
-
                       {' '}
                       {produto.motivo_reprovacao}
-
                     </p>
 
                   )}

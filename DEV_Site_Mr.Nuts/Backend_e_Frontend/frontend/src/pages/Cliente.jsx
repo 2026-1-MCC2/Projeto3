@@ -1,30 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-
-import {
-  useNavigate,
-  useLocation
-} from 'react-router-dom'
-
-import Navbar from '../components/Navbar'
-import ProdutoList from '../components/ProdutoList'
-
-import api from '../services/api'
-
-import '../styles/global.css'
-import '../styles/marketplace.css'
-
-function Cliente() {
-  const navigate = useNavigate()
-  const location = useLocation()
-
-  const usuario = JSON.parse(
-    localStorage.getItem('usuario')
-  )
-
-  const parametros = new URLSearchParams(location.search)
-  const buscaInicial = parametros.get('busca') || ''
-
-  const [produtos, setProdutos] = useState([])
+import { useLocation, useNavigate } from '  const [produtos, setProdutos] = useState([])import { useLocation, useNavigate } from 'react-router-dom'
+  const [orcamentos, setOrcamentos] = useState([])
   const [loading, setLoading] = useState(true)
   const [erro, setErro] = useState('')
 
@@ -41,6 +17,7 @@ function Cliente() {
     }
 
     carregarProdutos()
+    carregarMeusOrcamentos()
   }, [])
 
   useEffect(() => {
@@ -64,6 +41,68 @@ function Cliente() {
     } finally {
       setLoading(false)
     }
+  }
+
+  async function carregarMeusOrcamentos() {
+    try {
+      const response = await api.get(`/orcamentos/cliente/${usuario.id}`)
+      setOrcamentos(response.data)
+    } catch (error) {
+      console.error('Erro ao carregar orçamentos:', error)
+    }
+  }
+
+  async function cancelarOrcamento(id) {
+    const confirmar = window.confirm('Deseja cancelar este orçamento?')
+
+    if (!confirmar) {
+      return
+    }
+
+    try {
+      const response = await api.patch(`/orcamentos/${id}/cancelar`)
+
+      alert(response.data.mensagem || 'Orçamento cancelado com sucesso')
+      carregarMeusOrcamentos()
+    } catch (error) {
+      console.error(error)
+
+      alert(
+        error.response?.data?.erro ||
+        'Erro ao cancelar orçamento'
+      )
+    }
+  }
+
+  async function fecharOrcamento(id) {
+    const confirmar = window.confirm('Deseja fechar este orçamento?')
+
+    if (!confirmar) {
+      return
+    }
+
+    try {
+      const response = await api.patch(`/orcamentos/${id}/fechar`)
+
+      alert(response.data.mensagem || 'Orçamento fechado com sucesso')
+      carregarMeusOrcamentos()
+    } catch (error) {
+      console.error(error)
+
+      alert(
+        error.response?.data?.erro ||
+        'Erro ao fechar orçamento'
+      )
+    }
+  }
+
+  function formatarStatus(status) {
+    if (status === 'pending') return 'Pendente'
+    if (status === 'responded') return 'Respondido'
+    if (status === 'closed') return 'Fechado'
+    if (status === 'cancelled') return 'Cancelado'
+
+    return status || 'Não informado'
   }
 
   function obterNomeProduto(produto) {
@@ -282,7 +321,7 @@ function Cliente() {
         <section className="marketplace-top">
 
           <h1>
-            📦 Anúncios de Produtos
+            Anúncios de Produtos
           </h1>
 
           <div className="marketplace-search-row">
@@ -300,7 +339,7 @@ function Cliente() {
               className="marketplace-search-button"
               onClick={buscarProdutos}
             >
-              🔍 Buscar
+              Buscar
             </button>
 
             <button
@@ -308,7 +347,7 @@ function Cliente() {
               className="marketplace-clear-button"
               onClick={limparFiltros}
             >
-              ✕ Limpar
+              Limpar
             </button>
 
           </div>
@@ -415,24 +454,6 @@ function Cliente() {
             <div className="filter-block">
 
               <h3>
-                AVALIAÇÃO MÍNIMA
-              </h3>
-
-              <label className="filter-option">
-                <input type="radio" name="avaliacao" />
-                <span>★★★★☆ 4+</span>
-              </label>
-
-              <label className="filter-option">
-                <input type="radio" name="avaliacao" defaultChecked />
-                <span>Qualquer</span>
-              </label>
-
-            </div>
-
-            <div className="filter-block">
-
-              <h3>
                 MOQ MÁXIMO
               </h3>
 
@@ -450,13 +471,6 @@ function Cliente() {
               </p>
 
             </div>
-
-            <button
-              type="button"
-              className="apply-filters-button"
-            >
-              Aplicar Filtros
-            </button>
 
           </aside>
 
@@ -493,9 +507,130 @@ function Cliente() {
 
         </section>
 
+        <section className="card">
+
+          <h2>
+            Meus Orçamentos
+          </h2>
+
+          {orcamentos.length === 0 ? (
+
+            <p>
+              Nenhuma solicitação de orçamento enviada.
+            </p>
+
+          ) : (
+
+            orcamentos.map((orcamento) => (
+
+              <div
+                key={orcamento.id}
+                className="admin-item"
+              >
+
+                <h4>
+                  {orcamento.produto_nome ||
+                    orcamento.produto_nome_banco ||
+                    'Produto não informado'}
+                </h4>
+
+                <p>
+                  <strong>
+                    Fornecedor:
+                  </strong>
+                  {' '}
+                  {orcamento.fornecedor_empresa ||
+                    orcamento.fornecedor_nome ||
+                    'Não informado'}
+                </p>
+
+                <p>
+                  <strong>
+                    Quantidade:
+                  </strong>
+                  {' '}
+                  {orcamento.quantidade || 'Não informada'}
+                </p>
+
+                <p>
+                  <strong>
+                    Necessidades:
+                  </strong>
+                  {' '}
+                  {orcamento.necessidades || 'Não informado'}
+                </p>
+
+                <p>
+                  <strong>
+                    Status:
+                  </strong>
+                  {' '}
+                  {formatarStatus(orcamento.status)}
+                </p>
+
+                {orcamento.resposta && (
+
+                  <p>
+                    <strong>
+                      Resposta do fornecedor:
+                    </strong>
+                    {' '}
+                    {orcamento.resposta}
+                  </p>
+
+                )}
+
+                {orcamento.status === 'pending' && (
+
+                  <button
+                    type="button"
+                    className="btn-reprovar"
+                    onClick={() => cancelarOrcamento(orcamento.id)}
+                  >
+                    Cancelar orçamento
+                  </button>
+
+                )}
+
+                {orcamento.status === 'responded' && (
+
+                  <button
+                    type="button"
+                    className="btn-aprovar"
+                    onClick={() => fecharOrcamento(orcamento.id)}
+                  >
+                    Fechar orçamento
+                  </button>
+
+                )}
+
+              </div>
+
+            ))
+
+          )}
+
+        </section>
+
       </main>
     </>
   )
 }
 
 export default Cliente
+
+import Navbar from '../components/Navbar'
+import ProdutoList from '../components/ProdutoList'
+import api from '../services/api'
+
+import '../styles/global.css'
+import '../styles/marketplace.css'
+
+function Cliente() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const usuario = JSON.parse(localStorage.getItem('usuario'))
+
+  const parametros = new URLSearchParams(location.search)
+  const buscaInicial = parametros.get('busca') 
