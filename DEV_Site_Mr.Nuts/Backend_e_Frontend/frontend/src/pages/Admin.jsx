@@ -22,12 +22,37 @@ function Admin() {
 
   const [dashboard, setDashboard] =
     useState({
-      usuarios: 0,
-      produtos: 0,
-      fornecedores: 0,
-      avaliacoes: 0,
-      orcamentos: 0
+      filtros: {
+        dataInicio: null,
+        dataFim: null,
+        status: null
+      },
+      totais: {
+        usuarios: 0,
+        produtos: 0,
+        fornecedores: 0,
+        avaliacoes: 0,
+        orcamentos: 0
+      },
+      statusAnuncios: {
+        active: 0,
+        pending: 0,
+        paused: 0,
+        draft: 0
+      },
+      rankingFornecedores: [],
+      produtosRecentes: [],
+      avaliacoesRecentes: []
     })
+
+  const [filtroDataInicio, setFiltroDataInicio] =
+    useState('')
+
+  const [filtroDataFim, setFiltroDataFim] =
+    useState('')
+
+  const [filtroStatus, setFiltroStatus] =
+    useState('')
 
   const [produtos, setProdutos] =
     useState([])
@@ -65,12 +90,32 @@ function Admin() {
 
   }, [])
 
-  async function carregarDashboard() {
+  async function carregarDashboard(params = {}) {
 
     try {
 
+      const query =
+        new URLSearchParams()
+
+      if (params.dataInicio) {
+        query.append('dataInicio', params.dataInicio)
+      }
+
+      if (params.dataFim) {
+        query.append('dataFim', params.dataFim)
+      }
+
+      if (params.status) {
+        query.append('status', params.status)
+      }
+
+      const url =
+        query.toString()
+          ? `/dashboard?${query.toString()}`
+          : '/dashboard'
+
       const response =
-        await api.get('/dashboard')
+        await api.get(url)
 
       setDashboard(response.data)
 
@@ -78,7 +123,29 @@ function Admin() {
 
       console.error(error)
 
+      alert('Erro ao carregar dashboard')
+
     }
+
+  }
+
+  function aplicarFiltrosDashboard() {
+
+    carregarDashboard({
+      dataInicio: filtroDataInicio,
+      dataFim: filtroDataFim,
+      status: filtroStatus
+    })
+
+  }
+
+  function limparFiltrosDashboard() {
+
+    setFiltroDataInicio('')
+    setFiltroDataFim('')
+    setFiltroStatus('')
+
+    carregarDashboard()
 
   }
 
@@ -487,8 +554,97 @@ function Admin() {
 
         <section
           id="dashboard"
-          className="dashboard-grid"
+          className="card"
         >
+
+          <h2>
+            Filtros do Dashboard
+          </h2>
+
+          <div className="dashboard-filters">
+
+            <div>
+              <label>
+                Data inicial
+              </label>
+
+              <input
+                type="date"
+                value={filtroDataInicio}
+                onChange={(event) =>
+                  setFiltroDataInicio(event.target.value)
+                }
+              />
+            </div>
+
+            <div>
+              <label>
+                Data final
+              </label>
+
+              <input
+                type="date"
+                value={filtroDataFim}
+                onChange={(event) =>
+                  setFiltroDataFim(event.target.value)
+                }
+              />
+            </div>
+
+            <div>
+              <label>
+                Status do anúncio
+              </label>
+
+              <select
+                value={filtroStatus}
+                onChange={(event) =>
+                  setFiltroStatus(event.target.value)
+                }
+              >
+                <option value="">
+                  Todos
+                </option>
+
+                <option value="active">
+                  Ativos
+                </option>
+
+                <option value="pending">
+                  Pendentes
+                </option>
+
+                <option value="paused">
+                  Pausados
+                </option>
+
+                <option value="draft">
+                  Rascunhos
+                </option>
+              </select>
+            </div>
+
+            <button
+              type="button"
+              className="btn-aprovar"
+              onClick={aplicarFiltrosDashboard}
+            >
+              Aplicar filtros
+            </button>
+
+            <button
+              type="button"
+              className="btn-reprovar"
+              onClick={limparFiltrosDashboard}
+            >
+              Limpar filtros
+            </button>
+
+          </div>
+
+        </section>
+
+        <section className="dashboard-grid">
 
           <div className="dashboard-card">
 
@@ -497,7 +653,7 @@ function Admin() {
             </h3>
 
             <h1>
-              {dashboard.produtos}
+              {dashboard.totais?.produtos || 0}
             </h1>
 
             <p>
@@ -513,7 +669,7 @@ function Admin() {
             </h3>
 
             <h1>
-              {dashboard.usuarios}
+              {dashboard.totais?.usuarios || 0}
             </h1>
 
             <p>
@@ -529,7 +685,7 @@ function Admin() {
             </h3>
 
             <h1>
-              {dashboard.fornecedores}
+              {dashboard.totais?.fornecedores || 0}
             </h1>
 
             <p>
@@ -545,7 +701,7 @@ function Admin() {
             </h3>
 
             <h1>
-              {dashboard.avaliacoes}
+              {dashboard.totais?.avaliacoes || 0}
             </h1>
 
             <p>
@@ -561,7 +717,7 @@ function Admin() {
             </h3>
 
             <h1>
-              {dashboard.orcamentos}
+              {dashboard.totais?.orcamentos || 0}
             </h1>
 
             <p>
@@ -571,6 +727,231 @@ function Admin() {
           </div>
 
         </section>
+
+        <section className="dashboard-grid">
+
+          <div className="dashboard-card">
+
+            <h3>
+              Ativos
+            </h3>
+
+            <h1>
+              {dashboard.statusAnuncios?.active || 0}
+            </h1>
+
+            <p>
+              Anúncios publicados
+            </p>
+
+          </div>
+
+          <div className="dashboard-card">
+
+            <h3>
+              Pendentes
+            </h3>
+
+            <h1>
+              {dashboard.statusAnuncios?.pending || 0}
+            </h1>
+
+            <p>
+              Aguardando aprovação
+            </p>
+
+          </div>
+
+          <div className="dashboard-card">
+
+            <h3>
+              Pausados
+            </h3>
+
+            <h1>
+              {dashboard.statusAnuncios?.paused || 0}
+            </h1>
+
+            <p>
+              Anúncios pausados
+            </p>
+
+          </div>
+
+          <div className="dashboard-card">
+
+            <h3>
+              Rascunhos
+            </h3>
+
+            <h1>
+              {dashboard.statusAnuncios?.draft || 0}
+            </h1>
+
+            <p>
+              Anúncios em rascunho
+            </p>
+
+          </div>
+
+        </section>
+
+        <div className="card">
+
+          <h2>
+            Ranking de Fornecedores
+          </h2>
+
+          {
+            dashboard.rankingFornecedores?.length === 0 ? (
+
+              <p>
+                Nenhum fornecedor avaliado.
+              </p>
+
+            ) : (
+
+              dashboard.rankingFornecedores.map((fornecedor) => (
+
+                <div
+                  key={fornecedor.fornecedor_id}
+                  className="admin-item"
+                >
+
+                  <h4>
+                    {fornecedor.nome_empresa}
+                  </h4>
+
+                  <p>
+                    <strong>
+                      Média:
+                    </strong>
+                    {' '}
+                    {fornecedor.media_avaliacao || 0}
+                  </p>
+
+                  <p>
+                    <strong>
+                      Total de avaliações:
+                    </strong>
+                    {' '}
+                    {fornecedor.total_avaliacoes}
+                  </p>
+
+                </div>
+
+              ))
+
+            )
+          }
+
+        </div>
+
+        <div className="card">
+
+          <h2>
+            Produtos Recentes
+          </h2>
+
+          {
+            dashboard.produtosRecentes?.length === 0 ? (
+
+              <p>
+                Nenhum produto recente.
+              </p>
+
+            ) : (
+
+              dashboard.produtosRecentes.map((produto) => (
+
+                <div
+                  key={produto.id}
+                  className="admin-item"
+                >
+
+                  <h4>
+                    {produto.nome}
+                  </h4>
+
+                  <p>
+                    <strong>
+                      Fornecedor:
+                    </strong>
+                    {' '}
+                    {produto.nome_empresa || 'Não informado'}
+                  </p>
+
+                  <p>
+                    <strong>
+                      Status:
+                    </strong>
+                    {' '}
+                    {produto.status}
+                  </p>
+
+                </div>
+
+              ))
+
+            )
+          }
+
+        </div>
+
+        <div className="card">
+
+          <h2>
+            Avaliações Recentes
+          </h2>
+
+          {
+            dashboard.avaliacoesRecentes?.length === 0 ? (
+
+              <p>
+                Nenhuma avaliação recente.
+              </p>
+
+            ) : (
+
+              dashboard.avaliacoesRecentes.map((avaliacao) => (
+
+                <div
+                  key={avaliacao.id}
+                  className="admin-item"
+                >
+
+                  <h4>
+                    {avaliacao.produto_nome}
+                  </h4>
+
+                  <p>
+                    <strong>
+                      Usuário:
+                    </strong>
+                    {' '}
+                    {avaliacao.usuario_nome}
+                  </p>
+
+                  <p>
+                    <strong>
+                      Nota:
+                    </strong>
+                    {' '}
+                    {avaliacao.estrelas}
+                  </p>
+
+                  <p>
+                    {avaliacao.comentario || 'Sem comentário'}
+                  </p>
+
+                </div>
+
+              ))
+
+            )
+          }
+
+        </div>
 
         <div
           id="fornecedores"

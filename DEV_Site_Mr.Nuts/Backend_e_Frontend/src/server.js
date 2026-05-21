@@ -20,10 +20,10 @@ const avaliacoesRoutes =
 const orcamentosRoutes =
   require('./routes/orcamentos');
 
-const app = express();
-
-const dashboardRoutes = 
+const dashboardRoutes =
   require('./routes/dashboard');
+
+const app = express();
 
 
 // ============================================================
@@ -119,6 +119,14 @@ app.use(
 );
 
 
+// DASHBOARD
+
+app.use(
+  '/dashboard',
+  dashboardRoutes
+);
+
+
 // ============================================================
 // TESTE SERVIDOR
 // ============================================================
@@ -127,7 +135,7 @@ app.get('/', (req, res) => {
 
   res.json({
     mensagem:
-      'API Restocka funcionando ✅'
+      'API Restocka funcionando'
   });
 
 });
@@ -166,8 +174,3 @@ app.listen(PORT, () => {
   );
 
 });
-
-// ============================================================
-// DASHBOARD
-// ============================================================
-app.use('/dashboard', dashboardRoutes);
