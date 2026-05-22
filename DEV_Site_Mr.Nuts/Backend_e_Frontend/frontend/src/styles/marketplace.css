@@ -393,9 +393,9 @@
 }
 
 .btn-budget {
-  background: #fff4e8;
-  border: 1px solid #ffbd7b;
-  color: #7b4a2f;
+  background: #df263a !important;
+  border: none !important;
+  color: white !important;
 }
 
 .btn-contact {
@@ -754,4 +754,68 @@ body,
   background: #ff4d6d !important;
   color: #ffffff !important;
   border: 1px solid #ff4d6d !important;
+}
+
+/* BOTÕES VER PRODUTO E AVALIAR */
+.product-actions a,
+.product-actions button {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 38px !important;
+
+  border-radius: 999px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  font-size: 13px !important;
+  font-weight: 900 !important;
+
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+
+  box-sizing: border-box !important;
+}
+/* CENTRALIZAR CORAÇÃO DO FAVORITO */
+.favorite-circle {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 !important;
+  line-height: 1 !important;
+
+  width: 34px !important;
+  height: 34px !important;
+
+  border-radius: 50% !important;
+  font-size: 18px !important;
+}
+
+/* BOTÃO LIMPAR DO FILTRO MENOR */
+.filters-title-row button {
+  width: auto !important;
+  min-width: 86px !important;
+  height: 36px !important;
+
+  padding: 0 18px !important;
+
+  border-radius: 999px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  font-size: 14px !important;
+  font-weight: 800 !important;
+}
+
+/* REMOVE LINHA ENTRE NAVBAR E TOPO DO MARKETPLACE */
+.marketplace-top {
+  width: 100% !important;
+  margin: 0 !important;
+  background: #210800 !important;
 }

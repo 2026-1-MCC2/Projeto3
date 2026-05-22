@@ -135,15 +135,23 @@ body {
 }
 
 /* CARD DIREITA */
+
 .glass-card {
-  width: 580px;
-  padding: 30px;
+ 
+  width: 500px !important;
+  padding: 40px !important;
+
+  position: relative !important;
+  left: 40px !important;
+   top: -35px !important;
+  transform: none !important;
 
   background: rgba(255,255,255,0.08);
   border-radius: 20px;
 
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.2)
+
 }
 
 /* GRID */

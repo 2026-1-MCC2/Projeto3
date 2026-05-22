@@ -24,7 +24,7 @@ function Home() {
   const [busca, setBusca] = useState(buscaInicial)
   const [categoriaSelecionada, setCategoriaSelecionada] = useState('')
   const [regiaoSelecionada, setRegiaoSelecionada] = useState('')
-  const [moqMaximo, setMoqMaximo] = useState(5000)
+  const [moqMaximo, setMoqMaximo] = useState(10000)
 
   useEffect(() => {
     carregarProdutos()
@@ -495,7 +495,7 @@ function Home() {
                 className="moq-range"
                 type="range"
                 min="0"
-                max="5000"
+                max="10000"
                 value={moqMaximo}
                 onChange={(event) => setMoqMaximo(event.target.value)}
               />
