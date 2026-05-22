@@ -336,3 +336,18 @@ main > h1 {
     width: 100%;
   }
 }
+
+@media (max-width: 520px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-actions {
+    flex-direction: column;
+  }
+
+  .btn-aprovar,
+  .btn-reprovar {
+    width: 100%;
+  }
+}

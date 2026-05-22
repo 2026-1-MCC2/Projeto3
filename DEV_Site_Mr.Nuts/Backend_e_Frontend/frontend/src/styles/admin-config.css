@@ -134,3 +134,307 @@ button:hover {
     padding: 20px;
   }
 }
+
+/* =============================== */
+/* NAVBAR ADMIN - CORES FINAIS */
+/* =============================== */
+
+.topbar {
+  background: linear-gradient(135deg, #1a0500 0%, #4a0800 45%, #8b0000 100%) !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+/* Logo Restocka e Restocka Admin */
+.logo,
+.logo strong,
+.logo a,
+.topbar h1,
+.topbar h2,
+.topbar strong {
+  color: #ff6a00 !important;
+  font-weight: 900 !important;
+}
+
+/* Links e botões da navbar admin */
+.topbar a,
+.topbar button,
+.menu a,
+.menu-link {
+  color: #ffffff !important;
+  background: transparent !important;
+  font-weight: 800 !important;
+  white-space: nowrap !important;
+}
+
+/* Hover dos links */
+.topbar a:hover,
+.topbar button:hover,
+.menu a:hover,
+.menu-link:hover {
+  color: #ff7a00 !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Botão Configurações */
+.user-menu > button {
+  width: auto !important;
+  min-width: 160px !important;
+
+  background: #ff6a00 !important;
+  color: #ffffff !important;
+
+  border: none !important;
+  border-radius: 10px !important;
+
+  padding: 13px 22px !important;
+
+  font-weight: 900 !important;
+  font-size: 15px !important;
+}
+
+.user-menu > button:hover {
+  background: #ff7a00 !important;
+  color: #ffffff !important;
+}
+
+/* Botão Sair da navbar */
+.topbar .logout,
+.topbar button.logout {
+  background: transparent !important;
+  color: #ff7a00 !important;
+  border: 2px solid #ff7a00 !important;
+}
+
+.topbar .logout:hover,
+.topbar button.logout:hover {
+  background: #ff7a00 !important;
+  color: #ffffff !important;
+}
+
+/* =============================== */
+/* DROPDOWN CONFIGURAÇÕES */
+/* =============================== */
+
+.user-menu {
+  position: relative !important;
+}
+
+/* Caixa branca flutuante */
+.dropdown {
+  position: absolute !important;
+  right: 0 !important;
+  top: calc(100% + 12px) !important;
+
+  width: 300px !important;
+  min-width: 300px !important;
+
+  background: #ffffff !important;
+  color: #1f2d3d !important;
+
+  border: 1px solid #ffd2a6 !important;
+  border-radius: 14px !important;
+
+  padding: 14px !important;
+
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22) !important;
+
+  z-index: 99999 !important;
+}
+
+/* =============================== */
+/* NAVBARS ADMIN - DEGRADÊ CONTÍNUO */
+/* =============================== */
+
+/* PRIMEIRA NAVBAR */
+.topbar:first-of-type {
+  background: linear-gradient(
+    135deg,
+    #160300 0%,
+    #2a0500 45%,
+    #4a0800 100%
+  ) !important;
+
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+/* SEGUNDA NAVBAR - continuação do degradê */
+.topbar:nth-of-type(2),
+.topbar + .topbar {
+  background: linear-gradient(
+    135deg,
+    #4a0800 0%,
+    #650b00 48%,
+    #8b0000 100%
+  ) !important;
+
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+/* =============================== */
+/* CORES DOS LOGOS */
+/* =============================== */
+
+/* Restocka da navbar normal fica laranja */
+.topbar:first-of-type .logo,
+.topbar:first-of-type .logo strong,
+.topbar:first-of-type .logo a {
+  color: #ff6a00 !important;
+  font-weight: 900 !important;
+}
+
+/* Restocka Admin fica branco */
+.topbar:nth-of-type(2) .logo,
+.topbar:nth-of-type(2) .logo strong,
+.topbar:nth-of-type(2) .logo a,
+.topbar + .topbar .logo,
+.topbar + .topbar .logo strong,
+.topbar + .topbar .logo a {
+  color: #ffffff !important;
+  font-weight: 900 !important;
+}
+
+/* =============================== */
+/* LINKS DAS NAVBARS */
+/* =============================== */
+
+.topbar a,
+.topbar button,
+.menu a,
+.menu-link {
+  color: #ffffff !important;
+  background: transparent !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+}
+
+.topbar a:hover,
+.topbar button:hover,
+.menu a:hover,
+.menu-link:hover {
+  color: #ff9f43 !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ===================================== */
+/* NAVBARS COMO UM DEGRADÊ CONTÍNUO */
+/* ===================================== */
+
+/* PRIMEIRA NAVBAR */
+.topbar:first-of-type {
+  background: linear-gradient(
+    135deg,
+    #140300 0%,
+    #260500 45%,
+    #420800 100%
+  ) !important;
+
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+/* SEGUNDA NAVBAR - continuação do degradê */
+.topbar:nth-of-type(2),
+.topbar + .topbar {
+  background: linear-gradient(
+    135deg,
+    #420800 0%,
+    #650b00 48%,
+    #8b0000 100%
+  ) !important;
+
+  border-bottom: none !important;
+  box-shadow: none !important;
+
+  position: relative !important;
+}
+
+/* ===================================== */
+/* LOGOS */
+/* ===================================== */
+
+/* Restocka da navbar de cima laranja */
+.topbar:first-of-type .logo,
+.topbar:first-of-type .logo strong,
+.topbar:first-of-type .logo a {
+  color: #ff6a00 !important;
+  font-weight: 900 !important;
+}
+
+/* Restocka Admin branco */
+.topbar:nth-of-type(2) .logo,
+.topbar:nth-of-type(2) .logo strong,
+.topbar:nth-of-type(2) .logo a,
+.topbar + .topbar .logo,
+.topbar + .topbar .logo strong,
+.topbar + .topbar .logo a {
+  color: #ffffff !important;
+  font-weight: 900 !important;
+}
+
+/* ===================================== */
+/* LINKS DAS NAVBARS */
+/* ===================================== */
+
+.topbar a,
+.topbar button,
+.menu a,
+.menu-link {
+  color: #ffffff !important;
+  background: transparent !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+}
+
+.topbar a:hover,
+.topbar button:hover,
+.menu a:hover,
+.menu-link:hover {
+  color: #ff9f43 !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ===================================== */
+/* MANTER MENU DA SEGUNDA NAVBAR NO MEIO */
+/* ===================================== */
+
+.topbar:nth-of-type(2) .menu,
+.topbar + .topbar .menu {
+  position: absolute !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 34px !important;
+}
+
+/* ===================================== */
+/* REMOVER SÓ O BOTÃO CONFIG DA SEGUNDA NAVBAR */
+/* ===================================== */
+
+.topbar:nth-of-type(2) .user-menu,
+.topbar + .topbar .user-menu {
+  display: none !important;
+}
+
+/* ===================================== */
+/* BOTÃO SAIR DA NAVBAR DE CIMA */
+/* ===================================== */
+
+.topbar .logout,
+.topbar button.logout {
+  background: transparent !important;
+  color: #ff7a00 !important;
+  border: 2px solid #ff7a00 !important;
+}
+
+.topbar .logout:hover,
+.topbar button.logout:hover {
+  background: #ff7a00 !important;
+  color: #ffffff !important;
+}
