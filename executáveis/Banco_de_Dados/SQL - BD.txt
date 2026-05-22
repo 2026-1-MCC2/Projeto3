@@ -6,6 +6,10 @@ COLLATE utf8mb4_unicode_ci;
 
 USE marketplace_b2b;
 
+-- =========================
+-- USUÁRIOS
+-- =========================
+
 CREATE TABLE usuarios (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(120) NOT NULL,
@@ -19,6 +23,10 @@ CREATE TABLE usuarios (
     criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+-- =========================
+-- FORNECEDORES
+-- =========================
 
 CREATE TABLE fornecedores (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -36,6 +44,10 @@ CREATE TABLE fornecedores (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
+-- =========================
+-- CATEGORIAS
+-- =========================
+
 CREATE TABLE categorias (
     id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(80) NOT NULL UNIQUE,
@@ -43,6 +55,10 @@ CREATE TABLE categorias (
     descricao VARCHAR(255),
     ativa BOOLEAN NOT NULL DEFAULT TRUE
 );
+
+-- =========================
+-- PRODUTOS
+-- =========================
 
 CREATE TABLE produtos (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -67,6 +83,10 @@ CREATE TABLE produtos (
     FOREIGN KEY (categoria_id) REFERENCES categorias(id)
 );
 
+-- =========================
+-- FAVORITOS
+-- =========================
+
 CREATE TABLE favoritos (
     usuario_id INT UNSIGNED NOT NULL,
     produto_id INT UNSIGNED NOT NULL,
@@ -85,6 +105,10 @@ CREATE TABLE favoritos_fornecedores (
     FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id) ON DELETE CASCADE
 );
 
+-- =========================
+-- AVALIAÇÕES
+-- =========================
+
 CREATE TABLE avaliacoes (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     produto_id INT UNSIGNED NOT NULL,
@@ -96,6 +120,10 @@ CREATE TABLE avaliacoes (
     FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
+
+-- =========================
+-- ORÇAMENTOS
+-- =========================
 
 CREATE TABLE orcamentos (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -120,6 +148,10 @@ CREATE TABLE orcamentos (
     FOREIGN KEY (comprador_id) REFERENCES usuarios(id) ON DELETE SET NULL
 );
 
+-- =========================
+-- CONTATOS
+-- =========================
+
 CREATE TABLE contatos (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(120) NOT NULL,
@@ -129,6 +161,10 @@ CREATE TABLE contatos (
     lido BOOLEAN NOT NULL DEFAULT FALSE,
     criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- =========================
+-- AUDITORIA
+-- =========================
 
 CREATE TABLE auditoria (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -141,20 +177,34 @@ CREATE TABLE auditoria (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
+-- =========================
+-- CATEGORIAS
+-- Categoria Teste fica no banco, mas inativa
+-- =========================
 
-INSERT INTO categorias (nome, icone, descricao) VALUES
-('Castanhas', '🥜', 'Castanhas, amendoins e oleaginosas'),
-('Bebidas', '🥤', 'Bebidas para restaurantes e varejo'),
-('Categoria Teste', 'box', 'Categoria inicial para testes'),
-('Snacks', '🍪', 'Salgadinhos, biscoitos e aperitivos');
+INSERT INTO categorias (id, nome, icone, descricao, ativa) VALUES
+(1, 'Categoria Teste', '📦', 'Categoria inicial para testes', FALSE),
+(2, 'Castanhas', '🥜', 'Castanhas, amendoins e oleaginosas', TRUE),
+(3, 'Bebidas', '🥤', 'Bebidas para restaurantes e varejo', TRUE),
+(4, 'Doces', '🍫', 'Chocolates, balas e sobremesas', TRUE),
+(5, 'Snacks', '🍪', 'Salgadinhos, biscoitos e aperitivos', TRUE),
+(6, 'Congelados', '🧊', 'Produtos congelados para restaurantes e varejo', TRUE);
 
+-- =========================
+-- USUÁRIOS DEMO
+-- =========================
 
-INSERT INTO usuarios (nome, email, senha_hash, role, status) VALUES
-('Administrador Demo','admin@demo.com','$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi','admin','ativo'),
-('Fornecedor Demo','fornecedor@demo.com','$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi','supplier','ativo'),
-('Cliente Demo','cliente@demo.com','$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi','buyer','ativo');
+INSERT INTO usuarios (id, nome, email, senha_hash, role, status) VALUES
+(1, 'Administrador Demo', 'admin@demo.com', '$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi', 'admin', 'ativo'),
+(2, 'Fornecedor Demo', 'fornecedor@demo.com', '$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi', 'supplier', 'ativo'),
+(3, 'Cliente Demo', 'cliente@demo.com', '$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi', 'buyer', 'ativo');
+
+-- =========================
+-- FORNECEDOR DEMO
+-- =========================
 
 INSERT INTO fornecedores (
+    id,
     usuario_id,
     nome_empresa,
     cnpj,
@@ -165,6 +215,7 @@ INSERT INTO fornecedores (
     site_url,
     descricao
 ) VALUES (
+    1,
     2,
     'Empresa Demo',
     '12.345.678/0001-99',
@@ -176,7 +227,13 @@ INSERT INTO fornecedores (
     'Fornecedor de demonstração para testes do marketplace.'
 );
 
+-- =========================
+-- PRODUTOS
+-- Produto Teste existe, mas está ligado à Categoria Teste inativa
+-- =========================
+
 INSERT INTO produtos (
+    id,
     fornecedor_id,
     categoria_id,
     nome,
@@ -188,8 +245,12 @@ INSERT INTO produtos (
     unidade,
     regiao,
     prazo_entrega,
+    icone,
+    badge,
     status
-) VALUES (
+) VALUES
+(
+    1,
     1,
     1,
     'Produto Teste',
@@ -201,8 +262,99 @@ INSERT INTO produtos (
     'Caixa',
     'SP',
     '5 dias',
+    '📦',
+    'Teste',
+    'active'
+),
+(
+    2,
+    1,
+    2,
+    'Castanha de Caju',
+    'Restocka',
+    'Castanha de caju premium para revenda e estabelecimentos comerciais.',
+    39.90,
+    NULL,
+    20,
+    'Pacote',
+    'SP',
+    '3 dias',
+    '🥜',
+    'Popular',
+    'active'
+),
+(
+    3,
+    1,
+    3,
+    'Bebida Energética',
+    'Restocka',
+    'Caixa com bebidas energéticas para restaurantes, mercados e distribuidoras.',
+    59.90,
+    NULL,
+    30,
+    'Caixa',
+    'SP',
+    '4 dias',
+    '🥤',
+    'Oferta',
+    'active'
+),
+(
+    4,
+    1,
+    4,
+    'Chocolate Sortido',
+    'Restocka',
+    'Caixa de chocolates sortidos para varejo, cafeterias e restaurantes.',
+    45.90,
+    NULL,
+    15,
+    'Caixa',
+    'SP',
+    '5 dias',
+    '🍫',
+    'Novo',
+    'active'
+),
+(
+    5,
+    1,
+    5,
+    'Snack Salgado',
+    'Restocka',
+    'Salgadinhos e aperitivos em fardo para revenda.',
+    29.90,
+    NULL,
+    25,
+    'Fardo',
+    'SP',
+    '2 dias',
+    '🍪',
+    'Mais vendido',
+    'active'
+),
+(
+    6,
+    1,
+    6,
+    'Pão de Queijo Congelado',
+    'Restocka',
+    'Pão de queijo congelado para cafeterias, hotéis e restaurantes.',
+    34.90,
+    NULL,
+    40,
+    'Pacote',
+    'SP',
+    '3 dias',
+    '🧊',
+    'Novo',
     'active'
 );
+
+-- =========================
+-- AVALIAÇÃO DEMO
+-- =========================
 
 INSERT INTO avaliacoes (
     produto_id,
@@ -217,6 +369,10 @@ INSERT INTO avaliacoes (
     'Produto muito bom.',
     TRUE
 );
+
+-- =========================
+-- ORÇAMENTO DEMO
+-- =========================
 
 INSERT INTO orcamentos (
     produto_id,
@@ -246,13 +402,9 @@ INSERT INTO orcamentos (
     'pending'
 );
 
-INSERT INTO produtos
-(fornecedor_id, categoria_id, nome, marca)
-VALUES
-(1, 2, 'Castanha de Caju', 'Restocka'),
-(1, 3, 'Bebida Energética', 'Restocka'),
-(1, 4, 'Chocolate Sortido', 'Restocka'),
-(1, 5, 'Snack Salgado', 'Restocka');
+-- =========================
+-- ÍNDICES
+-- =========================
 
 CREATE INDEX idx_usuarios_role ON usuarios(role);
 CREATE INDEX idx_usuarios_status ON usuarios(status);
@@ -284,5 +436,34 @@ CREATE INDEX idx_contatos_criado_em ON contatos(criado_em);
 CREATE INDEX idx_auditoria_usuario ON auditoria(usuario_id);
 CREATE INDEX idx_auditoria_criado_em ON auditoria(criado_em);
 
-SHOW COLUMNS FROM produtos;
-SELECT id, nome, fornecedor_id, categoria_id FROM produtos;
+-- =========================
+-- TESTES FINAIS
+-- =========================
+
+SELECT id, nome, icone, ativa FROM categorias;
+
+SELECT 
+    p.id,
+    p.nome,
+    p.icone,
+    p.fornecedor_id,
+    f.nome_empresa AS fornecedor_nome,
+    p.categoria_id,
+    c.nome AS categoria_nome,
+    c.icone AS categoria_icone,
+    c.ativa AS categoria_ativa,
+    p.preco,
+    p.moq,
+    p.status
+FROM produtos p
+JOIN fornecedores f ON f.id = p.fornecedor_id
+JOIN categorias c ON c.id = p.categoria_id;
+
+-- Esse SELECT mostra só o que deveria aparecer na Home
+SELECT 
+    c.id,
+    c.nome,
+    c.icone
+FROM categorias c
+WHERE c.ativa = TRUE
+ORDER BY c.id;

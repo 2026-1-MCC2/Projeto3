@@ -61,8 +61,8 @@ function LandingPage() {
 
   function obterCategoria(anuncio) {
     return (
-      anuncio.categoria ||
       anuncio.categoria_nome ||
+      anuncio.categoria ||
       anuncio.nome_categoria ||
       'Outros'
     )
@@ -97,11 +97,12 @@ function LandingPage() {
   function obterEmojiCategoria(categoria) {
     const nome = String(categoria).toLowerCase()
 
-    if (nome.includes('chip') || nome.includes('snack')) return '🍟'
     if (nome.includes('castanha')) return '🥜'
     if (nome.includes('bebida')) return '🥤'
-    if (nome.includes('ingrediente')) return '🧂'
+    if (nome.includes('doce') || nome.includes('chocolate')) return '🍫'
+    if (nome.includes('snack') || nome.includes('salgadinho')) return '🍪'
     if (nome.includes('congelado')) return '🧊'
+    if (nome.includes('ingrediente')) return '🧂'
 
     return '📦'
   }
@@ -111,6 +112,15 @@ function LandingPage() {
 
     anuncios.forEach((anuncio) => {
       const nomeCategoria = obterCategoria(anuncio)
+
+      if (
+        !nomeCategoria ||
+        nomeCategoria === 'Categoria Teste' ||
+        nomeCategoria === 'Sem categoria' ||
+        nomeCategoria === 'Outros'
+      ) {
+        return
+      }
 
       if (!mapaCategorias[nomeCategoria]) {
         mapaCategorias[nomeCategoria] = {
@@ -128,8 +138,14 @@ function LandingPage() {
       .slice(0, 5)
   }, [anuncios])
 
+  const categoriasPopulares = useMemo(() => {
+    return categorias.slice(0, 4)
+  }, [categorias])
+
   const produtosMaisBuscados = useMemo(() => {
-    return anuncios.slice(0, 4)
+    return anuncios
+      .filter((anuncio) => obterCategoria(anuncio) !== 'Categoria Teste')
+      .slice(0, 4)
   }, [anuncios])
 
   return (
@@ -139,7 +155,7 @@ function LandingPage() {
       <section className="hero">
 
         <div className="hero-left">
-          
+
           <h1>
             Reabasteça seu negócio mais rápido com <span>Restocka</span>
           </h1>
@@ -178,19 +194,22 @@ function LandingPage() {
 
               {loading && (
                 <div className="cat-box">
-                  Carregando...
+                  <span>⏳</span>
+                  <p>Carregando...</p>
                 </div>
               )}
 
-              {!loading && categorias.length === 0 && (
+              {!loading && categoriasPopulares.length === 0 && (
                 <div className="cat-box">
-                  Nenhuma categoria
+                  <span>📦</span>
+                  <p>Nenhuma categoria</p>
                 </div>
               )}
 
-              {!loading && categorias.slice(0, 4).map((categoria) => (
+              {!loading && categoriasPopulares.map((categoria) => (
                 <div className="cat-box" key={categoria.nome}>
-                  {categoria.emoji} {categoria.nome}
+                  <span>{categoria.emoji}</span>
+                  <p>{categoria.nome}</p>
                 </div>
               ))}
 

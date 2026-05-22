@@ -497,3 +497,15 @@ body {
     width: 100%;
   }
 }
+
+.cat-box span {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.cat-box p {
+  margin: 0;
+  color: white;
+  font-weight: 700;
+}
