@@ -103,24 +103,35 @@ function LandingPage() {
     if (nome.includes('snack') || nome.includes('salgadinho')) return '🍪'
     if (nome.includes('congelado')) return '🧊'
     if (nome.includes('ingrediente')) return '🧂'
+    if (nome.includes('chip')) return '🍟'
 
     return '📦'
   }
 
+  function categoriaValida(nomeCategoria) {
+    const nome = String(nomeCategoria).toLowerCase().trim()
+
+    return (
+      nome &&
+      nome !== 'categoria teste' &&
+      nome !== 'sem categoria' &&
+      nome !== 'outros'
+    )
+  }
+
+  const anunciosVisiveis = useMemo(() => {
+    return anuncios.filter((anuncio) => {
+      const categoria = obterCategoria(anuncio)
+
+      return categoriaValida(categoria)
+    })
+  }, [anuncios])
+
   const categorias = useMemo(() => {
     const mapaCategorias = {}
 
-    anuncios.forEach((anuncio) => {
+    anunciosVisiveis.forEach((anuncio) => {
       const nomeCategoria = obterCategoria(anuncio)
-
-      if (
-        !nomeCategoria ||
-        nomeCategoria === 'Categoria Teste' ||
-        nomeCategoria === 'Sem categoria' ||
-        nomeCategoria === 'Outros'
-      ) {
-        return
-      }
 
       if (!mapaCategorias[nomeCategoria]) {
         mapaCategorias[nomeCategoria] = {
@@ -136,17 +147,15 @@ function LandingPage() {
     return Object.values(mapaCategorias)
       .sort((a, b) => b.total - a.total)
       .slice(0, 5)
-  }, [anuncios])
+  }, [anunciosVisiveis])
 
   const categoriasPopulares = useMemo(() => {
     return categorias.slice(0, 4)
   }, [categorias])
 
   const produtosMaisBuscados = useMemo(() => {
-    return anuncios
-      .filter((anuncio) => obterCategoria(anuncio) !== 'Categoria Teste')
-      .slice(0, 4)
-  }, [anuncios])
+    return anunciosVisiveis.slice(0, 4)
+  }, [anunciosVisiveis])
 
   return (
     <>
