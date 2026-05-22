@@ -127,7 +127,7 @@ Crie o banco e rode o schema:
 
 2. Backend (API)
 bash# Entre na pasta do backend
-cd DEV_Site_Mr.Nuts/Backend_e_Frontend
+cd executáveis/Backend_e_Frontend
 
 # Instale as dependências
 npm install
@@ -140,7 +140,7 @@ O servidor estará disponível em http://localhost:3000.
 3. Frontend (React + Vite)
 Em outro terminal:
 bash# Entre na pasta do frontend
-cd DEV_Site_Mr.Nuts/Backend_e_Frontend/frontend
+cd executáveis/Backend_e_Frontend/frontend
 
 # Instale as dependências
 npm install
