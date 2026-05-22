@@ -141,8 +141,13 @@ CREATE TABLE auditoria (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
+
 INSERT INTO categorias (nome, icone, descricao) VALUES
-('Categoria Teste', 'box', 'Categoria inicial para testes');
+('Castanhas', '🥜', 'Castanhas, amendoins e oleaginosas'),
+('Bebidas', '🥤', 'Bebidas para restaurantes e varejo'),
+('Categoria Teste', 'box', 'Categoria inicial para testes'),
+('Snacks', '🍪', 'Salgadinhos, biscoitos e aperitivos');
+
 
 INSERT INTO usuarios (nome, email, senha_hash, role, status) VALUES
 ('Administrador Demo','admin@demo.com','$2b$10$E6LPlyMWmz/UUnQyurNrw.LRsaQ3KOB1aXtMMnlSyHsUlslCP.Vgi','admin','ativo'),
@@ -241,6 +246,14 @@ INSERT INTO orcamentos (
     'pending'
 );
 
+INSERT INTO produtos
+(fornecedor_id, categoria_id, nome, marca)
+VALUES
+(1, 2, 'Castanha de Caju', 'Restocka'),
+(1, 3, 'Bebida Energética', 'Restocka'),
+(1, 4, 'Chocolate Sortido', 'Restocka'),
+(1, 5, 'Snack Salgado', 'Restocka');
+
 CREATE INDEX idx_usuarios_role ON usuarios(role);
 CREATE INDEX idx_usuarios_status ON usuarios(status);
 CREATE INDEX idx_usuarios_criado_em ON usuarios(criado_em);
@@ -270,3 +283,6 @@ CREATE INDEX idx_contatos_criado_em ON contatos(criado_em);
 
 CREATE INDEX idx_auditoria_usuario ON auditoria(usuario_id);
 CREATE INDEX idx_auditoria_criado_em ON auditoria(criado_em);
+
+SHOW COLUMNS FROM produtos;
+SELECT id, nome, fornecedor_id, categoria_id FROM produtos;
