@@ -509,3 +509,26 @@ body {
   color: white;
   font-weight: 700;
 }
+
+.glass-card {
+  width: 500px !important;
+  padding: 24px 32px !important;
+
+  position: relative !important;
+  left: 40px !important;
+  top: -15px !important;
+  transform: none !important;
+
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.cat-box {
+  background: rgba(255,255,255,0.12);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+}
